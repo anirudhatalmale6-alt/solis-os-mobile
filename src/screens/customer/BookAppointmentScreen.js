@@ -56,6 +56,13 @@ export default function BookAppointmentScreen({ navigation, route }) {
       Alert.alert('Select a time', 'Please choose a time slot')
       return
     }
+    if (!user) {
+      Alert.alert('Sign in required', 'You need to sign in to book an appointment', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => navigation.navigate('Login', { role: 'customer' }) },
+      ])
+      return
+    }
     setLoading(true)
     const booking = {
       business_id: business.id,

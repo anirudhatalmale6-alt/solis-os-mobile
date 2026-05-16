@@ -6,7 +6,8 @@ const AuthContext = createContext({})
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [userType, setUserType] = useState(null) // 'business' or 'customer'
+  const [userType, setUserType] = useState(null)
+  const [guestMode, setGuestMode] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,6 +20,9 @@ export function AuthProvider({ children }) {
         })
         AsyncStorage.getItem('solis_user_type').then(t => setUserType(t))
       }
+      AsyncStorage.getItem('solis_guest_mode').then(v => {
+        if (v === 'true') setGuestMode(true)
+      })
       setLoading(false)
     })
 
@@ -61,8 +65,10 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     await supabase.auth.signOut()
     await AsyncStorage.removeItem('solis_user_type')
+    await AsyncStorage.removeItem('solis_guest_mode')
     setUser(null)
     setUserType(null)
+    setGuestMode(false)
   }
 
   const setType = async (type) => {
@@ -70,8 +76,18 @@ export function AuthProvider({ children }) {
     setUserType(type)
   }
 
+  const enterGuestMode = async () => {
+    await AsyncStorage.setItem('solis_guest_mode', 'true')
+    setGuestMode(true)
+  }
+
+  const exitGuestMode = async () => {
+    await AsyncStorage.removeItem('solis_guest_mode')
+    setGuestMode(false)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, userType, loading, signIn, signUp, signOut, setType }}>
+    <AuthContext.Provider value={{ user, userType, guestMode, loading, signIn, signUp, signOut, setType, enterGuestMode, exitGuestMode }}>
       {children}
     </AuthContext.Provider>
   )

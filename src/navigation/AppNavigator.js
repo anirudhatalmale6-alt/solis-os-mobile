@@ -29,13 +29,15 @@ const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 const HomeStack = createNativeStackNavigator()
 
-// Customer Home Stack (Home > BusinessProfile > BookAppointment)
+// Customer Home Stack (Home > BusinessProfile > BookAppointment > Login/Signup)
 function CustomerHomeStack() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="BusinessProfile" component={BusinessProfileScreen} />
       <HomeStack.Screen name="BookAppointment" component={BookAppointmentScreen} />
+      <HomeStack.Screen name="Login" component={LoginScreen} />
+      <HomeStack.Screen name="Signup" component={SignupScreen} />
     </HomeStack.Navigator>
   )
 }
@@ -167,7 +169,7 @@ function AuthStack() {
 }
 
 export default function AppNavigator() {
-  const { user, userType, loading } = useAuth()
+  const { user, userType, guestMode, loading } = useAuth()
 
   if (loading) {
     return (
@@ -177,14 +179,17 @@ export default function AppNavigator() {
     )
   }
 
+  const showCustomerTabs = guestMode || (user && userType === 'customer')
+  const showBusinessTabs = user && userType === 'business'
+
   return (
     <NavigationContainer>
-      {!user ? (
-        <AuthStack />
-      ) : userType === 'business' ? (
+      {showBusinessTabs ? (
         <BusinessTabs />
-      ) : (
+      ) : showCustomerTabs ? (
         <CustomerTabs />
+      ) : (
+        <AuthStack />
       )}
     </NavigationContainer>
   )

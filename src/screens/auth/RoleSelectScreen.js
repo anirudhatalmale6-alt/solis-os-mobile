@@ -1,8 +1,10 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native'
 import { colors, shadows } from '../../theme/colors'
+import { useAuth } from '../../lib/AuthContext'
 
 export default function RoleSelectScreen({ navigation }) {
+  const { enterGuestMode } = useAuth()
   return (
     <View style={s.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
@@ -36,14 +38,14 @@ export default function RoleSelectScreen({ navigation }) {
         <TouchableOpacity
           style={s.roleCard}
           activeOpacity={0.85}
-          onPress={() => navigation.navigate('Login', { role: 'customer' })}
+          onPress={() => enterGuestMode()}
         >
           <View style={[s.roleIcon, { backgroundColor: colors.blueLight }]}>
             <Text style={s.roleEmoji}>👤</Text>
           </View>
           <Text style={s.roleTitle}>I'm a Customer</Text>
           <Text style={s.roleDesc}>
-            Discover businesses near you, book appointments instantly, and manage your bookings
+            Discover businesses near you, book appointments instantly, and browse services
           </Text>
           <View style={[s.roleBadge, { backgroundColor: colors.blueLight }]}>
             <Text style={[s.roleBadgeText, { color: colors.blue }]}>Free forever</Text>

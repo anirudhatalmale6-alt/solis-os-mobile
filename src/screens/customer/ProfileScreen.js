@@ -4,18 +4,13 @@ import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
 const MENU_ITEMS = [
-  { key: 'bookings', emoji: '📅', label: 'My Bookings', nav: 'MyBookings' },
   { key: 'notifications', emoji: '🔔', label: 'Notifications', nav: null },
   { key: 'help', emoji: '💡', label: 'Help & Support', nav: null },
   { key: 'about', emoji: '✨', label: 'About Solis OS', nav: null },
 ]
 
 export default function ProfileScreen({ navigation }) {
-  const { user, signOut } = useAuth()
-
-  const initials = user?.full_name
-    ? user.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-    : user?.email?.[0]?.toUpperCase() || '?'
+  const { user, signOut, exitGuestMode } = useAuth()
 
   const handleMenuPress = (item) => {
     if (item.nav) {
@@ -26,6 +21,10 @@ export default function ProfileScreen({ navigation }) {
   }
 
   const handleSignOut = () => {
+    if (!user) {
+      exitGuestMode()
+      return
+    }
     Alert.alert(
       'Sign Out',
       'Are you sure you want to sign out?',
@@ -36,6 +35,65 @@ export default function ProfileScreen({ navigation }) {
     )
   }
 
+  if (!user) {
+    return (
+      <View style={s.container}>
+        <ScrollView contentContainerStyle={s.scroll}>
+          <View style={s.profileSection}>
+            <View style={[s.avatar, { backgroundColor: colors.bgInput }]}>
+              <Text style={[s.avatarText, { color: colors.textMuted }]}>👤</Text>
+            </View>
+            <Text style={s.userName}>Guest</Text>
+            <Text style={s.userEmail}>Sign in to manage your bookings</Text>
+          </View>
+
+          <TouchableOpacity
+            style={s.signInBtn}
+            activeOpacity={0.85}
+            onPress={() => navigation.getParent()?.navigate('Home', { screen: 'Login', params: { role: 'customer' } })}
+          >
+            <Text style={s.signInText}>Sign In</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[s.signInBtn, { backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border, marginTop: 10 }]}
+            activeOpacity={0.85}
+            onPress={() => navigation.getParent()?.navigate('Home', { screen: 'Signup', params: { role: 'customer' } })}
+          >
+            <Text style={[s.signInText, { color: colors.text }]}>Create Account</Text>
+          </TouchableOpacity>
+
+          <View style={[s.menuContainer, { marginTop: 28 }]}>
+            {MENU_ITEMS.map((item, index) => (
+              <TouchableOpacity
+                key={item.key}
+                style={[s.menuItem, index === MENU_ITEMS.length - 1 && s.menuItemLast]}
+                activeOpacity={0.7}
+                onPress={() => handleMenuPress(item)}
+              >
+                <View style={s.menuIconWrap}>
+                  <Text style={s.menuEmoji}>{item.emoji}</Text>
+                </View>
+                <Text style={s.menuLabel}>{item.label}</Text>
+                <Text style={s.chevron}>›</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity style={s.signOutBtn} activeOpacity={0.7} onPress={handleSignOut}>
+            <Text style={s.signOutText}>Back to Start</Text>
+          </TouchableOpacity>
+
+          <Text style={s.version}>Solis OS v1.0</Text>
+        </ScrollView>
+      </View>
+    )
+  }
+
+  const initials = user.full_name
+    ? user.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : user.email?.[0]?.toUpperCase() || '?'
+
   return (
     <View style={s.container}>
       <ScrollView contentContainerStyle={s.scroll}>
@@ -43,8 +101,8 @@ export default function ProfileScreen({ navigation }) {
           <View style={s.avatar}>
             <Text style={s.avatarText}>{initials}</Text>
           </View>
-          <Text style={s.userName}>{user?.full_name || 'User'}</Text>
-          <Text style={s.userEmail}>{user?.email || ''}</Text>
+          <Text style={s.userName}>{user.full_name || 'User'}</Text>
+          <Text style={s.userEmail}>{user.email || ''}</Text>
         </View>
 
         <View style={s.menuContainer}>
@@ -91,6 +149,14 @@ const s = StyleSheet.create({
   avatarText: { fontSize: 28, fontWeight: '800', color: colors.textDark },
   userName: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 4 },
   userEmail: { fontSize: 14, color: colors.textMuted },
+  signInBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    ...shadows.button,
+  },
+  signInText: { fontSize: 16, fontWeight: '700', color: colors.textDark },
   menuContainer: {
     backgroundColor: colors.bgCard,
     borderRadius: 16,
