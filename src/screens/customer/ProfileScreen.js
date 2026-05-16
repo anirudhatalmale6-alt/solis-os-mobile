@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -38,22 +39,27 @@ export default function ProfileScreen({ navigation }) {
   if (!user) {
     return (
       <View style={s.container}>
-        <View style={s.glowOrb} />
+        <LinearGradient
+          colors={['rgba(245,158,11,0.1)', 'transparent']}
+          style={s.headerGlow}
+        />
+        <View style={s.glowOrb1} />
         <ScrollView contentContainerStyle={s.scroll}>
           <View style={s.profileSection}>
-            <View style={[s.avatar, { backgroundColor: colors.bgInput, borderColor: colors.border }]}>
-              <Text style={[s.avatarText, { color: colors.textMuted }]}>👤</Text>
+            <View style={s.avatarGuest}>
+              <Text style={s.avatarGuestText}>👤</Text>
             </View>
             <Text style={s.userName}>Guest</Text>
             <Text style={s.userEmail}>Sign in to manage your bookings</Text>
           </View>
 
           <TouchableOpacity
-            style={s.signInBtn}
             activeOpacity={0.85}
             onPress={() => navigation.getParent()?.navigate('Home', { screen: 'Login', params: { role: 'customer' } })}
           >
-            <Text style={s.signInText}>Sign In</Text>
+            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signInBtn}>
+              <Text style={s.signInText}>Sign In</Text>
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -72,9 +78,9 @@ export default function ProfileScreen({ navigation }) {
                 activeOpacity={0.7}
                 onPress={() => handleMenuPress(item)}
               >
-                <View style={s.menuIconWrap}>
+                <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
                   <Text style={s.menuEmoji}>{item.emoji}</Text>
-                </View>
+                </LinearGradient>
                 <Text style={s.menuLabel}>{item.label}</Text>
                 <Text style={s.chevron}>›</Text>
               </TouchableOpacity>
@@ -97,15 +103,28 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View style={s.container}>
-      <View style={s.glowOrb} />
+      <LinearGradient
+        colors={['rgba(245,158,11,0.12)', 'rgba(168,85,247,0.05)', 'transparent']}
+        style={s.headerGlow}
+      />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.profileSection}>
-          <View style={s.avatar}>
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.avatar}>
             <Text style={s.avatarText}>{initials}</Text>
-          </View>
+          </LinearGradient>
           <Text style={s.userName}>{user.full_name || 'User'}</Text>
           <Text style={s.userEmail}>{user.email || ''}</Text>
         </View>
+
+        <LinearGradient
+          colors={['rgba(245,158,11,0.08)', 'rgba(245,158,11,0.02)']}
+          style={s.memberCard}
+        >
+          <Text style={s.memberLabel}>MEMBER SINCE</Text>
+          <Text style={s.memberDate}>{user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently'}</Text>
+        </LinearGradient>
 
         <View style={s.menuContainer}>
           {MENU_ITEMS.map((item, index) => (
@@ -115,9 +134,9 @@ export default function ProfileScreen({ navigation }) {
               activeOpacity={0.7}
               onPress={() => handleMenuPress(item)}
             >
-              <View style={s.menuIconWrap}>
+              <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
                 <Text style={s.menuEmoji}>{item.emoji}</Text>
-              </View>
+              </LinearGradient>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
             </TouchableOpacity>
@@ -136,55 +155,89 @@ export default function ProfileScreen({ navigation }) {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  glowOrb: {
+  headerGlow: {
     position: 'absolute',
-    top: 40,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 300,
+  },
+  glowOrb1: {
+    position: 'absolute',
+    top: 30,
     right: -30,
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+  },
+  glowOrb2: {
+    position: 'absolute',
+    top: 200,
+    left: -40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(168, 85, 247, 0.06)',
   },
   scroll: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 100 },
-  profileSection: { alignItems: 'center', marginBottom: 32 },
+  profileSection: { alignItems: 'center', marginBottom: 24 },
   avatar: {
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: colors.primary,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
-    borderWidth: 2,
-    borderColor: colors.borderGlow,
     ...shadows.button,
   },
-  avatarText: { fontSize: 28, fontWeight: '800', color: colors.textDark },
-  userName: { fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  avatarText: { fontSize: 30, fontWeight: '800', color: '#000' },
+  avatarGuest: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+  },
+  avatarGuestText: { fontSize: 36 },
+  userName: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
   userEmail: { fontSize: 14, color: colors.textMuted },
+  memberCard: {
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+  },
+  memberLabel: { fontSize: 10, fontWeight: '700', color: colors.textMuted, letterSpacing: 1.5, marginBottom: 4 },
+  memberDate: { fontSize: 15, fontWeight: '600', color: colors.primary },
   signInBtn: {
-    backgroundColor: colors.primary,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     ...shadows.button,
   },
-  signInText: { fontSize: 16, fontWeight: '700', color: colors.textDark },
+  signInText: { fontSize: 16, fontWeight: '700', color: '#000' },
   createBtn: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 10,
   },
   createBtnText: { fontSize: 16, fontWeight: '700', color: colors.text },
   menuContainer: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     overflow: 'hidden',
     ...shadows.card,
   },
@@ -194,19 +247,18 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
     gap: 14,
   },
   menuItemLast: { borderBottomWidth: 0 },
   menuIconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: 11,
-    backgroundColor: colors.bgInput,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
@@ -214,7 +266,7 @@ const s = StyleSheet.create({
   signOutBtn: {
     marginTop: 28,
     backgroundColor: colors.redLight,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,

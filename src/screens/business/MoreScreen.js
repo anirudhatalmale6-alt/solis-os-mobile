@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
@@ -35,7 +36,12 @@ export default function MoreScreen() {
 
   return (
     <View style={s.container}>
-      <View style={s.glowOrb} />
+      <LinearGradient
+        colors={['rgba(245,158,11,0.1)', 'rgba(168,85,247,0.04)', 'transparent']}
+        style={s.headerGlow}
+      />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <View style={s.header}>
         <Text style={s.headerTitle}>More</Text>
       </View>
@@ -49,9 +55,9 @@ export default function MoreScreen() {
               activeOpacity={0.7}
               onPress={() => navigation.navigate(item.nav)}
             >
-              <View style={s.menuIconWrap}>
+              <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
                 <Text style={s.menuEmoji}>{item.emoji}</Text>
-              </View>
+              </LinearGradient>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
             </TouchableOpacity>
@@ -67,13 +73,13 @@ export default function MoreScreen() {
                 activeOpacity={0.7}
                 onPress={() => Alert.alert(item.label, 'Coming soon!')}
               >
-                <View style={s.menuIconWrap}>
+                <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
                   <Text style={s.menuEmoji}>{item.emoji}</Text>
-                </View>
+                </LinearGradient>
                 <Text style={s.menuLabel}>{item.label}</Text>
-                <View style={s.soonBadge}>
+                <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={s.soonBadge}>
                   <Text style={s.soonText}>Soon</Text>
-                </View>
+                </LinearGradient>
                 <Text style={s.chevron}>›</Text>
               </TouchableOpacity>
             ))}
@@ -92,23 +98,23 @@ export default function MoreScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  glowOrb: {
-    position: 'absolute',
-    top: 40,
-    right: -30,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
+  glowOrb1: {
+    position: 'absolute', top: 40, right: -30, width: 160, height: 160,
+    borderRadius: 80, backgroundColor: 'rgba(245, 158, 11, 0.1)',
+  },
+  glowOrb2: {
+    position: 'absolute', bottom: 150, left: -40, width: 120, height: 120,
+    borderRadius: 60, backgroundColor: 'rgba(168, 85, 247, 0.06)',
   },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   menuContainer: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     overflow: 'hidden',
     ...shadows.card,
   },
@@ -118,27 +124,23 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
     gap: 14,
   },
-  menuItemLast: {
-    borderBottomWidth: 0,
-  },
+  menuItemLast: { borderBottomWidth: 0 },
   menuIconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: 11,
-    backgroundColor: colors.bgInput,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
   soonBadge: {
-    backgroundColor: colors.primaryLight,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -149,7 +151,7 @@ const s = StyleSheet.create({
   signOutBtn: {
     marginTop: 28,
     backgroundColor: colors.redLight,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,

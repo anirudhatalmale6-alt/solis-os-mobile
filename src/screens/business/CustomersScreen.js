@@ -1,17 +1,18 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, TextInput, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
 const AVATAR_COLORS = [
-  { bg: colors.primaryLight, color: colors.primary },
-  { bg: colors.blueLight, color: colors.blue },
-  { bg: colors.greenLight, color: colors.green },
-  { bg: colors.purpleLight, color: colors.purple },
-  { bg: colors.tealLight, color: colors.teal },
-  { bg: colors.redLight, color: colors.red },
+  { gradient: ['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)'], color: colors.primary },
+  { gradient: ['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.08)'], color: colors.blue },
+  { gradient: ['rgba(34,197,94,0.2)', 'rgba(34,197,94,0.08)'], color: colors.green },
+  { gradient: ['rgba(168,85,247,0.2)', 'rgba(168,85,247,0.08)'], color: colors.purple },
+  { gradient: ['rgba(20,184,166,0.2)', 'rgba(20,184,166,0.08)'], color: colors.teal },
+  { gradient: ['rgba(239,68,68,0.2)', 'rgba(239,68,68,0.08)'], color: colors.red },
 ]
 
 export default function CustomersScreen() {
@@ -60,21 +61,33 @@ export default function CustomersScreen() {
 
   return (
     <View style={s.container}>
-      <View style={s.glowOrb} />
+      <LinearGradient
+        colors={['rgba(59,130,246,0.08)', 'rgba(245,158,11,0.04)', 'transparent']}
+        style={s.headerGlow}
+      />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Customers</Text>
-        <Text style={s.headerSub}>{customers.length} total</Text>
+        <View style={s.headerBadge}>
+          <Text style={s.headerBadgeText}>{customers.length} total</Text>
+        </View>
       </View>
 
       <View style={s.searchWrap}>
-        <Text style={s.searchIcon}>🔍</Text>
-        <TextInput
-          style={s.searchInput}
-          placeholder="Search by name, email, phone..."
-          placeholderTextColor={colors.textMuted}
-          value={search}
-          onChangeText={setSearch}
-        />
+        <LinearGradient
+          colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
+          style={s.searchInner}
+        >
+          <Text style={s.searchIcon}>🔍</Text>
+          <TextInput
+            style={s.searchInput}
+            placeholder="Search by name, email, phone..."
+            placeholderTextColor={colors.textMuted}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </LinearGradient>
       </View>
 
       <ScrollView
@@ -82,19 +95,22 @@ export default function CustomersScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {filtered.length === 0 ? (
-          <View style={s.empty}>
+          <LinearGradient
+            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
+            style={s.empty}
+          >
             <Text style={s.emptyEmoji}>👥</Text>
             <Text style={s.emptyTitle}>{search ? 'No results found' : 'No customers yet'}</Text>
             <Text style={s.emptyDesc}>{search ? 'Try a different search' : 'Customers who book will appear here'}</Text>
-          </View>
+          </LinearGradient>
         ) : (
           filtered.map((customer, index) => {
             const ac = AVATAR_COLORS[index % AVATAR_COLORS.length]
             return (
               <TouchableOpacity key={customer.id} style={s.customerRow} activeOpacity={0.8}>
-                <View style={[s.avatar, { backgroundColor: ac.bg }]}>
+                <LinearGradient colors={ac.gradient} style={s.avatar}>
                   <Text style={[s.avatarText, { color: ac.color }]}>{getInitials(customer.name)}</Text>
-                </View>
+                </LinearGradient>
                 <View style={s.customerInfo}>
                   <Text style={s.customerName}>{customer.name || 'Unknown'}</Text>
                   {customer.email && <Text style={s.customerDetail}>{customer.email}</Text>}
@@ -112,62 +128,49 @@ export default function CustomersScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  glowOrb: {
-    position: 'absolute',
-    top: 30,
-    right: -50,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(59, 130, 246, 0.03)',
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
+  glowOrb1: {
+    position: 'absolute', top: 30, right: -50, width: 180, height: 180,
+    borderRadius: 90, backgroundColor: 'rgba(59, 130, 246, 0.08)',
   },
-  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 },
+  glowOrb2: {
+    position: 'absolute', bottom: 150, left: -40, width: 120, height: 120,
+    borderRadius: 60, backgroundColor: 'rgba(245, 158, 11, 0.06)',
+  },
+  header: {
+    paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
-  headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
-  searchWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.bgCard,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    marginHorizontal: 20,
-    marginTop: 16,
-    marginBottom: 16,
-    paddingHorizontal: 14,
-    gap: 10,
-    ...shadows.card,
+  headerBadge: {
+    backgroundColor: colors.blueLight, paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(59,130,246,0.2)',
+  },
+  headerBadgeText: { fontSize: 11, color: colors.blue, fontWeight: '600' },
+  searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 16 },
+  searchInner: {
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 16, paddingHorizontal: 14, gap: 10, ...shadows.card,
   },
   searchIcon: { fontSize: 16 },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   customerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 8,
-    gap: 12,
-    ...shadows.card,
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: 18,
+    padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 8, gap: 12, ...shadows.card,
   },
-  avatar: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 15, fontWeight: '700' },
   customerInfo: { flex: 1 },
   customerName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
   customerDetail: { fontSize: 12, color: colors.textMuted, marginTop: 1 },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
   empty: {
-    alignItems: 'center',
-    paddingVertical: 60,
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginTop: 20,
-    ...shadows.card,
+    alignItems: 'center', paddingVertical: 60, borderRadius: 20,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20, ...shadows.card,
   },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

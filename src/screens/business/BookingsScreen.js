@@ -1,14 +1,15 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
 const STATUS_STYLES = {
-  confirmed: { bg: colors.greenLight, color: colors.green, border: 'rgba(34, 197, 94, 0.2)', label: 'Confirmed' },
-  pending: { bg: colors.primaryLight, color: colors.primary, border: colors.borderGlow, label: 'Pending' },
-  cancelled: { bg: colors.redLight, color: colors.red, border: 'rgba(239, 68, 68, 0.2)', label: 'Cancelled' },
+  confirmed: { gradient: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.05)'], color: colors.green, border: 'rgba(34,197,94,0.25)', label: 'Confirmed' },
+  pending: { gradient: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)'], color: colors.primary, border: 'rgba(245,158,11,0.25)', label: 'Pending' },
+  cancelled: { gradient: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)'], color: colors.red, border: 'rgba(239,68,68,0.25)', label: 'Cancelled' },
 }
 
 export default function BookingsScreen() {
@@ -52,11 +53,7 @@ export default function BookingsScreen() {
   const renderBooking = (booking) => {
     const status = STATUS_STYLES[booking.status] || STATUS_STYLES.pending
     const initials = (booking.customer_name || '??')
-      .split(' ')
-      .map(w => w[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+      .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
     const isExpanded = expandedId === booking.id
 
     return (
@@ -67,18 +64,18 @@ export default function BookingsScreen() {
         onPress={() => setExpandedId(isExpanded ? null : booking.id)}
       >
         <View style={s.bookingRow}>
-          <View style={s.avatar}>
+          <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.avatar}>
             <Text style={s.avatarText}>{initials}</Text>
-          </View>
+          </LinearGradient>
           <View style={s.bookingInfo}>
             <Text style={s.customerName}>{booking.customer_name || 'Customer'}</Text>
             <Text style={s.serviceName}>{booking.service_name || 'Service'}</Text>
           </View>
           <View style={s.rightCol}>
             <Text style={s.bookingTime}>{booking.time || '--:--'}</Text>
-            <View style={[s.badge, { backgroundColor: status.bg, borderColor: status.border }]}>
+            <LinearGradient colors={status.gradient} style={[s.badge, { borderColor: status.border }]}>
               <Text style={[s.badgeText, { color: status.color }]}>{status.label}</Text>
-            </View>
+            </LinearGradient>
           </View>
         </View>
 
@@ -106,12 +103,11 @@ export default function BookingsScreen() {
     )
   }
 
-  const renderSection = (title, items, emoji) => {
+  const renderSection = (title, items) => {
     if (items.length === 0) return null
     return (
       <View style={s.section}>
         <View style={s.sectionHeader}>
-          <Text style={s.sectionEmoji}>{emoji}</Text>
           <Text style={s.sectionTitle}>{title}</Text>
           <View style={s.sectionCountWrap}>
             <Text style={s.sectionCount}>{items.length}</Text>
@@ -124,10 +120,17 @@ export default function BookingsScreen() {
 
   return (
     <View style={s.container}>
-      <View style={s.glowOrb} />
+      <LinearGradient
+        colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']}
+        style={s.headerGlow}
+      />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Bookings</Text>
-        <Text style={s.headerSub}>{bookings.length} total</Text>
+        <View style={s.headerBadge}>
+          <Text style={s.headerBadgeText}>{bookings.length} total</Text>
+        </View>
       </View>
 
       <ScrollView
@@ -135,16 +138,19 @@ export default function BookingsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {bookings.length === 0 ? (
-          <View style={s.empty}>
+          <LinearGradient
+            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
+            style={s.empty}
+          >
             <Text style={s.emptyEmoji}>📅</Text>
             <Text style={s.emptyTitle}>No bookings yet</Text>
             <Text style={s.emptyDesc}>Bookings from customers will appear here</Text>
-          </View>
+          </LinearGradient>
         ) : (
           <>
-            {renderSection('Today', grouped.today, '📍')}
-            {renderSection('Upcoming', grouped.upcoming, '🗓️')}
-            {renderSection('Past', grouped.past, '🕐')}
+            {renderSection('Today', grouped.today)}
+            {renderSection('Upcoming', grouped.upcoming)}
+            {renderSection('Past', grouped.past)}
           </>
         )}
       </ScrollView>
@@ -154,64 +160,55 @@ export default function BookingsScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  glowOrb: {
-    position: 'absolute',
-    top: 20,
-    left: -40,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
+  glowOrb1: {
+    position: 'absolute', top: 20, left: -40, width: 160, height: 160,
+    borderRadius: 80, backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
-  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
+  glowOrb2: {
+    position: 'absolute', bottom: 200, right: -30, width: 120, height: 120,
+    borderRadius: 60, backgroundColor: 'rgba(59, 130, 246, 0.05)',
+  },
+  header: {
+    paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
-  headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
+  headerBadge: {
+    backgroundColor: colors.primaryLight, paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 10, borderWidth: 1, borderColor: colors.borderGlow,
+  },
+  headerBadgeText: { fontSize: 11, color: colors.primary, fontWeight: '600' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   section: { marginBottom: 24 },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
-  sectionEmoji: { fontSize: 16 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 },
   sectionCountWrap: {
-    backgroundColor: colors.bgInput,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.08)', paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
   sectionCount: { fontSize: 12, color: colors.textMuted, fontWeight: '600' },
   bookingCard: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 8,
-    ...shadows.card,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: 18, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', marginBottom: 8, ...shadows.card,
   },
   bookingRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: { width: 42, height: 42, borderRadius: 13, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 14, fontWeight: '700', color: colors.primary },
   bookingInfo: { flex: 1 },
-  customerName: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  customerName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
   serviceName: { fontSize: 12, color: colors.textMuted },
   rightCol: { alignItems: 'flex-end', gap: 4 },
-  bookingTime: { fontSize: 13, fontWeight: '600', color: colors.text },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, borderWidth: 1 },
+  bookingTime: { fontSize: 13, fontWeight: '700', color: colors.text },
+  badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
   badgeText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
-  details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border },
+  details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)' },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   detailLabel: { fontSize: 12, color: colors.textMuted },
   detailValue: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
   empty: {
-    alignItems: 'center',
-    paddingVertical: 60,
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginTop: 20,
-    ...shadows.card,
+    alignItems: 'center', paddingVertical: 60, borderRadius: 20,
+    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', marginTop: 20, ...shadows.card,
   },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, RefreshControl } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
@@ -50,7 +51,12 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={s.container}>
-      <View style={s.glowOrb} />
+      <LinearGradient
+        colors={['rgba(245,158,11,0.12)', 'rgba(245,158,11,0.04)', 'transparent']}
+        style={s.headerGlow}
+      />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
 
       <View style={s.header}>
         <Text style={s.greeting}>Find & Book</Text>
@@ -58,14 +64,19 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <View style={s.searchWrap}>
-        <Text style={s.searchIcon}>🔍</Text>
-        <TextInput
-          style={s.searchInput}
-          placeholder="Search businesses, services..."
-          placeholderTextColor={colors.textMuted}
-          value={search}
-          onChangeText={setSearch}
-        />
+        <LinearGradient
+          colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
+          style={s.searchInner}
+        >
+          <Text style={s.searchIcon}>🔍</Text>
+          <TextInput
+            style={s.searchInput}
+            placeholder="Search businesses, services..."
+            placeholderTextColor={colors.textMuted}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </LinearGradient>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.catsScroll} contentContainerStyle={s.catsContainer}>
@@ -73,7 +84,13 @@ export default function HomeScreen({ navigation }) {
           style={[s.catChip, !selectedCat && s.catChipActive]}
           onPress={() => setSelectedCat(null)}
         >
-          <Text style={[s.catChipText, !selectedCat && s.catChipTextActive]}>All</Text>
+          {!selectedCat ? (
+            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.catChipGradient}>
+              <Text style={s.catChipTextActive}>All</Text>
+            </LinearGradient>
+          ) : (
+            <Text style={s.catChipText}>All</Text>
+          )}
         </TouchableOpacity>
         {CATEGORIES.map(cat => (
           <TouchableOpacity
@@ -81,8 +98,17 @@ export default function HomeScreen({ navigation }) {
             style={[s.catChip, selectedCat === cat.key && s.catChipActive]}
             onPress={() => setSelectedCat(selectedCat === cat.key ? null : cat.key)}
           >
-            <Text style={s.catEmoji}>{cat.emoji}</Text>
-            <Text style={[s.catChipText, selectedCat === cat.key && s.catChipTextActive]}>{cat.label}</Text>
+            {selectedCat === cat.key ? (
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.catChipGradient}>
+                <Text style={s.catEmoji}>{cat.emoji}</Text>
+                <Text style={s.catChipTextActive}>{cat.label}</Text>
+              </LinearGradient>
+            ) : (
+              <>
+                <Text style={s.catEmoji}>{cat.emoji}</Text>
+                <Text style={s.catChipText}>{cat.label}</Text>
+              </>
+            )}
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -94,15 +120,20 @@ export default function HomeScreen({ navigation }) {
       >
         <View style={s.sectionHeader}>
           <Text style={s.sectionTitle}>Near You</Text>
-          <Text style={s.sectionCount}>{filtered.length} businesses</Text>
+          <View style={s.countBadge}>
+            <Text style={s.countText}>{filtered.length} businesses</Text>
+          </View>
         </View>
 
         {filtered.length === 0 ? (
-          <View style={s.empty}>
+          <LinearGradient
+            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
+            style={s.empty}
+          >
             <Text style={s.emptyEmoji}>🔍</Text>
             <Text style={s.emptyTitle}>No businesses found</Text>
             <Text style={s.emptyDesc}>Try a different search or category</Text>
-          </View>
+          </LinearGradient>
         ) : (
           filtered.map(biz => (
             <TouchableOpacity
@@ -115,7 +146,10 @@ export default function HomeScreen({ navigation }) {
                 source={{ uri: STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
                 style={s.bizImage}
               />
-              <View style={s.bizImageOverlay} />
+              <LinearGradient
+                colors={['transparent', 'rgba(8,8,13,0.8)', 'rgba(8,8,13,0.95)']}
+                style={s.bizImageOverlay}
+              />
               <View style={s.bizRating}>
                 <Text style={s.bizRatingText}>⭐ 4.{Math.floor(Math.random() * 3) + 7}</Text>
               </View>
@@ -134,182 +168,131 @@ export default function HomeScreen({ navigation }) {
 }
 
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
+  container: { flex: 1, backgroundColor: colors.bg },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 250,
   },
-  glowOrb: {
+  glowOrb1: {
     position: 'absolute',
     top: 20,
-    right: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+    right: -40,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 8,
+  glowOrb2: {
+    position: 'absolute',
+    top: 300,
+    left: -50,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(59, 130, 246, 0.06)',
   },
-  greeting: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.text,
-    letterSpacing: 0.3,
-  },
-  subGreeting: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: 4,
-  },
-  searchWrap: {
+  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 },
+  greeting: { fontSize: 30, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
+  subGreeting: { fontSize: 14, color: colors.primary, marginTop: 4, fontWeight: '500' },
+  searchWrap: { marginHorizontal: 20, marginTop: 16 },
+  searchInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    marginHorizontal: 20,
-    marginTop: 16,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
     paddingHorizontal: 14,
     gap: 10,
     ...shadows.card,
   },
-  searchIcon: {
-    fontSize: 16,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 14,
-    color: colors.text,
-  },
-  catsScroll: {
-    marginTop: 16,
-    maxHeight: 44,
-  },
-  catsContainer: {
-    paddingHorizontal: 20,
-    gap: 8,
-  },
+  searchIcon: { fontSize: 16 },
+  searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
+  catsScroll: { marginTop: 16, maxHeight: 50 },
+  catsContainer: { paddingHorizontal: 20, gap: 8 },
   catChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    gap: 5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 6,
   },
   catChipActive: {
-    backgroundColor: colors.primary,
     borderColor: colors.primary,
-    ...shadows.button,
+    backgroundColor: 'transparent',
+    padding: 0,
+    overflow: 'hidden',
   },
-  catEmoji: {
-    fontSize: 13,
-  },
-  catChipText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  catChipTextActive: {
-    color: colors.textDark,
-    fontWeight: '700',
-  },
-  list: {
-    flex: 1,
-    marginTop: 16,
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
-  },
-  sectionHeader: {
+  catChipGradient: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 6,
+    borderRadius: 24,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
+  catEmoji: { fontSize: 14 },
+  catChipText: { fontSize: 13, fontWeight: '600', color: colors.textSecondary },
+  catChipTextActive: { fontSize: 13, fontWeight: '700', color: '#000' },
+  list: { flex: 1, marginTop: 16 },
+  listContent: { paddingHorizontal: 20, paddingBottom: 100 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
+  countBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.borderGlow,
   },
-  sectionCount: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
+  countText: { fontSize: 11, color: colors.primary, fontWeight: '600' },
   bizCard: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     ...shadows.card,
   },
-  bizImage: {
-    width: '100%',
-    height: 150,
-  },
+  bizImage: { width: '100%', height: 160 },
   bizImageOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 150,
-    backgroundColor: 'rgba(8, 8, 13, 0.15)',
+    height: 160,
   },
   bizRating: {
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
-  bizRatingText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  bizInfo: {
-    padding: 16,
-  },
-  bizName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  bizMeta: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
+  bizRatingText: { fontSize: 12, fontWeight: '600', color: colors.text },
+  bizInfo: { padding: 16 },
+  bizName: { fontSize: 17, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  bizMeta: { fontSize: 13, color: colors.textMuted },
   empty: {
     alignItems: 'center',
     paddingVertical: 60,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  emptyEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  emptyDesc: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
+  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
+  emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

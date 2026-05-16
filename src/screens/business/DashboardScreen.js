@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -52,11 +53,14 @@ export default function DashboardScreen() {
     ? business.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
     : '?'
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+
   const STAT_CARDS = [
-    { icon: '📅', value: stats.todayBookings, label: "Today's Bookings", color: colors.primary, bg: colors.primaryLight, glow: colors.borderGlow },
-    { icon: '💰', value: `$${stats.todayRevenue}`, label: "Today's Revenue", color: colors.green, bg: colors.greenLight, glow: 'rgba(34, 197, 94, 0.2)' },
-    { icon: '👥', value: stats.totalCustomers, label: 'Total Customers', color: colors.blue, bg: colors.blueLight, glow: 'rgba(59, 130, 246, 0.2)' },
-    { icon: '⭐', value: stats.rating, label: 'Rating', color: colors.purple, bg: colors.purpleLight, glow: 'rgba(168, 85, 247, 0.2)' },
+    { icon: '📅', value: stats.todayBookings, label: "Today's Bookings", gradient: ['#f59e0b', '#f97316'] },
+    { icon: '💰', value: `$${stats.todayRevenue}`, label: "Today's Revenue", gradient: ['#22c55e', '#10b981'] },
+    { icon: '👥', value: stats.totalCustomers, label: 'Total Customers', gradient: ['#3b82f6', '#6366f1'] },
+    { icon: '⭐', value: stats.rating, label: 'Rating', gradient: ['#a855f7', '#ec4899'] },
   ]
 
   const AVATAR_COLORS = [
@@ -69,46 +73,80 @@ export default function DashboardScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient
+        colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)', 'transparent']}
+        style={s.headerGradient}
+      />
       <View style={s.glowOrb1} />
       <View style={s.glowOrb2} />
+      <View style={s.glowOrb3} />
+
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         <View style={s.header}>
           <View>
-            <Text style={s.greetingSub}>Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}</Text>
+            <Text style={s.greetingSub}>{greeting}</Text>
             <Text style={s.bizName}>{business?.name || 'My Business'}</Text>
           </View>
-          <View style={s.avatar}>
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.avatar}>
             <Text style={s.avatarText}>{initials}</Text>
-          </View>
+          </LinearGradient>
         </View>
+
+        <LinearGradient
+          colors={['rgba(245,158,11,0.08)', 'rgba(249,115,22,0.04)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={s.welcomeBanner}
+        >
+          <View style={s.welcomeGlow} />
+          <Text style={s.welcomeTitle}>Your Dashboard</Text>
+          <Text style={s.welcomeDesc}>Here's how your business is performing today</Text>
+        </LinearGradient>
 
         <View style={s.statsGrid}>
           {STAT_CARDS.map((st, i) => (
-            <View key={i} style={[s.statCard, { borderColor: st.glow }]}>
-              <View style={[s.statIcon, { backgroundColor: st.bg }]}>
-                <Text style={s.statEmoji}>{st.icon}</Text>
+            <View key={i} style={s.statCard}>
+              <LinearGradient
+                colors={st.gradient}
+                style={s.statAccent}
+              />
+              <View style={s.statContent}>
+                <View style={s.statHeader}>
+                  <Text style={s.statEmoji}>{st.icon}</Text>
+                  <Text style={s.statLabel}>{st.label}</Text>
+                </View>
+                <Text style={s.statVal}>{st.value}</Text>
               </View>
-              <Text style={s.statVal}>{st.value}</Text>
-              <Text style={s.statLabel}>{st.label}</Text>
             </View>
           ))}
         </View>
 
-        <Text style={s.sectionTitle}>Upcoming</Text>
+        <View style={s.sectionRow}>
+          <Text style={s.sectionTitle}>Upcoming</Text>
+          <View style={s.sectionBadge}>
+            <Text style={s.sectionBadgeText}>{upcoming.length}</Text>
+          </View>
+        </View>
 
         {upcoming.length === 0 ? (
-          <View style={s.emptyUpcoming}>
+          <LinearGradient
+            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
+            style={s.emptyUpcoming}
+          >
+            <Text style={s.emptyEmoji}>📅</Text>
             <Text style={s.emptyText}>No upcoming bookings</Text>
-          </View>
+            <Text style={s.emptyDesc}>Bookings will show up here</Text>
+          </LinearGradient>
         ) : (
           upcoming.map((b, i) => {
             const ac = AVATAR_COLORS[i % AVATAR_COLORS.length]
             const customerInitials = (b.customer_name || '??').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
             return (
               <View key={b.id} style={s.bookingRow}>
+                <View style={s.bookingGlowDot} />
                 <View style={[s.bookingAvatar, { backgroundColor: ac.bg }]}>
                   <Text style={[s.bookingAvatarText, { color: ac.color }]}>{customerInitials}</Text>
                 </View>
@@ -116,8 +154,14 @@ export default function DashboardScreen() {
                   <Text style={s.bookingName}>{b.customer_name || 'Customer'}</Text>
                   <Text style={s.bookingService}>{b.service_name}</Text>
                 </View>
-                <View style={s.bookingTimeWrap}>
-                  <Text style={s.bookingTime}>{b.time}</Text>
+                <View style={s.bookingRight}>
+                  <LinearGradient
+                    colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']}
+                    style={s.bookingTimeWrap}
+                  >
+                    <Text style={s.bookingTime}>{b.time}</Text>
+                  </LinearGradient>
+                  <Text style={s.bookingDate}>{b.date}</Text>
                 </View>
               </View>
             )
@@ -130,88 +174,156 @@ export default function DashboardScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 280,
+  },
   glowOrb1: {
     position: 'absolute',
-    top: -40,
-    right: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: 'rgba(245, 158, 11, 0.04)',
+    top: -30,
+    right: -40,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(245, 158, 11, 0.12)',
   },
   glowOrb2: {
     position: 'absolute',
-    bottom: 100,
-    left: -80,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(59, 130, 246, 0.02)',
+    top: 200,
+    left: -60,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(59, 130, 246, 0.06)',
+  },
+  glowOrb3: {
+    position: 'absolute',
+    bottom: 120,
+    right: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(168, 85, 247, 0.05)',
   },
   scroll: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 100 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  greetingSub: { fontSize: 13, color: colors.textMuted, marginBottom: 2 },
-  bizName: { fontSize: 24, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  greetingSub: { fontSize: 14, color: colors.primary, marginBottom: 2, fontWeight: '600' },
+  bizName: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: colors.primary,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.borderGlow,
     ...shadows.button,
   },
-  avatarText: { fontSize: 15, fontWeight: '700', color: colors.textDark },
+  avatarText: { fontSize: 16, fontWeight: '800', color: '#000' },
+  welcomeBanner: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+    overflow: 'hidden',
+  },
+  welcomeGlow: {
+    position: 'absolute',
+    top: -30,
+    right: -30,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+  },
+  welcomeTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  welcomeDesc: { fontSize: 13, color: colors.textSecondary },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28 },
   statCard: {
     width: '48%',
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 18,
-    padding: 16,
+    overflow: 'hidden',
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     ...shadows.card,
   },
-  statIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  statEmoji: { fontSize: 16 },
-  statVal: { fontSize: 26, fontWeight: '800', color: colors.text, marginBottom: 2 },
-  statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '500' },
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 14 },
-  bookingRow: {
+  statAccent: {
+    height: 3,
+    width: '100%',
+  },
+  statContent: {
+    padding: 16,
+  },
+  statHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 8,
-    gap: 12,
-    ...shadows.card,
+    gap: 8,
+    marginBottom: 12,
   },
-  bookingAvatar: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  bookingAvatarText: { fontSize: 14, fontWeight: '700' },
-  bookingInfo: { flex: 1 },
-  bookingName: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
-  bookingService: { fontSize: 12, color: colors.textMuted },
-  bookingTimeWrap: {
+  statEmoji: { fontSize: 18 },
+  statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
+  statVal: { fontSize: 28, fontWeight: '800', color: colors.text },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 10 },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
+  sectionBadge: {
     backgroundColor: colors.primaryLight,
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.borderGlow,
   },
-  bookingTime: { fontSize: 13, fontWeight: '600', color: colors.primary },
-  emptyUpcoming: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 30,
+  sectionBadgeText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  bookingRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 8,
+    gap: 12,
+    overflow: 'hidden',
     ...shadows.card,
   },
-  emptyText: { fontSize: 14, color: colors.textMuted },
+  bookingGlowDot: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(245, 158, 11, 0.06)',
+  },
+  bookingAvatar: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  bookingAvatarText: { fontSize: 15, fontWeight: '700' },
+  bookingInfo: { flex: 1 },
+  bookingName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 3 },
+  bookingService: { fontSize: 12, color: colors.textMuted },
+  bookingRight: { alignItems: 'flex-end' },
+  bookingTimeWrap: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.2)',
+    marginBottom: 4,
+  },
+  bookingTime: { fontSize: 13, fontWeight: '700', color: colors.primary },
+  bookingDate: { fontSize: 10, color: colors.textMuted },
+  emptyUpcoming: {
+    borderRadius: 18,
+    padding: 40,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    ...shadows.card,
+  },
+  emptyEmoji: { fontSize: 40, marginBottom: 12 },
+  emptyText: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 4 },
+  emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

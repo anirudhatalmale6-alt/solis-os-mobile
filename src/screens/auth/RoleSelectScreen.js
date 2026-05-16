@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -9,49 +10,62 @@ export default function RoleSelectScreen({ navigation }) {
     <View style={s.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
+      <LinearGradient
+        colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)', 'transparent']}
+        style={s.topGlow}
+      />
       <View style={s.glowOrb1} />
       <View style={s.glowOrb2} />
+      <View style={s.glowOrb3} />
 
       <View style={s.logoWrap}>
-        <View style={s.logoCircle}>
+        <LinearGradient colors={['#f59e0b', '#f97316']} style={s.logoCircle}>
           <Text style={s.logoText}>S</Text>
-        </View>
+        </LinearGradient>
         <Text style={s.brandName}>Solis OS</Text>
         <Text style={s.tagline}>The future of business management</Text>
       </View>
 
       <View style={s.cardsWrap}>
         <TouchableOpacity
-          style={[s.roleCard, s.roleCardBusiness]}
           activeOpacity={0.85}
           onPress={() => navigation.navigate('Login', { role: 'business' })}
         >
-          <View style={[s.roleIcon, { backgroundColor: colors.primaryLight }]}>
-            <Text style={s.roleEmoji}>🏢</Text>
-          </View>
-          <Text style={s.roleTitle}>I'm a Business</Text>
-          <Text style={s.roleDesc}>
-            Manage bookings, staff, customers, invoices and grow your business with AI tools
-          </Text>
-          <View style={s.roleBadge}>
-            <Text style={s.roleBadgeText}>Plans from $29/mo</Text>
-          </View>
+          <LinearGradient
+            colors={['rgba(245,158,11,0.12)', 'rgba(245,158,11,0.04)', 'rgba(255,255,255,0.04)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={s.roleCardBusiness}
+          >
+            <View style={s.cardGlow} />
+            <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleIcon}>
+              <Text style={s.roleEmoji}>🏢</Text>
+            </LinearGradient>
+            <Text style={s.roleTitle}>I'm a Business</Text>
+            <Text style={s.roleDesc}>
+              Manage bookings, staff, customers, invoices and grow your business with AI tools
+            </Text>
+            <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleBadge}>
+              <Text style={s.roleBadgeText}>Plans from $29/mo</Text>
+            </LinearGradient>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={s.roleCard}
           activeOpacity={0.85}
           onPress={() => enterGuestMode()}
         >
-          <View style={[s.roleIcon, { backgroundColor: colors.blueLight }]}>
-            <Text style={s.roleEmoji}>👤</Text>
-          </View>
-          <Text style={s.roleTitle}>I'm a Customer</Text>
-          <Text style={s.roleDesc}>
-            Discover businesses near you, book appointments instantly, and browse services
-          </Text>
-          <View style={[s.roleBadge, { backgroundColor: colors.blueLight }]}>
-            <Text style={[s.roleBadgeText, { color: colors.blue }]}>Free forever</Text>
+          <View style={s.roleCard}>
+            <LinearGradient colors={['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.08)']} style={s.roleIcon}>
+              <Text style={s.roleEmoji}>👤</Text>
+            </LinearGradient>
+            <Text style={s.roleTitle}>I'm a Customer</Text>
+            <Text style={s.roleDesc}>
+              Discover businesses near you, book appointments instantly, and browse services
+            </Text>
+            <LinearGradient colors={['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.05)']} style={s.roleBadge}>
+              <Text style={[s.roleBadgeText, { color: colors.blue }]}>Free forever</Text>
+            </LinearGradient>
           </View>
         </TouchableOpacity>
       </View>
@@ -66,45 +80,60 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: 'center',
   },
+  topGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 350,
+  },
   glowOrb1: {
     position: 'absolute',
-    top: -80,
-    right: -60,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(245, 158, 11, 0.04)',
+    top: -60,
+    right: -40,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(245, 158, 11, 0.12)',
   },
   glowOrb2: {
     position: 'absolute',
     bottom: -40,
-    left: -80,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(59, 130, 246, 0.03)',
+    left: -60,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(59, 130, 246, 0.06)',
+  },
+  glowOrb3: {
+    position: 'absolute',
+    top: '40%',
+    left: -30,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(168, 85, 247, 0.05)',
   },
   logoWrap: {
     alignItems: 'center',
     marginBottom: 48,
   },
   logoCircle: {
-    width: 76,
-    height: 76,
-    borderRadius: 22,
-    backgroundColor: colors.primary,
+    width: 80,
+    height: 80,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     ...shadows.button,
   },
   logoText: {
-    fontSize: 34,
+    fontSize: 36,
     fontWeight: '800',
-    color: colors.textDark,
+    color: '#000',
   },
   brandName: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '800',
     color: colors.text,
     marginBottom: 6,
@@ -112,27 +141,41 @@ const s = StyleSheet.create({
   },
   tagline: {
     fontSize: 14,
-    color: colors.textMuted,
+    color: colors.primary,
+    fontWeight: '500',
   },
   cardsWrap: {
     gap: 14,
   },
-  roleCard: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 20,
+  roleCardBusiness: {
+    borderRadius: 22,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.border,
-    ...shadows.card,
-  },
-  roleCardBusiness: {
-    borderColor: colors.borderGlow,
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+    overflow: 'hidden',
     ...shadows.cardGlow,
   },
+  cardGlow: {
+    position: 'absolute',
+    top: -20,
+    right: -20,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+  },
+  roleCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 22,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    ...shadows.card,
+  },
   roleIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
+    width: 54,
+    height: 54,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -141,27 +184,28 @@ const s = StyleSheet.create({
     fontSize: 24,
   },
   roleTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
     color: colors.text,
     marginBottom: 6,
   },
   roleDesc: {
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 20,
     color: colors.textSecondary,
     marginBottom: 14,
   },
   roleBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.primaryLight,
     paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.2)',
   },
   roleBadgeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.primary,
   },
 })
