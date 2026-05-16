@@ -24,10 +24,17 @@ import DashboardScreen from '../screens/business/DashboardScreen'
 import BookingsScreen from '../screens/business/BookingsScreen'
 import CustomersScreen from '../screens/business/CustomersScreen'
 import MoreScreen from '../screens/business/MoreScreen'
+import ServicesScreen from '../screens/business/ServicesScreen'
+import ScheduleScreen from '../screens/business/ScheduleScreen'
+import StaffScreen from '../screens/business/StaffScreen'
+import SettingsScreen from '../screens/business/SettingsScreen'
+import AnalyticsScreen from '../screens/business/AnalyticsScreen'
+import BookingLinkScreen from '../screens/business/BookingLinkScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 const HomeStack = createNativeStackNavigator()
+const MoreStack = createNativeStackNavigator()
 
 // Customer Home Stack (Home > BusinessProfile > BookAppointment > Login/Signup)
 function CustomerHomeStack() {
@@ -105,6 +112,21 @@ function CustomerTabs() {
   )
 }
 
+// Business More Stack (More > Services, Schedule, Staff, etc.)
+function BusinessMoreStack() {
+  return (
+    <MoreStack.Navigator screenOptions={{ headerShown: false }}>
+      <MoreStack.Screen name="MoreMain" component={MoreScreen} />
+      <MoreStack.Screen name="Services" component={ServicesScreen} />
+      <MoreStack.Screen name="Schedule" component={ScheduleScreen} />
+      <MoreStack.Screen name="Staff" component={StaffScreen} />
+      <MoreStack.Screen name="Settings" component={SettingsScreen} />
+      <MoreStack.Screen name="Analytics" component={AnalyticsScreen} />
+      <MoreStack.Screen name="BookingLink" component={BookingLinkScreen} />
+    </MoreStack.Navigator>
+  )
+}
+
 // Business Tab Navigator
 function BusinessTabs() {
   return (
@@ -146,7 +168,7 @@ function BusinessTabs() {
       />
       <Tab.Screen
         name="More"
-        component={MoreScreen}
+        component={BusinessMoreStack}
         options={{
           tabBarIcon: ({ focused }) => (
             <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>☰</Text>

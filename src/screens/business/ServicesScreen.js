@@ -1,5 +1,18 @@
 import React, { useState, useCallback } from 'react'
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+  Modal,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -9,20 +22,41 @@ export default function ServicesScreen() {
   const { user } = useAuth()
   const [services, setServices] = useState([])
   const [refreshing, setRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [editingService, setEditingService] = useState(null)
+  const [businessId, setBusinessId] = useState(null)
+
+  // Form state
+  const [formName, setFormName] = useState('')
+  const [formPrice, setFormPrice] = useState('')
+  const [formDuration, setFormDuration] = useState('')
 
   const fetchServices = async () => {
     if (!user?.id) return
-    const { data: bizArr } = await supabase.from('businesses').select('id').eq('owner_id', user.id)
-    const bizId = bizArr?.[0]?.id
-    if (!bizId) return
+    try {
+      const { data: bizArr } = await supabase.from('businesses').select('id').eq('owner_id', user.id)
+      const bizId = bizArr?.[0]?.id
+      if (!bizId) {
+        setLoading(false)
+        return
+      }
+      setBusinessId(bizId)
 
-    const { data } = await supabase
-      .from('services')
-      .select('*')
-      .eq('business_id', bizId)
-      .order('name', { ascending: true })
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('business_id', bizId)
+        .order('name', { ascending: true })
 
-    setServices(data || [])
+      if (error) throw error
+      setServices(data || [])
+    } catch (err) {
+      console.error('Error fetching services:', err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useFocusEffect(useCallback(() => { fetchServices() }, [user]))
@@ -40,57 +74,308 @@ export default function ServicesScreen() {
       const mins = minutes % 60
       return mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`
     }
-    return `${minutes}m`
+    return `${minutes} min`
+  }
+
+  const formatPrice = (price) => {
+    if (price == null || price === '') return 'Free'
+    return `$${parseFloat(price).toFixed(2)}`
+  }
+
+  const openAddModal = () => {
+    setEditingService(null)
+    setFormName('')
+    setFormPrice('')
+    setFormDuration('')
+    setModalVisible(true)
+  }
+
+  const openEditModal = (service) => {
+    setEditingService(service)
+    setFormName(service.name || '')
+    setFormPrice(service.price != null ? String(service.price) : '')
+    setFormDuration(service.duration != null ? String(service.duration) : '')
+    setModalVisible(true)
+  }
+
+  const closeModal = () => {
+    setModalVisible(false)
+    setEditingService(null)
+  }
+
+  const handleSave = async () => {
+    if (!formName.trim()) {
+      Alert.alert('Validation', 'Service name is required.')
+      return
+    }
+    if (formPrice && isNaN(parseFloat(formPrice))) {
+      Alert.alert('Validation', 'Price must be a valid number.')
+      return
+    }
+    if (formDuration && isNaN(parseInt(formDuration, 10))) {
+      Alert.alert('Validation', 'Duration must be a valid number in minutes.')
+      return
+    }
+    if (!businessId) {
+      Alert.alert('Error', 'No business found. Please set up your business first.')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const payload = {
+        name: formName.trim(),
+        price: formPrice ? parseFloat(formPrice) : null,
+        duration: formDuration ? parseInt(formDuration, 10) : null,
+        business_id: businessId,
+      }
+
+      if (editingService) {
+        const { error } = await supabase
+          .from('services')
+          .update(payload)
+          .eq('id', editingService.id)
+        if (error) throw error
+      } else {
+        payload.is_active = true
+        const { error } = await supabase.from('services').insert(payload)
+        if (error) throw error
+      }
+
+      closeModal()
+      await fetchServices()
+    } catch (err) {
+      Alert.alert('Error', err.message || 'Failed to save service.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = (service) => {
+    Alert.alert(
+      'Delete Service',
+      `Are you sure you want to delete "${service.name}"? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error } = await supabase.from('services').delete().eq('id', service.id)
+              if (error) throw error
+              await fetchServices()
+            } catch (err) {
+              Alert.alert('Error', err.message || 'Failed to delete service.')
+            }
+          },
+        },
+      ]
+    )
+  }
+
+  const toggleActive = async (service) => {
+    try {
+      const { error } = await supabase
+        .from('services')
+        .update({ is_active: !service.is_active })
+        .eq('id', service.id)
+      if (error) throw error
+      await fetchServices()
+    } catch (err) {
+      Alert.alert('Error', err.message || 'Failed to update status.')
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={[s.container, s.centered]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    )
   }
 
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>Services</Text>
-        <Text style={s.headerSub}>{services.length} services</Text>
+        <View>
+          <Text style={s.headerTitle}>Services</Text>
+          <Text style={s.headerSub}>
+            {services.length} {services.length === 1 ? 'service' : 'services'}
+          </Text>
+        </View>
+        <TouchableOpacity style={s.addButton} onPress={openAddModal} activeOpacity={0.8}>
+          <Text style={s.addButtonText}>+ Add Service</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView
         contentContainerStyle={s.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+        }
       >
         {services.length === 0 ? (
           <View style={s.empty}>
             <Text style={s.emptyEmoji}>✂️</Text>
             <Text style={s.emptyTitle}>No services yet</Text>
-            <Text style={s.emptyDesc}>Add services for customers to book</Text>
+            <Text style={s.emptyDesc}>Tap "Add Service" to create your first offering</Text>
           </View>
         ) : (
           services.map((service) => (
-            <View key={service.id} style={s.serviceCard}>
+            <TouchableOpacity
+              key={service.id}
+              style={s.serviceCard}
+              onPress={() => openEditModal(service)}
+              onLongPress={() => handleDelete(service)}
+              activeOpacity={0.8}
+            >
               <View style={s.cardTop}>
-                <Text style={s.serviceName}>{service.name}</Text>
-                <Text style={s.servicePrice}>
-                  {service.price != null ? `$${service.price}` : 'Free'}
-                </Text>
+                <Text style={s.serviceName} numberOfLines={1}>{service.name}</Text>
+                <Text style={s.servicePrice}>{formatPrice(service.price)}</Text>
               </View>
               <View style={s.cardBottom}>
-                <View style={s.durationBadge}>
-                  <Text style={s.durationIcon}>🕐</Text>
-                  <Text style={s.durationText}>{formatDuration(service.duration)}</Text>
+                <View style={s.badgeRow}>
+                  <View style={s.durationBadge}>
+                    <Text style={s.durationIcon}>🕐</Text>
+                    <Text style={s.durationText}>{formatDuration(service.duration)}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={[
+                      s.statusBadge,
+                      service.is_active ? s.statusActive : s.statusInactive,
+                    ]}
+                    onPress={() => toggleActive(service)}
+                    activeOpacity={0.7}
+                  >
+                    <View
+                      style={[
+                        s.statusDot,
+                        { backgroundColor: service.is_active ? colors.green : colors.red },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        s.statusText,
+                        { color: service.is_active ? colors.green : colors.red },
+                      ]}
+                    >
+                      {service.is_active ? 'Active' : 'Inactive'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                {service.description && (
-                  <Text style={s.description} numberOfLines={2}>{service.description}</Text>
-                )}
+                <TouchableOpacity
+                  style={s.deleteBtn}
+                  onPress={() => handleDelete(service)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={s.deleteBtnText}>Delete</Text>
+                </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>
+
+      {/* Add/Edit Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={s.modalOverlay}
+        >
+          <View style={s.modalContent}>
+            <View style={s.modalHeader}>
+              <Text style={s.modalTitle}>
+                {editingService ? 'Edit Service' : 'Add Service'}
+              </Text>
+              <TouchableOpacity onPress={closeModal} activeOpacity={0.7}>
+                <Text style={s.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={s.formGroup}>
+              <Text style={s.label}>Service Name</Text>
+              <TextInput
+                style={s.input}
+                placeholder="e.g. Haircut, Consultation..."
+                placeholderTextColor={colors.textMuted}
+                value={formName}
+                onChangeText={setFormName}
+                autoCapitalize="words"
+              />
+            </View>
+
+            <View style={s.formGroup}>
+              <Text style={s.label}>Price ($)</Text>
+              <TextInput
+                style={s.input}
+                placeholder="0.00"
+                placeholderTextColor={colors.textMuted}
+                value={formPrice}
+                onChangeText={setFormPrice}
+                keyboardType="decimal-pad"
+              />
+            </View>
+
+            <View style={s.formGroup}>
+              <Text style={s.label}>Duration (minutes)</Text>
+              <TextInput
+                style={s.input}
+                placeholder="30"
+                placeholderTextColor={colors.textMuted}
+                value={formDuration}
+                onChangeText={setFormDuration}
+                keyboardType="number-pad"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[s.saveButton, saving && s.saveButtonDisabled]}
+              onPress={handleSave}
+              disabled={saving}
+              activeOpacity={0.8}
+            >
+              {saving ? (
+                <ActivityIndicator size="small" color={colors.bg} />
+              ) : (
+                <Text style={s.saveButtonText}>
+                  {editingService ? 'Update Service' : 'Create Service'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   )
 }
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
+  centered: { justifyContent: 'center', alignItems: 'center' },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 12,
+  },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
+  addButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    ...shadows.button,
+  },
+  addButtonText: { fontSize: 14, fontWeight: '700', color: colors.bg },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   serviceCard: {
     backgroundColor: colors.bgCard,
@@ -105,16 +390,20 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  serviceName: { fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 },
+  serviceName: { fontSize: 16, fontWeight: '700', color: colors.text, flex: 1, marginRight: 12 },
   servicePrice: { fontSize: 18, fontWeight: '800', color: colors.primary },
-  cardBottom: { gap: 8 },
+  cardBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   durationBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.bgInput,
-    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
@@ -122,9 +411,83 @@ const s = StyleSheet.create({
   },
   durationIcon: { fontSize: 12 },
   durationText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
-  description: { fontSize: 13, color: colors.textMuted, lineHeight: 18 },
-  empty: { alignItems: 'center', paddingVertical: 80 },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    gap: 5,
+  },
+  statusActive: { backgroundColor: colors.greenLight },
+  statusInactive: { backgroundColor: colors.redLight },
+  statusDot: { width: 6, height: 6, borderRadius: 3 },
+  statusText: { fontSize: 11, fontWeight: '600' },
+  deleteBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: colors.redLight,
+  },
+  deleteBtnText: { fontSize: 11, fontWeight: '600', color: colors.red },
+  empty: {
+    alignItems: 'center',
+    paddingVertical: 80,
+    backgroundColor: colors.bgCard,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginTop: 20,
+    ...shadows.card,
+  },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
-  emptyDesc: { fontSize: 13, color: colors.textMuted },
+  emptyDesc: { fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingHorizontal: 40 },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: colors.bgCardSolid,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: colors.borderGlow,
+    borderBottomWidth: 0,
+    ...shadows.deep,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalTitle: { fontSize: 20, fontWeight: '800', color: colors.text },
+  modalClose: { fontSize: 22, color: colors.textMuted, padding: 4 },
+  formGroup: { marginBottom: 18 },
+  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 8 },
+  input: {
+    backgroundColor: colors.bgInput,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: colors.text,
+  },
+  saveButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 8,
+    ...shadows.button,
+  },
+  saveButtonDisabled: { opacity: 0.6 },
+  saveButtonText: { fontSize: 16, fontWeight: '700', color: colors.bg },
 })

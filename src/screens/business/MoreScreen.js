@@ -1,20 +1,26 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
 const MENU_ITEMS = [
-  { key: 'schedule', emoji: '📅', label: 'Schedule' },
+  { key: 'Services', emoji: '🛠', label: 'Services', nav: 'Services' },
+  { key: 'Schedule', emoji: '📅', label: 'Schedule', nav: 'Schedule' },
+  { key: 'Staff', emoji: '👤', label: 'Staff', nav: 'Staff' },
+  { key: 'Analytics', emoji: '📊', label: 'Analytics', nav: 'Analytics' },
+  { key: 'BookingLink', emoji: '🔗', label: 'Booking Link', nav: 'BookingLink' },
+  { key: 'Settings', emoji: '⚙️', label: 'Settings', nav: 'Settings' },
+]
+
+const COMING_SOON = [
   { key: 'invoices', emoji: '🧾', label: 'Invoices' },
-  { key: 'staff', emoji: '👤', label: 'Staff' },
-  { key: 'analytics', emoji: '📊', label: 'Analytics' },
   { key: 'messages', emoji: '💬', label: 'Messages' },
-  { key: 'settings', emoji: '⚙️', label: 'Settings' },
-  { key: 'booking_link', emoji: '🔗', label: 'Booking Link' },
 ]
 
 export default function MoreScreen() {
   const { signOut } = useAuth()
+  const navigation = useNavigation()
 
   const handleSignOut = () => {
     Alert.alert(
@@ -25,10 +31,6 @@ export default function MoreScreen() {
         { text: 'Sign Out', style: 'destructive', onPress: signOut },
       ]
     )
-  }
-
-  const handleMenuPress = (item) => {
-    Alert.alert(item.label, 'Coming soon!')
   }
 
   return (
@@ -45,7 +47,7 @@ export default function MoreScreen() {
               key={item.key}
               style={[s.menuItem, index === MENU_ITEMS.length - 1 && s.menuItemLast]}
               activeOpacity={0.7}
-              onPress={() => handleMenuPress(item)}
+              onPress={() => navigation.navigate(item.nav)}
             >
               <View style={s.menuIconWrap}>
                 <Text style={s.menuEmoji}>{item.emoji}</Text>
@@ -55,6 +57,28 @@ export default function MoreScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {COMING_SOON.length > 0 && (
+          <View style={[s.menuContainer, { marginTop: 16 }]}>
+            {COMING_SOON.map((item, index) => (
+              <TouchableOpacity
+                key={item.key}
+                style={[s.menuItem, index === COMING_SOON.length - 1 && s.menuItemLast]}
+                activeOpacity={0.7}
+                onPress={() => Alert.alert(item.label, 'Coming soon!')}
+              >
+                <View style={s.menuIconWrap}>
+                  <Text style={s.menuEmoji}>{item.emoji}</Text>
+                </View>
+                <Text style={s.menuLabel}>{item.label}</Text>
+                <View style={s.soonBadge}>
+                  <Text style={s.soonText}>Soon</Text>
+                </View>
+                <Text style={s.chevron}>›</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         <TouchableOpacity style={s.signOutBtn} activeOpacity={0.7} onPress={handleSignOut}>
           <Text style={s.signOutText}>Sign Out</Text>
@@ -113,6 +137,15 @@ const s = StyleSheet.create({
   menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
+  soonBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.borderGlow,
+  },
+  soonText: { fontSize: 10, fontWeight: '700', color: colors.primary },
   signOutBtn: {
     marginTop: 28,
     backgroundColor: colors.redLight,
