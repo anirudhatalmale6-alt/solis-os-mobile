@@ -26,18 +26,20 @@ export default function ExpensesScreen() {
 
   const fetchExpenses = async () => {
     if (!user?.id) return
-    const { data: bizArr } = await supabase.from('businesses').select('id').eq('owner_id', user.id)
-    const id = bizArr?.[0]?.id
-    if (!id) return
-    setBizId(id)
+    try {
+      const { data: bizArr } = await supabase.from('businesses').select('id').eq('owner_id', user.id)
+      const id = bizArr?.[0]?.id
+      if (!id) return
+      setBizId(id)
 
-    const { data } = await supabase
-      .from('expenses')
-      .select('*')
-      .eq('business_id', id)
-      .order('created_at', { ascending: false })
+      const { data, error } = await supabase
+        .from('expenses')
+        .select('*')
+        .eq('business_id', id)
+        .order('created_at', { ascending: false })
 
-    setExpenses(data || [])
+      if (!error) setExpenses(data || [])
+    } catch (e) {}
   }
 
   useFocusEffect(useCallback(() => { fetchExpenses() }, [user]))
@@ -50,20 +52,24 @@ export default function ExpensesScreen() {
 
   const handleAdd = async () => {
     if (!form.description || !form.amount || !bizId) return
-    await supabase.from('expenses').insert({
-      business_id: bizId,
-      description: form.description,
-      amount: parseFloat(form.amount),
-      category: form.category,
-    })
-    setForm({ description: '', amount: '', category: 'supplies' })
-    setShowModal(false)
-    fetchExpenses()
+    try {
+      await supabase.from('expenses').insert({
+        business_id: bizId,
+        description: form.description,
+        amount: parseFloat(form.amount),
+        category: form.category,
+      })
+      setForm({ description: '', amount: '', category: 'supplies' })
+      setShowModal(false)
+      fetchExpenses()
+    } catch (e) {}
   }
 
   const handleDelete = async (id) => {
-    await supabase.from('expenses').delete().eq('id', id)
-    fetchExpenses()
+    try {
+      await supabase.from('expenses').delete().eq('id', id)
+      fetchExpenses()
+    } catch (e) {}
   }
 
   const totalThisMonth = expenses

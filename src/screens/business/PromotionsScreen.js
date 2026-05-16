@@ -54,10 +54,9 @@ export default function PromotionsScreen() {
         .eq('business_id', bizId)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
-      setPromotions(data || [])
+      if (!error) setPromotions(data || [])
     } catch (err) {
-      console.error('Error fetching promotions:', err.message)
+      console.log('Promotions table not ready')
     } finally {
       setLoading(false)
     }

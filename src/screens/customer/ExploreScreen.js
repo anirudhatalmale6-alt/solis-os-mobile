@@ -136,7 +136,7 @@ export default function ExploreScreen({ navigation }) {
               })}
             >
               <Image
-                source={{ uri: STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
+                source={{ uri: biz.logo_url || STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
                 style={s.bizImage}
               />
               <LinearGradient

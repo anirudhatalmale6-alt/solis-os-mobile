@@ -10,9 +10,11 @@ import {
   Modal,
   FlatList,
   ActivityIndicator,
+  Image,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
+import { launchImageLibrary } from 'react-native-image-picker'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
@@ -43,6 +45,8 @@ export default function SettingsScreen() {
   const [bizId, setBizId] = useState(null)
 
   const [name, setName] = useState('')
+  const [logoUrl, setLogoUrl] = useState('')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
   const [industry, setIndustry] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -66,6 +70,7 @@ export default function SettingsScreen() {
       if (biz) {
         setBizId(biz.id)
         setName(biz.name || '')
+        setLogoUrl(biz.logo_url || '')
         setIndustry(biz.industry || '')
         setPhone(biz.phone || '')
         setEmail(biz.email || '')
@@ -119,6 +124,51 @@ export default function SettingsScreen() {
     ])
   }
 
+  const handleLogoUpload = async () => {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        maxWidth: 512,
+        maxHeight: 512,
+        quality: 0.8,
+      })
+      if (result.didCancel || !result.assets?.[0]) return
+
+      setUploadingLogo(true)
+      const asset = result.assets[0]
+      const ext = asset.fileName?.split('.').pop() || 'jpg'
+      const filePath = `${bizId}/logo.${ext}`
+
+      const formData = new FormData()
+      formData.append('file', {
+        uri: asset.uri,
+        name: `logo.${ext}`,
+        type: asset.type || 'image/jpeg',
+      })
+
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(filePath, formData, { upsert: true })
+
+      if (uploadError) {
+        Alert.alert('Upload Error', uploadError.message)
+        setUploadingLogo(false)
+        return
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('logos')
+        .getPublicUrl(filePath)
+
+      await supabase.from('businesses').update({ logo_url: publicUrl }).eq('id', bizId)
+      setLogoUrl(publicUrl)
+      Alert.alert('Success', 'Logo uploaded successfully')
+    } catch (e) {
+      Alert.alert('Error', 'Failed to upload logo')
+    }
+    setUploadingLogo(false)
+  }
+
   const getIndustryLabel = () => {
     const found = INDUSTRIES.find(i => i.value === industry)
     return found ? found.label : 'Select Industry'
@@ -148,6 +198,33 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        {/* Logo Section */}
+        <Text style={s.sectionLabel}>Business Logo</Text>
+        <View style={s.card}>
+          <View style={s.logoRow}>
+            {logoUrl ? (
+              <Image source={{ uri: logoUrl }} style={s.logoPreview} />
+            ) : (
+              <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.logoPlaceholder}>
+                <Text style={s.logoPlaceholderText}>{name ? name[0]?.toUpperCase() : 'S'}</Text>
+              </LinearGradient>
+            )}
+            <View style={s.logoInfo}>
+              <Text style={s.logoInfoTitle}>{logoUrl ? 'Logo uploaded' : 'No logo yet'}</Text>
+              <Text style={s.logoInfoDesc}>Your logo appears on your public profile</Text>
+              <TouchableOpacity activeOpacity={0.8} onPress={handleLogoUpload} disabled={uploadingLogo}>
+                <LinearGradient colors={['#f59e0b', '#f97316']} style={s.logoUploadBtn}>
+                  {uploadingLogo ? (
+                    <ActivityIndicator size="small" color="#000" />
+                  ) : (
+                    <Text style={s.logoUploadText}>{logoUrl ? 'Change Logo' : 'Upload Logo'}</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
         {/* Business Profile Section */}
         <Text style={s.sectionLabel}>Business Profile</Text>
         <View style={s.card}>
@@ -358,6 +435,26 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  logoRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+  },
+  logoPreview: {
+    width: 72, height: 72, borderRadius: 18, borderWidth: 2, borderColor: colors.borderGlow,
+  },
+  logoPlaceholder: {
+    width: 72, height: 72, borderRadius: 18, alignItems: 'center', justifyContent: 'center',
+  },
+  logoPlaceholderText: {
+    fontSize: 28, fontWeight: '800', color: colors.primary,
+  },
+  logoInfo: { flex: 1 },
+  logoInfoTitle: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  logoInfoDesc: { fontSize: 12, color: colors.textMuted, marginBottom: 10 },
+  logoUploadBtn: {
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, alignSelf: 'flex-start',
+    ...shadows.button,
+  },
+  logoUploadText: { fontSize: 13, fontWeight: '700', color: '#000' },
   headerGlow: {
     position: 'absolute',
     top: 0,
