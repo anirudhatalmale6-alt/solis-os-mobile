@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -87,6 +88,8 @@ export default function BookingLinkScreen() {
 
   return (
     <View style={styles.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={styles.headerGlow} />
+      <View style={styles.glowOrb1} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -129,8 +132,10 @@ export default function BookingLinkScreen() {
             onPress={handleShareLink}
             activeOpacity={0.7}
           >
-            <Text style={styles.shareButtonIcon}>📤</Text>
-            <Text style={styles.shareButtonText}>Share Link</Text>
+            <LinearGradient colors={['#f59e0b', '#f97316']} style={styles.shareButtonGradient}>
+              <Text style={styles.shareButtonIcon}>📤</Text>
+              <Text style={styles.shareButtonText}>Share Link</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -192,6 +197,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 250,
+  },
+  glowOrb1: {
+    position: 'absolute',
+    top: 20,
+    right: -30,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(245,158,11,0.1)',
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',
@@ -219,10 +240,10 @@ const styles = StyleSheet.create({
 
   // URL Card
   urlCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.borderGlow,
+    borderColor: 'rgba(255,255,255,0.1)',
     padding: 20,
     marginBottom: 20,
     ...shadows.card,
@@ -288,7 +309,16 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   shareButton: {
-    backgroundColor: colors.primary,
+    overflow: 'hidden',
+  },
+  shareButtonGradient: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
   },
   shareButtonIcon: {
     fontSize: 16,
@@ -301,10 +331,10 @@ const styles = StyleSheet.create({
 
   // Cards
   card: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     padding: 20,
     marginBottom: 16,
     ...shadows.card,

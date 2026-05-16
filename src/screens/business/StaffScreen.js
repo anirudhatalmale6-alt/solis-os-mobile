@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -182,6 +183,7 @@ export default function StaffScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
       <View style={s.glowOrb} />
 
       {/* Header */}
@@ -191,7 +193,9 @@ export default function StaffScreen() {
           <Text style={s.headerSub}>{staff.length} team member{staff.length !== 1 ? 's' : ''}</Text>
         </View>
         <TouchableOpacity style={s.addBtn} onPress={openAddModal} activeOpacity={0.8}>
-          <Text style={s.addBtnText}>+ Add Staff</Text>
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.addBtnGradient}>
+            <Text style={s.addBtnText}>+ Add Staff</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 
@@ -329,11 +333,13 @@ export default function StaffScreen() {
                 disabled={saving}
                 activeOpacity={0.8}
               >
-                {saving ? (
-                  <ActivityIndicator size="small" color="#08080d" />
-                ) : (
-                  <Text style={s.saveBtnText}>{editingStaff ? 'Update' : 'Add Member'}</Text>
-                )}
+                <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveBtnGradient}>
+                  {saving ? (
+                    <ActivityIndicator size="small" color="#08080d" />
+                  ) : (
+                    <Text style={s.saveBtnText}>{editingStaff ? 'Update' : 'Add Member'}</Text>
+                  )}
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </View>
@@ -345,6 +351,7 @@ export default function StaffScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#08080d' },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   glowOrb: {
     position: 'absolute',
     top: 30,
@@ -352,7 +359,7 @@ const s = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
   header: {
     flexDirection: 'row',
@@ -365,11 +372,14 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: '#f0f0f5', letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: '#555566', marginTop: 4 },
   addBtn: {
-    backgroundColor: '#f59e0b',
+    borderRadius: 12,
+    overflow: 'hidden',
+    ...shadows.card,
+  },
+  addBtnGradient: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 12,
-    ...shadows.card,
   },
   addBtnText: { color: '#08080d', fontSize: 13, fontWeight: '700' },
   searchWrap: {
@@ -486,7 +496,10 @@ const s = StyleSheet.create({
   deleteBtnText: { color: '#ef4444', fontSize: 14, fontWeight: '600' },
   saveBtn: {
     flex: 2,
-    backgroundColor: '#f59e0b',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  saveBtnGradient: {
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',

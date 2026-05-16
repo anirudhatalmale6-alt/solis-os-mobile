@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -33,18 +34,30 @@ export default function SignupScreen({ navigation, route }) {
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(168,85,247,0.04)', 'transparent']} style={s.headerGlow} />
       <View style={s.glowOrb} />
+      <View style={s.glowOrb2} />
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
-          <Text style={s.backText}>←</Text>
-        </TouchableOpacity>
+        <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.backBtn}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={s.backText}>←</Text>
+          </TouchableOpacity>
+        </LinearGradient>
 
         <View style={s.header}>
-          <View style={[s.roleTag, role === 'business' ? { backgroundColor: colors.primaryLight, borderColor: colors.borderGlow } : { backgroundColor: colors.blueLight, borderColor: 'rgba(59, 130, 246, 0.2)' }]}>
-            <Text style={[s.roleTagText, role === 'business' ? { color: colors.primary } : { color: colors.blue }]}>
-              {role === 'business' ? '🏢 Business' : '👤 Customer'}
-            </Text>
-          </View>
+          {role === 'business' ? (
+            <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={[s.roleTag, { borderColor: colors.borderGlow }]}>
+              <Text style={[s.roleTagText, { color: colors.primary }]}>
+                🏢 Business
+              </Text>
+            </LinearGradient>
+          ) : (
+            <View style={[s.roleTag, { backgroundColor: colors.blueLight, borderColor: 'rgba(59, 130, 246, 0.2)' }]}>
+              <Text style={[s.roleTagText, { color: colors.blue }]}>
+                👤 Customer
+              </Text>
+            </View>
+          )}
           <Text style={s.title}>Create account</Text>
           <Text style={s.subtitle}>
             {role === 'business' ? 'Set up your business on Solis OS' : 'Join Solis OS to discover and book'}
@@ -92,14 +105,16 @@ export default function SignupScreen({ navigation, route }) {
 
           {error ? <Text style={s.error}>{error}</Text> : null}
 
-          <TouchableOpacity style={s.signupBtn} onPress={handleSignup} disabled={loading} activeOpacity={0.85}>
-            {loading ? (
-              <ActivityIndicator color={colors.textDark} />
-            ) : (
-              <Text style={s.signupBtnText}>
-                {role === 'business' ? 'Create Business Account' : 'Create Account'}
-              </Text>
-            )}
+          <TouchableOpacity onPress={handleSignup} disabled={loading} activeOpacity={0.85}>
+            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signupBtn}>
+              {loading ? (
+                <ActivityIndicator color={colors.textDark} />
+              ) : (
+                <Text style={s.signupBtnText}>
+                  {role === 'business' ? 'Create Business Account' : 'Create Account'}
+                </Text>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -118,6 +133,13 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 300,
+  },
   glowOrb: {
     position: 'absolute',
     top: 60,
@@ -125,7 +147,16 @@ const s = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+    backgroundColor: 'rgba(245, 158, 11, 0.10)',
+  },
+  glowOrb2: {
+    position: 'absolute',
+    bottom: 80,
+    right: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(168,85,247,0.06)',
   },
   scroll: {
     flexGrow: 1,
@@ -136,9 +167,6 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: colors.bgCard,
-    borderWidth: 1,
-    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 32,
@@ -173,11 +201,11 @@ const s = StyleSheet.create({
     color: colors.textMuted,
   },
   formCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     gap: 16,
     ...shadows.card,
   },
@@ -190,9 +218,9 @@ const s = StyleSheet.create({
     color: colors.textSecondary,
   },
   input: {
-    backgroundColor: colors.bgInput,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -205,7 +233,6 @@ const s = StyleSheet.create({
     textAlign: 'center',
   },
   signupBtn: {
-    backgroundColor: colors.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',

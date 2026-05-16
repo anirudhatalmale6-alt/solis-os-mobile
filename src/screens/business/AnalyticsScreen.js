@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
@@ -147,6 +148,8 @@ export default function AnalyticsScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
+      <View style={s.glowOrb1} />
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={
@@ -271,6 +274,22 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: C.bg,
   },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 250,
+  },
+  glowOrb1: {
+    position: 'absolute',
+    top: 20,
+    right: -30,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(245,158,11,0.1)',
+  },
   scroll: {
     padding: 20,
     paddingTop: 60,
@@ -289,11 +308,11 @@ const s = StyleSheet.create({
   },
   statCard: {
     width: '47%',
-    backgroundColor: C.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     borderLeftWidth: 3,
     ...shadows.card,
   },
@@ -309,12 +328,12 @@ const s = StyleSheet.create({
     fontWeight: '500',
   },
   card: {
-    backgroundColor: C.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     ...shadows.card,
   },
   sectionTitle: {

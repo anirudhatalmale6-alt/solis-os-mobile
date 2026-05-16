@@ -11,6 +11,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -140,6 +141,8 @@ export default function SettingsScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
+      <View style={s.glowOrb1} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Settings</Text>
       </View>
@@ -252,11 +255,13 @@ export default function SettingsScreen() {
           disabled={saving}
           activeOpacity={0.8}
         >
-          {saving ? (
-            <ActivityIndicator size="small" color="#000" />
-          ) : (
-            <Text style={s.saveButtonText}>Save Changes</Text>
-          )}
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
+            {saving ? (
+              <ActivityIndicator size="small" color="#000" />
+            ) : (
+              <Text style={s.saveButtonText}>Save Changes</Text>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* Account Section */}
@@ -353,6 +358,22 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 250,
+  },
+  glowOrb1: {
+    position: 'absolute',
+    top: 20,
+    right: -30,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(245,158,11,0.1)',
+  },
   loadingWrap: {
     flex: 1,
     justifyContent: 'center',
@@ -382,10 +403,10 @@ const s = StyleSheet.create({
     marginTop: 8,
   },
   card: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     padding: 20,
     marginBottom: 20,
     ...shadows.card,
@@ -440,13 +461,16 @@ const s = StyleSheet.create({
     color: colors.textSecondary,
   },
   saveButton: {
-    backgroundColor: colors.primary,
     borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 28,
+    ...shadows.button,
+  },
+  saveButtonGradient: {
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 28,
-    ...shadows.button,
+    borderRadius: 12,
   },
   saveButtonDisabled: {
     opacity: 0.7,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
@@ -29,9 +30,11 @@ export default function BusinessProfileScreen({ navigation, route }) {
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.heroWrap}>
           <Image source={{ uri: heroImage }} style={s.heroImage} />
-          <View style={s.heroOverlay} />
-          <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
-            <Text style={s.backText}>←</Text>
+          <LinearGradient colors={['transparent', 'rgba(8,8,13,0.6)', 'rgba(8,8,13,0.98)']} style={s.heroOverlay} />
+          <TouchableOpacity style={s.backBtnWrap} onPress={() => navigation.goBack()} activeOpacity={0.8}>
+            <LinearGradient colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.4)']} style={s.backBtn}>
+              <Text style={s.backText}>←</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -41,7 +44,7 @@ export default function BusinessProfileScreen({ navigation, route }) {
             {(business.industry || 'Business').charAt(0).toUpperCase() + (business.industry || 'business').slice(1)} · {business.city || 'Local'}
           </Text>
 
-          <View style={s.statsRow}>
+          <View style={[s.statsRow, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
             <View style={s.stat}>
               <Text style={s.statVal}>⭐ 4.9</Text>
               <Text style={s.statLabel}>(128)</Text>
@@ -62,11 +65,11 @@ export default function BusinessProfileScreen({ navigation, route }) {
         <View style={s.servicesSection}>
           <Text style={s.servicesTitle}>Services</Text>
           {services.length === 0 ? (
-            <View style={s.noServices}>
+            <View style={[s.noServices, { backgroundColor: 'rgba(255,255,255,0.06)' }]}>
               <Text style={s.noServicesText}>No services listed yet</Text>
             </View>
           ) : (
-            <View style={s.servicesCard}>
+            <View style={[s.servicesCard, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
               {services.map((svc, idx) => (
                 <TouchableOpacity
                   key={svc.id}
@@ -74,15 +77,17 @@ export default function BusinessProfileScreen({ navigation, route }) {
                   activeOpacity={0.85}
                   onPress={() => navigation.navigate('BookAppointment', { business, service: svc })}
                 >
-                  <View style={s.serviceLeft}>
+                  <LinearGradient colors={['rgba(245,158,11,0.08)', 'rgba(245,158,11,0.02)']} style={s.serviceInfo}>
                     <Text style={s.serviceName}>{svc.name}</Text>
                     <Text style={s.serviceDuration}>{svc.duration || 30} min</Text>
-                  </View>
+                  </LinearGradient>
                   <View style={s.serviceRight}>
                     <Text style={s.servicePrice}>${svc.price || 0}</Text>
-                    <View style={s.bookTag}>
-                      <Text style={s.serviceBook}>Book</Text>
-                    </View>
+                    <TouchableOpacity activeOpacity={0.85} onPress={() => navigation.navigate('BookAppointment', { business, service: svc })}>
+                      <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.bookTag}>
+                        <Text style={s.serviceBook}>Book</Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -93,7 +98,7 @@ export default function BusinessProfileScreen({ navigation, route }) {
         {business.address && (
           <View style={s.detailsSection}>
             <Text style={s.detailsTitle}>Location</Text>
-            <View style={s.detailCard}>
+            <View style={[s.detailCard, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
               <View style={s.detailRow}>
                 <Text style={s.detailIcon}>📍</Text>
                 <Text style={s.detailText}>{business.address}</Text>
@@ -115,7 +120,9 @@ export default function BusinessProfileScreen({ navigation, route }) {
           activeOpacity={0.85}
           onPress={() => navigation.navigate('BookAppointment', { business, service: services[0] })}
         >
-          <Text style={s.bookBtnText}>Book Now</Text>
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.bookBtnGradient}>
+            <Text style={s.bookBtnText}>Book Now</Text>
+          </LinearGradient>
         </TouchableOpacity>
       )}
     </View>
@@ -143,17 +150,19 @@ const s = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 120,
-    backgroundColor: 'rgba(8, 8, 13, 0.4)',
+    height: '100%',
   },
-  backBtn: {
+  backBtnWrap: {
     position: 'absolute',
     top: 52,
     left: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  backBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
@@ -257,12 +266,11 @@ const s = StyleSheet.create({
     color: colors.primary,
   },
   bookTag: {
-    backgroundColor: colors.primaryLight,
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: colors.borderGlow,
+    borderColor: 'rgba(245,158,11,0.3)',
   },
   serviceBook: {
     fontSize: 11,
@@ -317,15 +325,24 @@ const s = StyleSheet.create({
     bottom: 30,
     left: 20,
     right: 20,
-    backgroundColor: colors.primary,
     borderRadius: 14,
+    overflow: 'hidden',
+    ...shadows.button,
+  },
+  bookBtnGradient: {
     paddingVertical: 16,
     alignItems: 'center',
-    ...shadows.button,
+    borderRadius: 14,
   },
   bookBtnText: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.textDark,
+  },
+  serviceInfo: {
+    flex: 1,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
   },
 })

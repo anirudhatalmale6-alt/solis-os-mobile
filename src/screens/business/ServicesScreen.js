@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -197,6 +198,7 @@ export default function ServicesScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Services</Text>
@@ -205,7 +207,9 @@ export default function ServicesScreen() {
           </Text>
         </View>
         <TouchableOpacity style={s.addButton} onPress={openAddModal} activeOpacity={0.8}>
-          <Text style={s.addButtonText}>+ Add Service</Text>
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.addButtonGradient}>
+            <Text style={s.addButtonText}>+ Add Service</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 
@@ -340,13 +344,15 @@ export default function ServicesScreen() {
               disabled={saving}
               activeOpacity={0.8}
             >
-              {saving ? (
-                <ActivityIndicator size="small" color={colors.bg} />
-              ) : (
-                <Text style={s.saveButtonText}>
-                  {editingService ? 'Update Service' : 'Create Service'}
-                </Text>
-              )}
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
+                {saving ? (
+                  <ActivityIndicator size="small" color={colors.bg} />
+                ) : (
+                  <Text style={s.saveButtonText}>
+                    {editingService ? 'Update Service' : 'Create Service'}
+                  </Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -357,6 +363,7 @@ export default function ServicesScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   centered: { justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
@@ -369,20 +376,23 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
   addButton: {
-    backgroundColor: colors.primary,
+    borderRadius: 12,
+    overflow: 'hidden',
+    ...shadows.button,
+  },
+  addButtonGradient: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 12,
-    ...shadows.button,
   },
   addButtonText: { fontSize: 14, fontWeight: '700', color: colors.bg },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   serviceCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     marginBottom: 10,
     ...shadows.card,
   },
@@ -433,10 +443,10 @@ const s = StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingVertical: 80,
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     marginTop: 20,
     ...shadows.card,
   },
@@ -481,12 +491,15 @@ const s = StyleSheet.create({
     color: colors.text,
   },
   saveButton: {
-    backgroundColor: colors.primary,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginTop: 8,
+    ...shadows.button,
+  },
+  saveButtonGradient: {
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 8,
-    ...shadows.button,
   },
   saveButtonDisabled: { opacity: 0.6 },
   saveButtonText: { fontSize: 16, fontWeight: '700', color: colors.bg },

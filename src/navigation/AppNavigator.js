@@ -14,6 +14,7 @@ import SignupScreen from '../screens/auth/SignupScreen'
 
 // Customer Screens
 import HomeScreen from '../screens/customer/HomeScreen'
+import ExploreScreen from '../screens/customer/ExploreScreen'
 import BusinessProfileScreen from '../screens/customer/BusinessProfileScreen'
 import BookAppointmentScreen from '../screens/customer/BookAppointmentScreen'
 import MyBookingsScreen from '../screens/customer/MyBookingsScreen'
@@ -46,17 +47,6 @@ function CustomerHomeStack() {
       <HomeStack.Screen name="Login" component={LoginScreen} />
       <HomeStack.Screen name="Signup" component={SignupScreen} />
     </HomeStack.Navigator>
-  )
-}
-
-// Placeholder Explore screen
-function ExploreScreen() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderEmoji}>🔍</Text>
-      <Text style={styles.placeholderTitle}>Explore</Text>
-      <Text style={styles.placeholderDesc}>Discover new businesses near you</Text>
-    </View>
   )
 }
 
@@ -248,27 +238,5 @@ const styles = StyleSheet.create({
   },
   tabIconActive: {
     opacity: 1,
-  },
-  placeholder: {
-    flex: 1,
-    backgroundColor: colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-  },
-  placeholderEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  placeholderTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 8,
-  },
-  placeholderDesc: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
   },
 })

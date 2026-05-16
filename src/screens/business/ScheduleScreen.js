@@ -10,6 +10,7 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -146,6 +147,7 @@ export default function ScheduleScreen() {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Schedule</Text>
       </View>
@@ -204,11 +206,13 @@ export default function ScheduleScreen() {
           activeOpacity={0.8}
           disabled={saving}
         >
-          {saving ? (
-            <ActivityIndicator color={colors.bg} />
-          ) : (
-            <Text style={s.saveButtonText}>Save Schedule</Text>
-          )}
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
+            {saving ? (
+              <ActivityIndicator color={colors.bg} />
+            ) : (
+              <Text style={s.saveButtonText}>Save Schedule</Text>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
 
@@ -270,13 +274,17 @@ export default function ScheduleScreen() {
                 style={s.modalCancel}
                 onPress={() => setPickerVisible(false)}
               >
-                <Text style={s.modalCancelText}>Cancel</Text>
+                <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.modalCancelGradient}>
+                  <Text style={s.modalCancelText}>Cancel</Text>
+                </LinearGradient>
               </TouchableOpacity>
               <TouchableOpacity
                 style={s.modalConfirm}
                 onPress={confirmPicker}
               >
-                <Text style={s.modalConfirmText}>Confirm</Text>
+                <LinearGradient colors={['#f59e0b', '#f97316']} style={s.modalConfirmGradient}>
+                  <Text style={s.modalConfirmText}>Confirm</Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </View>
@@ -288,17 +296,18 @@ export default function ScheduleScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   center: { justifyContent: 'center', alignItems: 'center' },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
 
   dayCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     marginBottom: 10,
     ...shadows.card,
   },
@@ -361,13 +370,16 @@ const s = StyleSheet.create({
   },
 
   saveButton: {
-    backgroundColor: colors.primary,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginTop: 20,
+    ...shadows.button,
+  },
+  saveButtonGradient: {
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    ...shadows.button,
   },
   saveButtonText: {
     fontSize: 16,
@@ -452,11 +464,12 @@ const s = StyleSheet.create({
   },
   modalCancel: {
     flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalCancelGradient: {
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: colors.bgInput,
-    borderWidth: 1,
-    borderColor: colors.border,
     alignItems: 'center',
   },
   modalCancelText: {
@@ -466,9 +479,12 @@ const s = StyleSheet.create({
   },
   modalConfirm: {
     flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalConfirmGradient: {
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: colors.primary,
     alignItems: 'center',
   },
   modalConfirmText: {

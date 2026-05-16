@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
@@ -92,19 +93,24 @@ export default function BookAppointmentScreen({ navigation, route }) {
 
   return (
     <View style={s.container}>
+      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.topBar}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-            <Text style={s.backText}>←</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.backBtn}>
+              <Text style={s.backText}>←</Text>
+            </LinearGradient>
           </TouchableOpacity>
           <Text style={s.topTitle}>Select Time</Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <View style={s.serviceInfo}>
+        <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)']} style={s.serviceInfo}>
           <Text style={s.serviceName}>{service.name}</Text>
           <Text style={s.serviceMeta}>{service.duration || 30} min · ${service.price || 0}</Text>
-        </View>
+        </LinearGradient>
 
         <View style={s.calCard}>
           <View style={s.calHeader}>
@@ -131,11 +137,19 @@ export default function BookAppointmentScreen({ navigation, route }) {
                   disabled={isPast}
                 >
                   <Text style={[s.dayName, isPast && s.dayPast]}>{DAYS[d.getDay()]}</Text>
-                  <View style={[s.dayNum, isSelected && s.dayNumSelected]}>
-                    <Text style={[s.dayNumText, isSelected && s.dayNumTextSelected, isPast && s.dayPast]}>
-                      {d.getDate()}
-                    </Text>
-                  </View>
+                  {isSelected ? (
+                    <LinearGradient colors={['#f59e0b', '#f97316']} style={s.dayNumSelected}>
+                      <Text style={[s.dayNumText, s.dayNumTextSelected]}>
+                        {d.getDate()}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View style={s.dayNum}>
+                      <Text style={[s.dayNumText, isPast && s.dayPast]}>
+                        {d.getDate()}
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               )
             })}
@@ -147,14 +161,30 @@ export default function BookAppointmentScreen({ navigation, route }) {
           {TIME_SLOTS.map(time => {
             const isBooked = bookedSlots.includes(time)
             const isSelected = time === selectedTime
+            if (isSelected) {
+              return (
+                <TouchableOpacity
+                  key={time}
+                  onPress={() => !isBooked && setSelectedTime(time)}
+                  disabled={isBooked}
+                  style={{ width: '31%' }}
+                >
+                  <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(249,115,22,0.1)']} style={s.slotSelectedGradient}>
+                    <Text style={[s.slotText, s.slotTextSelected]}>
+                      {time}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )
+            }
             return (
               <TouchableOpacity
                 key={time}
-                style={[s.slot, isBooked && s.slotBooked, isSelected && s.slotSelected]}
+                style={[s.slot, isBooked && s.slotBooked]}
                 onPress={() => !isBooked && setSelectedTime(time)}
                 disabled={isBooked}
               >
-                <Text style={[s.slotText, isBooked && s.slotTextBooked, isSelected && s.slotTextSelected]}>
+                <Text style={[s.slotText, isBooked && s.slotTextBooked]}>
                   {time}
                 </Text>
               </TouchableOpacity>
@@ -185,14 +215,21 @@ export default function BookAppointmentScreen({ navigation, route }) {
         )}
       </ScrollView>
 
-      <TouchableOpacity
-        style={[s.confirmBtn, !selectedTime && s.confirmBtnDisabled]}
-        onPress={handleConfirm}
-        disabled={!selectedTime || loading}
-        activeOpacity={0.85}
-      >
-        <Text style={s.confirmBtnText}>{loading ? 'Booking...' : 'Confirm Booking'}</Text>
-      </TouchableOpacity>
+      {selectedTime ? (
+        <TouchableOpacity
+          onPress={handleConfirm}
+          disabled={loading}
+          activeOpacity={0.85}
+        >
+          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.confirmBtn}>
+            <Text style={s.confirmBtnText}>{loading ? 'Booking...' : 'Confirm Booking'}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      ) : (
+        <View style={[s.confirmBtn, s.confirmBtnDisabled]}>
+          <Text style={s.confirmBtnText}>Confirm Booking</Text>
+        </View>
+      )}
     </View>
   )
 }
@@ -201,6 +238,31 @@ const s = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 250,
+  },
+  glowOrb1: {
+    position: 'absolute',
+    top: 20,
+    right: -30,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(245,158,11,0.1)',
+  },
+  glowOrb2: {
+    position: 'absolute',
+    bottom: 150,
+    left: -40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(59,130,246,0.06)',
   },
   scroll: {
     paddingHorizontal: 20,
@@ -217,9 +279,8 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -233,7 +294,6 @@ const s = StyleSheet.create({
     color: colors.text,
   },
   serviceInfo: {
-    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
@@ -252,11 +312,11 @@ const s = StyleSheet.create({
     color: colors.textMuted,
   },
   calCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     marginBottom: 20,
     ...shadows.card,
   },
@@ -279,7 +339,7 @@ const s = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: colors.bgInput,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -316,7 +376,11 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   dayNumSelected: {
-    backgroundColor: colors.primary,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
     ...shadows.button,
   },
   dayNumText: {
@@ -341,9 +405,9 @@ const s = StyleSheet.create({
   },
   slot: {
     width: '31%',
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
@@ -351,8 +415,11 @@ const s = StyleSheet.create({
   slotBooked: {
     opacity: 0.3,
   },
-  slotSelected: {
-    backgroundColor: colors.primaryLight,
+  slotSelectedGradient: {
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
     borderColor: colors.primary,
     ...shadows.cardGlow,
   },
@@ -368,7 +435,7 @@ const s = StyleSheet.create({
     color: colors.primary,
   },
   summaryCard: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
@@ -404,13 +471,13 @@ const s = StyleSheet.create({
     bottom: 30,
     left: 20,
     right: 20,
-    backgroundColor: colors.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     ...shadows.button,
   },
   confirmBtnDisabled: {
+    backgroundColor: colors.primary,
     opacity: 0.4,
   },
   confirmBtnText: {
