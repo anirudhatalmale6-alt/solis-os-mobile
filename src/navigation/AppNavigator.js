@@ -31,6 +31,10 @@ import StaffScreen from '../screens/business/StaffScreen'
 import SettingsScreen from '../screens/business/SettingsScreen'
 import AnalyticsScreen from '../screens/business/AnalyticsScreen'
 import BookingLinkScreen from '../screens/business/BookingLinkScreen'
+import InvoicesScreen from '../screens/business/InvoicesScreen'
+import ExpensesScreen from '../screens/business/ExpensesScreen'
+import PromotionsScreen from '../screens/business/PromotionsScreen'
+import NotificationsScreen from '../screens/business/NotificationsScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -113,6 +117,10 @@ function BusinessMoreStack() {
       <MoreStack.Screen name="Settings" component={SettingsScreen} />
       <MoreStack.Screen name="Analytics" component={AnalyticsScreen} />
       <MoreStack.Screen name="BookingLink" component={BookingLinkScreen} />
+      <MoreStack.Screen name="Invoices" component={InvoicesScreen} />
+      <MoreStack.Screen name="Expenses" component={ExpensesScreen} />
+      <MoreStack.Screen name="Promotions" component={PromotionsScreen} />
+      <MoreStack.Screen name="Notifications" component={NotificationsScreen} />
     </MoreStack.Navigator>
   )
 }

@@ -10,13 +10,17 @@ const MENU_ITEMS = [
   { key: 'Schedule', emoji: '📅', label: 'Schedule', nav: 'Schedule' },
   { key: 'Staff', emoji: '👤', label: 'Staff', nav: 'Staff' },
   { key: 'Analytics', emoji: '📊', label: 'Analytics', nav: 'Analytics' },
+  { key: 'Invoices', emoji: '🧾', label: 'Invoices', nav: 'Invoices' },
+  { key: 'Expenses', emoji: '💸', label: 'Expenses', nav: 'Expenses' },
+  { key: 'Promotions', emoji: '🎁', label: 'Promotions', nav: 'Promotions' },
+  { key: 'Notifications', emoji: '🔔', label: 'Notifications', nav: 'Notifications' },
   { key: 'BookingLink', emoji: '🔗', label: 'Booking Link', nav: 'BookingLink' },
   { key: 'Settings', emoji: '⚙️', label: 'Settings', nav: 'Settings' },
 ]
 
 const COMING_SOON = [
-  { key: 'invoices', emoji: '🧾', label: 'Invoices' },
-  { key: 'messages', emoji: '💬', label: 'Messages' },
+  { key: 'loyalty', emoji: '⭐', label: 'Loyalty & Rewards' },
+  { key: 'waitlist', emoji: '⏳', label: 'Digital Waitlist' },
 ]
 
 export default function MoreScreen() {
