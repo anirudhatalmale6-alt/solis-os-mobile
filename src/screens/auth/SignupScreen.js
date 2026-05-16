@@ -33,13 +33,14 @@ export default function SignupScreen({ navigation, route }) {
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
+      <View style={s.glowOrb} />
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
         <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
-          <Text style={s.backText}>← Back</Text>
+          <Text style={s.backText}>←</Text>
         </TouchableOpacity>
 
         <View style={s.header}>
-          <View style={[s.roleTag, role === 'business' ? { backgroundColor: colors.primaryLight } : { backgroundColor: colors.blueLight }]}>
+          <View style={[s.roleTag, role === 'business' ? { backgroundColor: colors.primaryLight, borderColor: colors.borderGlow } : { backgroundColor: colors.blueLight, borderColor: 'rgba(59, 130, 246, 0.2)' }]}>
             <Text style={[s.roleTagText, role === 'business' ? { color: colors.primary } : { color: colors.blue }]}>
               {role === 'business' ? '🏢 Business' : '👤 Customer'}
             </Text>
@@ -50,7 +51,7 @@ export default function SignupScreen({ navigation, route }) {
           </Text>
         </View>
 
-        <View style={s.form}>
+        <View style={s.formCard}>
           <View style={s.inputWrap}>
             <Text style={s.label}>Full Name</Text>
             <TextInput
@@ -100,13 +101,13 @@ export default function SignupScreen({ navigation, route }) {
               </Text>
             )}
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate('Login', { role })} style={s.switchWrap}>
-            <Text style={s.switchText}>
-              Already have an account? <Text style={s.switchLink}>Sign in</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Login', { role })} style={s.switchWrap}>
+          <Text style={s.switchText}>
+            Already have an account? <Text style={s.switchLink}>Sign in</Text>
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -117,20 +118,37 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  glowOrb: {
+    position: 'absolute',
+    top: 60,
+    left: -40,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 60,
   },
   backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 32,
   },
   backText: {
-    fontSize: 15,
-    color: colors.textSecondary,
+    fontSize: 18,
+    color: colors.text,
   },
   header: {
-    marginBottom: 36,
+    marginBottom: 32,
   },
   roleTag: {
     alignSelf: 'flex-start',
@@ -138,6 +156,7 @@ const s = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 8,
     marginBottom: 16,
+    borderWidth: 1,
   },
   roleTagText: {
     fontSize: 12,
@@ -153,8 +172,14 @@ const s = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
   },
-  form: {
+  formCard: {
+    backgroundColor: colors.bgCard,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
     gap: 16,
+    ...shadows.card,
   },
   inputWrap: {
     gap: 6,
@@ -184,7 +209,7 @@ const s = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 4,
     ...shadows.button,
   },
   signupBtnText: {
@@ -194,7 +219,7 @@ const s = StyleSheet.create({
   },
   switchWrap: {
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 24,
   },
   switchText: {
     fontSize: 14,

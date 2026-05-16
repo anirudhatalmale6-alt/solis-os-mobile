@@ -9,6 +9,9 @@ export default function RoleSelectScreen({ navigation }) {
     <View style={s.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
+
       <View style={s.logoWrap}>
         <View style={s.logoCircle}>
           <Text style={s.logoText}>S</Text>
@@ -19,7 +22,7 @@ export default function RoleSelectScreen({ navigation }) {
 
       <View style={s.cardsWrap}>
         <TouchableOpacity
-          style={s.roleCard}
+          style={[s.roleCard, s.roleCardBusiness]}
           activeOpacity={0.85}
           onPress={() => navigation.navigate('Login', { role: 'business' })}
         >
@@ -63,14 +66,32 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: 'center',
   },
+  glowOrb1: {
+    position: 'absolute',
+    top: -80,
+    right: -60,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(245, 158, 11, 0.04)',
+  },
+  glowOrb2: {
+    position: 'absolute',
+    bottom: -40,
+    left: -80,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(59, 130, 246, 0.03)',
+  },
   logoWrap: {
     alignItems: 'center',
     marginBottom: 48,
   },
   logoCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
+    width: 76,
+    height: 76,
+    borderRadius: 22,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -78,22 +99,23 @@ const s = StyleSheet.create({
     ...shadows.button,
   },
   logoText: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '800',
     color: colors.textDark,
   },
   brandName: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '800',
     color: colors.text,
     marginBottom: 6,
+    letterSpacing: 0.5,
   },
   tagline: {
     fontSize: 14,
     color: colors.textMuted,
   },
   cardsWrap: {
-    gap: 16,
+    gap: 14,
   },
   roleCard: {
     backgroundColor: colors.bgCard,
@@ -102,6 +124,10 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     ...shadows.card,
+  },
+  roleCardBusiness: {
+    borderColor: colors.borderGlow,
+    ...shadows.cardGlow,
   },
   roleIcon: {
     width: 52,

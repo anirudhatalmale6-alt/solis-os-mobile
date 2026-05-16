@@ -28,12 +28,12 @@ export default function MoreScreen() {
   }
 
   const handleMenuPress = (item) => {
-    // Future navigation to individual screens
     Alert.alert(item.label, 'Coming soon!')
   }
 
   return (
     <View style={s.container}>
+      <View style={s.glowOrb} />
       <View style={s.header}>
         <Text style={s.headerTitle}>More</Text>
       </View>
@@ -68,12 +68,21 @@ export default function MoreScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  glowOrb: {
+    position: 'absolute',
+    top: 40,
+    right: -30,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   menuContainer: {
     backgroundColor: colors.bgCard,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
@@ -92,12 +101,14 @@ const s = StyleSheet.create({
     borderBottomWidth: 0,
   },
   menuIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 38,
+    height: 38,
+    borderRadius: 11,
     backgroundColor: colors.bgInput,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
@@ -109,7 +120,7 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: 'rgba(239, 68, 68, 0.2)',
   },
   signOutText: { fontSize: 15, fontWeight: '700', color: colors.red },
   version: { fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 20 },

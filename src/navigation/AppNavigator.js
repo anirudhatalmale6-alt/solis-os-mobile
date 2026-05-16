@@ -203,12 +203,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabBar: {
-    backgroundColor: '#111118',
+    backgroundColor: 'rgba(8, 8, 13, 0.95)',
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: 'rgba(255, 255, 255, 0.06)',
     paddingTop: 8,
     paddingBottom: 8,
-    height: 64,
+    height: 66,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
   },
   tabLabel: {
     fontSize: 10,
@@ -217,7 +222,7 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     fontSize: 20,
-    opacity: 0.6,
+    opacity: 0.5,
   },
   tabIconActive: {
     opacity: 1,

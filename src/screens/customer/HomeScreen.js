@@ -4,12 +4,12 @@ import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
 const CATEGORIES = [
-  { key: 'salon', emoji: '💇', label: 'Salon', color: colors.primaryLight },
-  { key: 'clinic', emoji: '🏥', label: 'Clinic', color: colors.blueLight },
-  { key: 'barber', emoji: '💈', label: 'Barber', color: colors.purpleLight },
-  { key: 'garage', emoji: '🔧', label: 'Garage', color: colors.redLight },
-  { key: 'lessons', emoji: '🎓', label: 'Lessons', color: colors.greenLight },
-  { key: 'other', emoji: '🏢', label: 'Other', color: colors.tealLight },
+  { key: 'salon', emoji: '💇', label: 'Salon' },
+  { key: 'clinic', emoji: '🏥', label: 'Clinic' },
+  { key: 'barber', emoji: '💈', label: 'Barber' },
+  { key: 'garage', emoji: '🔧', label: 'Garage' },
+  { key: 'lessons', emoji: '🎓', label: 'Lessons' },
+  { key: 'other', emoji: '🏢', label: 'Other' },
 ]
 
 const STOCK_IMAGES = {
@@ -50,6 +50,8 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={s.container}>
+      <View style={s.glowOrb} />
+
       <View style={s.header}>
         <Text style={s.greeting}>Find & Book</Text>
         <Text style={s.subGreeting}>Discover businesses near you</Text>
@@ -113,6 +115,7 @@ export default function HomeScreen({ navigation }) {
                 source={{ uri: STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
                 style={s.bizImage}
               />
+              <View style={s.bizImageOverlay} />
               <View style={s.bizRating}>
                 <Text style={s.bizRatingText}>⭐ 4.{Math.floor(Math.random() * 3) + 7}</Text>
               </View>
@@ -135,15 +138,25 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  glowOrb: {
+    position: 'absolute',
+    top: 20,
+    right: -60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  },
   header: {
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 8,
   },
   greeting: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
     color: colors.text,
+    letterSpacing: 0.3,
   },
   subGreeting: {
     fontSize: 14,
@@ -153,7 +166,7 @@ const s = StyleSheet.create({
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 14,
@@ -161,13 +174,14 @@ const s = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: 14,
     gap: 10,
+    ...shadows.card,
   },
   searchIcon: {
     fontSize: 16,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 13,
+    paddingVertical: 14,
     fontSize: 14,
     color: colors.text,
   },
@@ -182,7 +196,7 @@ const s = StyleSheet.create({
   catChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 20,
@@ -193,6 +207,7 @@ const s = StyleSheet.create({
   catChipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
+    ...shadows.button,
   },
   catEmoji: {
     fontSize: 13,
@@ -204,7 +219,7 @@ const s = StyleSheet.create({
   },
   catChipTextActive: {
     color: colors.textDark,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   list: {
     flex: 1,
@@ -231,7 +246,7 @@ const s = StyleSheet.create({
   },
   bizCard: {
     backgroundColor: colors.bgCard,
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
     marginBottom: 14,
     borderWidth: 1,
@@ -240,16 +255,26 @@ const s = StyleSheet.create({
   },
   bizImage: {
     width: '100%',
-    height: 140,
+    height: 150,
+  },
+  bizImageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
+    backgroundColor: 'rgba(8, 8, 13, 0.15)',
   },
   bizRating: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    top: 12,
+    right: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   bizRatingText: {
     fontSize: 12,
@@ -257,7 +282,7 @@ const s = StyleSheet.create({
     color: colors.text,
   },
   bizInfo: {
-    padding: 14,
+    padding: 16,
   },
   bizName: {
     fontSize: 16,

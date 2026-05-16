@@ -98,7 +98,7 @@ export default function BookAppointmentScreen({ navigation, route }) {
             <Text style={s.backText}>←</Text>
           </TouchableOpacity>
           <Text style={s.topTitle}>Select Time</Text>
-          <View style={{ width: 38 }} />
+          <View style={{ width: 40 }} />
         </View>
 
         <View style={s.serviceInfo}>
@@ -110,10 +110,10 @@ export default function BookAppointmentScreen({ navigation, route }) {
           <View style={s.calHeader}>
             <Text style={s.calMonth}>{monthLabel}</Text>
             <View style={s.calArrows}>
-              <TouchableOpacity onPress={() => setWeekOffset(Math.max(0, weekOffset - 1))}>
+              <TouchableOpacity onPress={() => setWeekOffset(Math.max(0, weekOffset - 1))} style={s.arrowBtn}>
                 <Text style={s.calArrow}>‹</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setWeekOffset(weekOffset + 1)}>
+              <TouchableOpacity onPress={() => setWeekOffset(weekOffset + 1)} style={s.arrowBtn}>
                 <Text style={s.calArrow}>›</Text>
               </TouchableOpacity>
             </View>
@@ -214,17 +214,17 @@ const s = StyleSheet.create({
     marginBottom: 20,
   },
   backBtn: {
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
     borderRadius: 12,
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backText: {
-    fontSize: 16,
+    fontSize: 18,
     color: colors.text,
   },
   topTitle: {
@@ -234,11 +234,12 @@ const s = StyleSheet.create({
   },
   serviceInfo: {
     backgroundColor: colors.bgCard,
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: 16,
+    padding: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderGlow,
     marginBottom: 16,
+    ...shadows.cardGlow,
   },
   serviceName: {
     fontSize: 16,
@@ -252,11 +253,12 @@ const s = StyleSheet.create({
   },
   calCard: {
     backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 20,
+    ...shadows.card,
   },
   calHeader: {
     flexDirection: 'row',
@@ -271,12 +273,21 @@ const s = StyleSheet.create({
   },
   calArrows: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 8,
+  },
+  arrowBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: colors.bgInput,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   calArrow: {
-    fontSize: 20,
-    color: colors.textMuted,
-    paddingHorizontal: 4,
+    fontSize: 18,
+    color: colors.textSecondary,
   },
   daysRow: {
     flexDirection: 'row',
@@ -306,6 +317,7 @@ const s = StyleSheet.create({
   },
   dayNumSelected: {
     backgroundColor: colors.primary,
+    ...shadows.button,
   },
   dayNumText: {
     fontSize: 15,
@@ -329,7 +341,7 @@ const s = StyleSheet.create({
   },
   slot: {
     width: '31%',
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 12,
@@ -342,6 +354,7 @@ const s = StyleSheet.create({
   slotSelected: {
     backgroundColor: colors.primaryLight,
     borderColor: colors.primary,
+    ...shadows.cardGlow,
   },
   slotText: {
     fontSize: 14,
@@ -356,10 +369,11 @@ const s = StyleSheet.create({
   },
   summaryCard: {
     backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderGlow,
+    ...shadows.cardGlow,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -381,7 +395,7 @@ const s = StyleSheet.create({
     marginVertical: 6,
   },
   summaryTotal: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '800',
     color: colors.primary,
   },

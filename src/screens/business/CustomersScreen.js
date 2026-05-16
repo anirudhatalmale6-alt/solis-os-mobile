@@ -60,6 +60,7 @@ export default function CustomersScreen() {
 
   return (
     <View style={s.container}>
+      <View style={s.glowOrb} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Customers</Text>
         <Text style={s.headerSub}>{customers.length} total</Text>
@@ -111,13 +112,22 @@ export default function CustomersScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  glowOrb: {
+    position: 'absolute',
+    top: 30,
+    right: -50,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(59, 130, 246, 0.03)',
+  },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 14,
@@ -126,29 +136,39 @@ const s = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 14,
     gap: 10,
+    ...shadows.card,
   },
   searchIcon: { fontSize: 16 },
-  searchInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: colors.text },
+  searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   customerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.bgCard,
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 8,
     gap: 12,
     ...shadows.card,
   },
-  avatar: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 15, fontWeight: '700' },
   customerInfo: { flex: 1 },
   customerName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
   customerDetail: { fontSize: 12, color: colors.textMuted, marginTop: 1 },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
-  empty: { alignItems: 'center', paddingVertical: 80 },
+  empty: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    backgroundColor: colors.bgCard,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginTop: 20,
+    ...shadows.card,
+  },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },

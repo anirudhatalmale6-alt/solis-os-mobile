@@ -53,10 +53,10 @@ export default function DashboardScreen() {
     : '?'
 
   const STAT_CARDS = [
-    { icon: '📅', value: stats.todayBookings, label: "Today's Bookings", color: colors.primary, bg: colors.primaryLight },
-    { icon: '💰', value: `$${stats.todayRevenue}`, label: "Today's Revenue", color: colors.green, bg: colors.greenLight },
-    { icon: '👥', value: stats.totalCustomers, label: 'Total Customers', color: colors.blue, bg: colors.blueLight },
-    { icon: '⭐', value: stats.rating, label: 'Rating', color: colors.purple, bg: colors.purpleLight },
+    { icon: '📅', value: stats.todayBookings, label: "Today's Bookings", color: colors.primary, bg: colors.primaryLight, glow: colors.borderGlow },
+    { icon: '💰', value: `$${stats.todayRevenue}`, label: "Today's Revenue", color: colors.green, bg: colors.greenLight, glow: 'rgba(34, 197, 94, 0.2)' },
+    { icon: '👥', value: stats.totalCustomers, label: 'Total Customers', color: colors.blue, bg: colors.blueLight, glow: 'rgba(59, 130, 246, 0.2)' },
+    { icon: '⭐', value: stats.rating, label: 'Rating', color: colors.purple, bg: colors.purpleLight, glow: 'rgba(168, 85, 247, 0.2)' },
   ]
 
   const AVATAR_COLORS = [
@@ -69,6 +69,8 @@ export default function DashboardScreen() {
 
   return (
     <View style={s.container}>
+      <View style={s.glowOrb1} />
+      <View style={s.glowOrb2} />
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
@@ -85,7 +87,7 @@ export default function DashboardScreen() {
 
         <View style={s.statsGrid}>
           {STAT_CARDS.map((st, i) => (
-            <View key={i} style={s.statCard}>
+            <View key={i} style={[s.statCard, { borderColor: st.glow }]}>
               <View style={[s.statIcon, { backgroundColor: st.bg }]}>
                 <Text style={s.statEmoji}>{st.icon}</Text>
               </View>
@@ -114,7 +116,9 @@ export default function DashboardScreen() {
                   <Text style={s.bookingName}>{b.customer_name || 'Customer'}</Text>
                   <Text style={s.bookingService}>{b.service_name}</Text>
                 </View>
-                <Text style={s.bookingTime}>{b.time}</Text>
+                <View style={s.bookingTimeWrap}>
+                  <Text style={s.bookingTime}>{b.time}</Text>
+                </View>
               </View>
             )
           })
@@ -126,26 +130,88 @@ export default function DashboardScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  glowOrb1: {
+    position: 'absolute',
+    top: -40,
+    right: -60,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(245, 158, 11, 0.04)',
+  },
+  glowOrb2: {
+    position: 'absolute',
+    bottom: 100,
+    left: -80,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(59, 130, 246, 0.02)',
+  },
   scroll: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 100 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
   greetingSub: { fontSize: 13, color: colors.textMuted, marginBottom: 2 },
-  bizName: { fontSize: 22, fontWeight: '800', color: colors.text },
-  avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', ...shadows.button },
+  bizName: { fontSize: 24, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.borderGlow,
+    ...shadows.button,
+  },
   avatarText: { fontSize: 15, fontWeight: '700', color: colors.textDark },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28 },
-  statCard: { width: '48%', backgroundColor: colors.bgCard, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: colors.border, ...shadows.card },
-  statIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  statCard: {
+    width: '48%',
+    backgroundColor: colors.bgCard,
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    ...shadows.card,
+  },
+  statIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   statEmoji: { fontSize: 16 },
-  statVal: { fontSize: 24, fontWeight: '800', color: colors.text, marginBottom: 2 },
+  statVal: { fontSize: 26, fontWeight: '800', color: colors.text, marginBottom: 2 },
   statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '500' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 14 },
-  bookingRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgCard, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: colors.border, marginBottom: 8, gap: 12 },
-  bookingAvatar: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  bookingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.bgCard,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 8,
+    gap: 12,
+    ...shadows.card,
+  },
+  bookingAvatar: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
   bookingAvatarText: { fontSize: 14, fontWeight: '700' },
   bookingInfo: { flex: 1 },
   bookingName: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
   bookingService: { fontSize: 12, color: colors.textMuted },
+  bookingTimeWrap: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.borderGlow,
+  },
   bookingTime: { fontSize: 13, fontWeight: '600', color: colors.primary },
-  emptyUpcoming: { backgroundColor: colors.bgCard, borderRadius: 14, padding: 30, alignItems: 'center', borderWidth: 1, borderColor: colors.border },
+  emptyUpcoming: {
+    backgroundColor: colors.bgCard,
+    borderRadius: 16,
+    padding: 30,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.card,
+  },
   emptyText: { fontSize: 14, color: colors.textMuted },
 })

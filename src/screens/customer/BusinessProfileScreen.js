@@ -66,40 +66,45 @@ export default function BusinessProfileScreen({ navigation, route }) {
               <Text style={s.noServicesText}>No services listed yet</Text>
             </View>
           ) : (
-            services.map(svc => (
-              <TouchableOpacity
-                key={svc.id}
-                style={s.serviceRow}
-                activeOpacity={0.85}
-                onPress={() => navigation.navigate('BookAppointment', { business, service: svc })}
-              >
-                <View style={s.serviceLeft}>
-                  <Text style={s.serviceName}>{svc.name}</Text>
-                  <Text style={s.serviceDuration}>{svc.duration || 30} min</Text>
-                </View>
-                <View style={s.serviceRight}>
-                  <Text style={s.servicePrice}>${svc.price || 0}</Text>
-                  <Text style={s.serviceBook}>Book →</Text>
-                </View>
-              </TouchableOpacity>
-            ))
+            <View style={s.servicesCard}>
+              {services.map((svc, idx) => (
+                <TouchableOpacity
+                  key={svc.id}
+                  style={[s.serviceRow, idx === services.length - 1 && { borderBottomWidth: 0 }]}
+                  activeOpacity={0.85}
+                  onPress={() => navigation.navigate('BookAppointment', { business, service: svc })}
+                >
+                  <View style={s.serviceLeft}>
+                    <Text style={s.serviceName}>{svc.name}</Text>
+                    <Text style={s.serviceDuration}>{svc.duration || 30} min</Text>
+                  </View>
+                  <View style={s.serviceRight}>
+                    <Text style={s.servicePrice}>${svc.price || 0}</Text>
+                    <View style={s.bookTag}>
+                      <Text style={s.serviceBook}>Book</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
           )}
         </View>
 
         {business.address && (
           <View style={s.detailsSection}>
             <Text style={s.detailsTitle}>Location</Text>
-            <View style={s.detailRow}>
-              <Text style={s.detailIcon}>📍</Text>
-              <Text style={s.detailText}>{business.address}</Text>
+            <View style={s.detailCard}>
+              <View style={s.detailRow}>
+                <Text style={s.detailIcon}>📍</Text>
+                <Text style={s.detailText}>{business.address}</Text>
+              </View>
+              {business.phone && (
+                <View style={[s.detailRow, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 12, marginTop: 4 }]}>
+                  <Text style={s.detailIcon}>📞</Text>
+                  <Text style={s.detailText}>{business.phone}</Text>
+                </View>
+              )}
             </View>
-          </View>
-        )}
-
-        {business.phone && (
-          <View style={s.detailRow}>
-            <Text style={s.detailIcon}>📞</Text>
-            <Text style={s.detailText}>{business.phone}</Text>
           </View>
         )}
       </ScrollView>
@@ -126,7 +131,7 @@ const s = StyleSheet.create({
     paddingBottom: 100,
   },
   heroWrap: {
-    height: 220,
+    height: 240,
     position: 'relative',
   },
   heroImage: {
@@ -138,17 +143,19 @@ const s = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 100,
-    backgroundColor: 'transparent',
+    height: 120,
+    backgroundColor: 'rgba(8, 8, 13, 0.4)',
   },
   backBtn: {
     position: 'absolute',
     top: 52,
     left: 16,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -162,10 +169,11 @@ const s = StyleSheet.create({
     paddingBottom: 16,
   },
   bizName: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '800',
     color: colors.text,
     marginBottom: 4,
+    letterSpacing: 0.3,
   },
   bizType: {
     fontSize: 14,
@@ -176,10 +184,11 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.bgCard,
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.card,
   },
   stat: {
     flex: 1,
@@ -210,11 +219,20 @@ const s = StyleSheet.create({
     color: colors.text,
     marginBottom: 14,
   },
+  servicesCard: {
+    backgroundColor: colors.bgCard,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    ...shadows.card,
+  },
   serviceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -231,21 +249,33 @@ const s = StyleSheet.create({
   },
   serviceRight: {
     alignItems: 'flex-end',
+    gap: 6,
   },
   servicePrice: {
     fontSize: 17,
     fontWeight: '700',
     color: colors.primary,
-    marginBottom: 2,
+  },
+  bookTag: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.borderGlow,
   },
   serviceBook: {
-    fontSize: 12,
-    color: colors.textMuted,
-    fontWeight: '500',
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: '600',
   },
   noServices: {
     paddingVertical: 30,
     alignItems: 'center',
+    backgroundColor: colors.bgCard,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   noServicesText: {
     fontSize: 14,
@@ -261,11 +291,18 @@ const s = StyleSheet.create({
     color: colors.text,
     marginBottom: 12,
   },
+  detailCard: {
+    backgroundColor: colors.bgCard,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.card,
+  },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingHorizontal: 20,
     marginBottom: 8,
   },
   detailIcon: {

@@ -6,9 +6,9 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
 const STATUS_STYLES = {
-  confirmed: { bg: colors.greenLight, color: colors.green, label: 'Confirmed' },
-  pending: { bg: colors.primaryLight, color: colors.primary, label: 'Pending' },
-  cancelled: { bg: colors.redLight, color: colors.red, label: 'Cancelled' },
+  confirmed: { bg: colors.greenLight, color: colors.green, border: 'rgba(34, 197, 94, 0.2)', label: 'Confirmed' },
+  pending: { bg: colors.primaryLight, color: colors.primary, border: colors.borderGlow, label: 'Pending' },
+  cancelled: { bg: colors.redLight, color: colors.red, border: 'rgba(239, 68, 68, 0.2)', label: 'Cancelled' },
 }
 
 export default function BookingsScreen() {
@@ -76,7 +76,7 @@ export default function BookingsScreen() {
           </View>
           <View style={s.rightCol}>
             <Text style={s.bookingTime}>{booking.time || '--:--'}</Text>
-            <View style={[s.badge, { backgroundColor: status.bg }]}>
+            <View style={[s.badge, { backgroundColor: status.bg, borderColor: status.border }]}>
               <Text style={[s.badgeText, { color: status.color }]}>{status.label}</Text>
             </View>
           </View>
@@ -91,7 +91,7 @@ export default function BookingsScreen() {
             {booking.price != null && (
               <View style={s.detailRow}>
                 <Text style={s.detailLabel}>Price</Text>
-                <Text style={s.detailValue}>${booking.price}</Text>
+                <Text style={[s.detailValue, { color: colors.primary, fontWeight: '700' }]}>${booking.price}</Text>
               </View>
             )}
             {booking.notes && (
@@ -113,7 +113,9 @@ export default function BookingsScreen() {
         <View style={s.sectionHeader}>
           <Text style={s.sectionEmoji}>{emoji}</Text>
           <Text style={s.sectionTitle}>{title}</Text>
-          <Text style={s.sectionCount}>{items.length}</Text>
+          <View style={s.sectionCountWrap}>
+            <Text style={s.sectionCount}>{items.length}</Text>
+          </View>
         </View>
         {items.map(renderBooking)}
       </View>
@@ -122,6 +124,7 @@ export default function BookingsScreen() {
 
   return (
     <View style={s.container}>
+      <View style={s.glowOrb} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Bookings</Text>
         <Text style={s.headerSub}>{bookings.length} total</Text>
@@ -151,39 +154,65 @@ export default function BookingsScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
+  glowOrb: {
+    position: 'absolute',
+    top: 20,
+    left: -40,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(245, 158, 11, 0.03)',
+  },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
   sectionEmoji: { fontSize: 16 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 },
-  sectionCount: { fontSize: 12, color: colors.textMuted, backgroundColor: colors.bgInput, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, overflow: 'hidden' },
+  sectionCountWrap: {
+    backgroundColor: colors.bgInput,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sectionCount: { fontSize: 12, color: colors.textMuted, fontWeight: '600' },
   bookingCard: {
     backgroundColor: colors.bgCard,
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 8,
     ...shadows.card,
   },
   bookingRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 42, height: 42, borderRadius: 13, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 14, fontWeight: '700', color: colors.primary },
   bookingInfo: { flex: 1 },
   customerName: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
   serviceName: { fontSize: 12, color: colors.textMuted },
   rightCol: { alignItems: 'flex-end', gap: 4 },
   bookingTime: { fontSize: 13, fontWeight: '600', color: colors.text },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, borderWidth: 1 },
   badgeText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
-  details: { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border },
+  details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   detailLabel: { fontSize: 12, color: colors.textMuted },
   detailValue: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
-  empty: { alignItems: 'center', paddingVertical: 80 },
+  empty: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    backgroundColor: colors.bgCard,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginTop: 20,
+    ...shadows.card,
+  },
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
