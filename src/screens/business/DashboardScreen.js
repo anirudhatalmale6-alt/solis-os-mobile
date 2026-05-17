@@ -2,14 +2,18 @@ import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
+const BOT_URL = 'http://146.190.26.115:3003'
+
 export default function DashboardScreen() {
   const { user } = useAuth()
+  const navigation = useNavigation()
   const [business, setBusiness] = useState(null)
+  const [whatsappStatus, setWhatsappStatus] = useState(null)
   const [stats, setStats] = useState({ todayBookings: 0, todayRevenue: 0, totalCustomers: 0, rating: 4.9 })
   const [upcoming, setUpcoming] = useState([])
   const [refreshing, setRefreshing] = useState(false)
@@ -20,6 +24,12 @@ export default function DashboardScreen() {
     const biz = bizArr?.[0]
     if (!biz) return
     setBusiness(biz)
+
+    try {
+      const waResp = await fetch(`${BOT_URL}/api/whatsapp/status/${biz.id}`)
+      const waData = await waResp.json()
+      setWhatsappStatus(waData.status)
+    } catch { setWhatsappStatus(null) }
 
     const today = new Date().toISOString().split('T')[0]
 
@@ -128,6 +138,21 @@ export default function DashboardScreen() {
             </View>
           ))}
         </View>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('More', { screen: 'WhatsAppConnect' })}
+          style={s.whatsappCard}
+        >
+          <MaterialCommunityIcons name="whatsapp" size={24} color="#25D366" />
+          <View style={s.whatsappCardContent}>
+            <Text style={s.whatsappCardTitle}>WhatsApp AI Chatbot</Text>
+            <Text style={s.whatsappCardStatus}>
+              {whatsappStatus === 'connected' ? 'Active - Replying to customers 24/7' : 'Tap to connect your WhatsApp'}
+            </Text>
+          </View>
+          <View style={[s.whatsappDot, whatsappStatus === 'connected' && s.whatsappDotActive]} />
+        </TouchableOpacity>
 
         <View style={s.sectionRow}>
           <Text style={s.sectionTitle}>Upcoming</Text>
@@ -276,6 +301,16 @@ const s = StyleSheet.create({
   },
   statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
   statVal: { fontSize: 28, fontWeight: '800', color: colors.text },
+  whatsappCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(37,211,102,0.08)', borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(37,211,102,0.2)', marginBottom: 24,
+  },
+  whatsappCardContent: { flex: 1 },
+  whatsappCardTitle: { fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 2 },
+  whatsappCardStatus: { fontSize: 12, color: colors.textSecondary },
+  whatsappDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#6b7280' },
+  whatsappDotActive: { backgroundColor: '#25D366' },
   sectionRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 10 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
   sectionBadge: {
