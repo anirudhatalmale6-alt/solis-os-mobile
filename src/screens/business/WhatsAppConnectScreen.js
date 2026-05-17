@@ -106,22 +106,6 @@ export default function WhatsAppConnectScreen({ navigation }) {
     }
   }
 
-  const startPairingLink = async () => {
-    setLinkMethod('code')
-    setWaitingCode(true)
-    setPairingCode(null)
-    try {
-      await fetch(`${BOT_URL}/api/whatsapp/connect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ business_id: bizId, phone_number: savedNumber }),
-      })
-      startPollingForCode()
-    } catch (e) {
-      setWaitingCode(false)
-      Alert.alert('Error', 'Could not reach the bot server. Please try again later.')
-    }
-  }
 
   const startPollingQR = () => {
     if (pollRef.current) clearInterval(pollRef.current)
@@ -153,35 +137,6 @@ export default function WhatsAppConnectScreen({ navigation }) {
     }, 2000)
   }
 
-  const startPollingForCode = () => {
-    if (pollRef.current) clearInterval(pollRef.current)
-    let attempts = 0
-    pollRef.current = setInterval(async () => {
-      attempts++
-      if (attempts > 30) {
-        clearInterval(pollRef.current)
-        setWaitingCode(false)
-        Alert.alert('Timeout', 'Could not get pairing code. Please try again.')
-        return
-      }
-      try {
-        const resp = await fetch(`${BOT_URL}/api/whatsapp/pairing-code/${bizId}`)
-        const data = await resp.json()
-        if (data.code) {
-          setPairingCode(data.code)
-          setWaitingCode(false)
-          clearInterval(pollRef.current)
-          startPollingForConnection()
-        } else if (data.status === 'connected') {
-          clearInterval(pollRef.current)
-          setWaitingCode(false)
-          setPairingCode(null)
-          setConnected(true)
-          setBotConnected(true)
-        }
-      } catch (e) {}
-    }, 2000)
-  }
 
   const startPollingForConnection = () => {
     if (pollRef.current) clearInterval(pollRef.current)
@@ -266,71 +221,30 @@ export default function WhatsAppConnectScreen({ navigation }) {
         <ScrollView contentContainerStyle={s.scroll}>
           <View style={s.qrCard}>
             <Image source={{ uri: qrImage }} style={s.qrImage} resizeMode="contain" />
-            <Text style={s.qrTitle}>Link Your WhatsApp</Text>
-            <Text style={s.qrInstructions}>Follow these steps:</Text>
+            <Text style={s.qrTitle}>Scan with WhatsApp</Text>
+            <Text style={s.qrInstructions}>On your phone:</Text>
             <View style={s.qrSteps}>
-              <Text style={s.qrStep}>1. Take a screenshot of this QR code</Text>
-              <Text style={s.qrStep}>2. Open WhatsApp on this phone</Text>
-              <Text style={s.qrStep}>3. Go to Settings {'>'} Linked Devices</Text>
-              <Text style={s.qrStep}>4. Tap "Link a Device"</Text>
-              <Text style={s.qrStep}>5. Tap the gallery/photos icon at the bottom</Text>
-              <Text style={s.qrStep}>6. Select the screenshot you just took</Text>
+              <Text style={s.qrStep}>1. Open WhatsApp</Text>
+              <Text style={s.qrStep}>2. Go to Settings {'>'} Linked Devices</Text>
+              <Text style={s.qrStep}>3. Tap "Link a Device"</Text>
+              <Text style={s.qrStep}>4. Point your camera at this QR code</Text>
+            </View>
+            <View style={s.securityNoticeSmall}>
+              <MaterialCommunityIcons name="laptop" size={16} color="#60a5fa" />
+              <Text style={s.securityNoticeSmallText}>
+                Open this screen on a laptop or second device so you can scan the QR code with your phone's WhatsApp camera.
+              </Text>
             </View>
             <View style={s.waitingRow}>
               <ActivityIndicator size="small" color="#25D366" />
               <Text style={s.waitingText}>Waiting for you to scan...</Text>
             </View>
-            <Text style={s.qrNote}>QR code refreshes automatically. If it doesn't work, go back and try again.</Text>
           </View>
         </ScrollView>
       </View>
     )
   }
 
-  // Pairing code display screen
-  if (pairingCode) {
-    const formatted = pairingCode.length === 8
-      ? `${pairingCode.slice(0, 4)}-${pairingCode.slice(4)}`
-      : pairingCode
-    return (
-      <View style={s.container}>
-        <LinearGradient colors={['rgba(37,211,102,0.1)', 'rgba(37,211,102,0.03)', 'transparent']} style={s.headerGlow} />
-        <View style={s.header}>
-          <TouchableOpacity onPress={cancelLink} style={s.backBtn}>
-            <Ionicons name="arrow-back" size={20} color={colors.text} />
-          </TouchableOpacity>
-          <Text style={s.headerTitle}>Enter Code</Text>
-        </View>
-        <ScrollView contentContainerStyle={s.scroll}>
-          <View style={s.codeCard}>
-            <MaterialCommunityIcons name="whatsapp" size={48} color="#25D366" />
-            <Text style={s.codeTitle}>Your Pairing Code</Text>
-            <View style={s.codeBox}>
-              <Text style={s.codeText}>{formatted}</Text>
-            </View>
-            <Text style={s.codeInstructions}>Open WhatsApp on this phone:</Text>
-            <View style={s.codeSteps}>
-              <Text style={s.codeStep}>1. Go to Settings</Text>
-              <Text style={s.codeStep}>2. Tap Linked Devices</Text>
-              <Text style={s.codeStep}>3. Tap Link a Device</Text>
-              <Text style={s.codeStep}>4. Tap "Link with phone number instead"</Text>
-              <Text style={s.codeStep}>5. Enter the code above</Text>
-            </View>
-            <View style={s.securityNoticeSmall}>
-              <MaterialCommunityIcons name="shield-check" size={16} color="#60a5fa" />
-              <Text style={s.securityNoticeSmallText}>
-                You may see a location security notice - this is normal. It's our secure cloud server. Tap "Link Device" to continue.
-              </Text>
-            </View>
-            <View style={s.waitingRow}>
-              <ActivityIndicator size="small" color="#25D366" />
-              <Text style={s.waitingText}>Waiting for you to enter the code...</Text>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    )
-  }
 
   // Waiting for QR or code
   if (waitingQR || waitingCode) {
@@ -385,28 +299,17 @@ export default function WhatsAppConnectScreen({ navigation }) {
                   Your number is saved. Link your WhatsApp below to activate the AI chatbot.
                 </Text>
 
-                <Text style={s.methodTitle}>Choose how to link:</Text>
-
-                <TouchableOpacity activeOpacity={0.8} onPress={startPairingLink} style={{ alignSelf: 'stretch', marginBottom: 10 }}>
+                <TouchableOpacity activeOpacity={0.8} onPress={startQRLink} style={{ alignSelf: 'stretch', marginBottom: 14 }}>
                   <LinearGradient colors={['#25D366', '#128C7E']} style={s.connectBtn}>
-                    <MaterialCommunityIcons name="dialpad" size={20} color="#fff" />
-                    <Text style={s.connectBtnText}>Link with Pairing Code</Text>
+                    <MaterialCommunityIcons name="qrcode-scan" size={20} color="#fff" />
+                    <Text style={s.connectBtnText}>Link WhatsApp</Text>
                   </LinearGradient>
                 </TouchableOpacity>
-                <Text style={s.methodHint}>Recommended for phone users - get an 8-digit code to enter in WhatsApp</Text>
-
-                <TouchableOpacity activeOpacity={0.8} onPress={startQRLink} style={{ alignSelf: 'stretch', marginBottom: 10, marginTop: 12 }}>
-                  <View style={s.altBtn}>
-                    <MaterialCommunityIcons name="qrcode-scan" size={20} color="#25D366" />
-                    <Text style={s.altBtnText}>Link with QR Code</Text>
-                  </View>
-                </TouchableOpacity>
-                <Text style={s.methodHint}>Requires a second device (laptop/tablet) to scan the QR code</Text>
 
                 <View style={s.securityNotice}>
-                  <MaterialCommunityIcons name="shield-check" size={20} color="#60a5fa" />
+                  <MaterialCommunityIcons name="laptop" size={20} color="#60a5fa" />
                   <Text style={s.securityNoticeText}>
-                    During linking, WhatsApp may show a security notice about a device in another location. This is normal - it's our secure cloud server that powers your AI chatbot. Your messages remain encrypted and private. Simply tap "Link Device" to continue.
+                    For best experience, open Solis on a laptop, desktop, or a second device to scan the QR code with your WhatsApp camera.
                   </Text>
                 </View>
               </>
@@ -494,7 +397,7 @@ export default function WhatsAppConnectScreen({ navigation }) {
             <View style={s.stepNum}><Text style={s.stepNumText}>2</Text></View>
             <View style={s.stepContent}>
               <Text style={s.stepTitle}>Link your WhatsApp</Text>
-              <Text style={s.stepDesc}>Use QR code (screenshot and scan from gallery) or enter a pairing code</Text>
+              <Text style={s.stepDesc}>Open this app on a laptop or second device, then scan the QR code with your WhatsApp camera</Text>
             </View>
           </View>
 
@@ -537,22 +440,7 @@ const s = StyleSheet.create({
   qrInstructions: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 12, alignSelf: 'flex-start' },
   qrSteps: { alignSelf: 'stretch', marginBottom: 20 },
   qrStep: { fontSize: 14, color: colors.textSecondary, lineHeight: 28, paddingLeft: 8 },
-  qrNote: { fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 12, fontStyle: 'italic' },
 
-  // Pairing code screen
-  codeCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 28,
-    borderWidth: 1, borderColor: 'rgba(37,211,102,0.2)', alignItems: 'center', marginBottom: 28,
-  },
-  codeTitle: { fontSize: 20, fontWeight: '800', color: colors.text, marginTop: 12, marginBottom: 20 },
-  codeBox: {
-    backgroundColor: 'rgba(37,211,102,0.12)', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 32,
-    borderWidth: 2, borderColor: 'rgba(37,211,102,0.3)', marginBottom: 24,
-  },
-  codeText: { fontSize: 28, fontWeight: '800', color: '#25D366', letterSpacing: 4 },
-  codeInstructions: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 16, textAlign: 'center' },
-  codeSteps: { alignSelf: 'stretch', marginBottom: 24 },
-  codeStep: { fontSize: 14, color: colors.textSecondary, lineHeight: 28, paddingLeft: 8 },
 
   waitingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   waitingText: { fontSize: 13, color: '#25D366', fontWeight: '500' },
