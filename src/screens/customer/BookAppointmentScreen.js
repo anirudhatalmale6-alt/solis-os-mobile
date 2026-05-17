@@ -70,13 +70,12 @@ export default function BookAppointmentScreen({ navigation, route }) {
       customer_name: user?.full_name || 'Customer',
       customer_email: user?.email || '',
       customer_phone: '',
-      service_name: service.name,
+      service_id: service.id,
       date: selectedDate,
       time: selectedTime,
       duration: service.duration || 30,
-      price: service.price || 0,
       status: 'confirmed',
-      notes: '',
+      notes: `${service.name} - $${service.price || 0}`,
     }
     const { error } = await supabase.from('bookings').insert(booking)
     setLoading(false)
