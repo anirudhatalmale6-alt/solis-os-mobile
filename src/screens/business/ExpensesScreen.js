@@ -1,19 +1,20 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, TextInput, Modal } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
 const CATEGORIES = [
-  { key: 'rent', label: 'Rent', emoji: '🏠' },
-  { key: 'supplies', label: 'Supplies', emoji: '📦' },
-  { key: 'utilities', label: 'Utilities', emoji: '💡' },
-  { key: 'marketing', label: 'Marketing', emoji: '📢' },
-  { key: 'salary', label: 'Salaries', emoji: '💼' },
-  { key: 'equipment', label: 'Equipment', emoji: '🔧' },
-  { key: 'other', label: 'Other', emoji: '📋' },
+  { key: 'rent', label: 'Rent', icon: 'home-outline' },
+  { key: 'supplies', label: 'Supplies', icon: 'package-variant' },
+  { key: 'utilities', label: 'Utilities', icon: 'lightbulb-outline' },
+  { key: 'marketing', label: 'Marketing', icon: 'bullhorn-outline' },
+  { key: 'salary', label: 'Salaries', icon: 'briefcase-outline' },
+  { key: 'equipment', label: 'Equipment', icon: 'wrench-outline' },
+  { key: 'other', label: 'Other', icon: 'clipboard-outline' },
 ]
 
 export default function ExpensesScreen() {
@@ -127,7 +128,7 @@ export default function ExpensesScreen() {
               const pct = totalAll > 0 ? (amount / totalAll) * 100 : 0
               return (
                 <View key={cat} style={s.catRow}>
-                  <Text style={s.catEmoji}>{catInfo.emoji}</Text>
+                  <MaterialCommunityIcons name={catInfo.icon} size={16} color={colors.primary} />
                   <Text style={s.catName}>{catInfo.label}</Text>
                   <View style={s.catBarWrap}>
                     <View style={[s.catBar, { width: `${pct}%` }]} />
@@ -145,7 +146,7 @@ export default function ExpensesScreen() {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.empty}
           >
-            <Text style={s.emptyEmoji}>💸</Text>
+            <MaterialCommunityIcons name="cash-remove" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No expenses recorded</Text>
             <Text style={s.emptyDesc}>Tap + Add to track your first expense</Text>
           </LinearGradient>
@@ -163,7 +164,7 @@ export default function ExpensesScreen() {
                   colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']}
                   style={s.expIcon}
                 >
-                  <Text style={s.expEmoji}>{catInfo.emoji}</Text>
+                  <MaterialCommunityIcons name={catInfo.icon} size={18} color={colors.primary} />
                 </LinearGradient>
                 <View style={s.expInfo}>
                   <Text style={s.expDesc}>{exp.description}</Text>
@@ -212,7 +213,7 @@ export default function ExpensesScreen() {
                     form.category === cat.key && s.catChipActive,
                   ]}
                 >
-                  <Text style={s.catChipEmoji}>{cat.emoji}</Text>
+                  <MaterialCommunityIcons name={cat.icon} size={14} color={colors.textMuted} />
                   <Text style={[
                     s.catChipText,
                     form.category === cat.key && s.catChipTextActive,
@@ -267,7 +268,6 @@ const s = StyleSheet.create({
   },
   catTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 14 },
   catRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 8 },
-  catEmoji: { fontSize: 16 },
   catName: { fontSize: 13, color: colors.textSecondary, width: 70 },
   catBarWrap: {
     flex: 1, height: 6, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 3,
@@ -282,7 +282,6 @@ const s = StyleSheet.create({
     marginBottom: 8, gap: 12, ...shadows.card,
   },
   expIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  expEmoji: { fontSize: 18 },
   expInfo: { flex: 1 },
   expDesc: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
   expCat: { fontSize: 12, color: colors.textMuted },
@@ -291,7 +290,7 @@ const s = StyleSheet.create({
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
   modalOverlay: {
@@ -316,7 +315,6 @@ const s = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
   catChipActive: { borderColor: colors.borderGlow, backgroundColor: 'rgba(245,158,11,0.1)' },
-  catChipEmoji: { fontSize: 14 },
   catChipText: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
   catChipTextActive: { color: colors.primary },
   modalActions: { flexDirection: 'row', gap: 12 },

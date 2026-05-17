@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, TextInput, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -79,7 +80,7 @@ export default function CustomersScreen() {
           colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
           style={s.searchInner}
         >
-          <Text style={s.searchIcon}>🔍</Text>
+          <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
             placeholder="Search by name, email, phone..."
@@ -99,7 +100,7 @@ export default function CustomersScreen() {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.empty}
           >
-            <Text style={s.emptyEmoji}>👥</Text>
+            <MaterialCommunityIcons name="account-group-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>{search ? 'No results found' : 'No customers yet'}</Text>
             <Text style={s.emptyDesc}>{search ? 'Try a different search' : 'Customers who book will appear here'}</Text>
           </LinearGradient>
@@ -153,7 +154,6 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
     borderRadius: 16, paddingHorizontal: 14, gap: 10, ...shadows.card,
   },
-  searchIcon: { fontSize: 16 },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   customerRow: {
@@ -172,7 +172,7 @@ const s = StyleSheet.create({
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20, ...shadows.card,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

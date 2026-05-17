@@ -131,24 +131,29 @@ export default function SettingsScreen() {
         maxWidth: 512,
         maxHeight: 512,
         quality: 0.8,
+        includeBase64: true,
       })
       if (result.didCancel || !result.assets?.[0]) return
 
       setUploadingLogo(true)
       const asset = result.assets[0]
-      const ext = asset.fileName?.split('.').pop() || 'jpg'
-      const filePath = `${bizId}/logo.${ext}`
+      const ext = asset.fileName?.split('.').pop()?.toLowerCase() || 'jpg'
+      const filePath = `${bizId}/logo_${Date.now()}.${ext}`
+      const contentType = asset.type || 'image/jpeg'
 
-      const formData = new FormData()
-      formData.append('file', {
-        uri: asset.uri,
-        name: `logo.${ext}`,
-        type: asset.type || 'image/jpeg',
-      })
+      const base64Data = asset.base64
+      const binaryStr = atob(base64Data)
+      const bytes = new Uint8Array(binaryStr.length)
+      for (let i = 0; i < binaryStr.length; i++) {
+        bytes[i] = binaryStr.charCodeAt(i)
+      }
 
       const { error: uploadError } = await supabase.storage
         .from('logos')
-        .upload(filePath, formData, { upsert: true })
+        .upload(filePath, bytes.buffer, {
+          contentType,
+          upsert: true,
+        })
 
       if (uploadError) {
         Alert.alert('Upload Error', uploadError.message)
@@ -160,11 +165,16 @@ export default function SettingsScreen() {
         .from('logos')
         .getPublicUrl(filePath)
 
-      await supabase.from('businesses').update({ logo_url: publicUrl }).eq('id', bizId)
+      const { error: dbError } = await supabase.from('businesses').update({ logo_url: publicUrl }).eq('id', bizId)
+      if (dbError) {
+        Alert.alert('Save Error', 'Logo uploaded but failed to save to profile: ' + dbError.message)
+        setUploadingLogo(false)
+        return
+      }
       setLogoUrl(publicUrl)
       Alert.alert('Success', 'Logo uploaded successfully')
     } catch (e) {
-      Alert.alert('Error', 'Failed to upload logo')
+      Alert.alert('Error', e.message || 'Failed to upload logo')
     }
     setUploadingLogo(false)
   }

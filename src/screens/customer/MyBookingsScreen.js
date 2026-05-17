@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -64,7 +65,7 @@ export default function MyBookingsScreen() {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.emptyCard}
           >
-            <Text style={s.emptyEmoji}>📅</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No bookings yet</Text>
             <Text style={s.emptyDesc}>Browse businesses and book your first appointment</Text>
           </LinearGradient>
@@ -90,7 +91,7 @@ export default function MyBookingsScreen() {
                         </LinearGradient>
                       </View>
                       <View style={s.bookingDetails}>
-                        <Text style={s.bookingDate}>📅 {b.date} at {b.time}</Text>
+                        <Text style={s.bookingDate}>{b.date} at {b.time}</Text>
                         {b.price > 0 && <Text style={s.bookingPrice}>${b.price}</Text>}
                       </View>
                     </View>
@@ -119,7 +120,7 @@ export default function MyBookingsScreen() {
                           </Text>
                         </LinearGradient>
                       </View>
-                      <Text style={s.bookingDate}>📅 {b.date} at {b.time}</Text>
+                      <Text style={s.bookingDate}>{b.date} at {b.time}</Text>
                     </View>
                   )
                 })}
@@ -230,7 +231,7 @@ const s = StyleSheet.create({
     marginTop: 20,
     ...shadows.card,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 17, fontWeight: '600', color: colors.text, marginBottom: 6 },
   emptyDesc: { fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingHorizontal: 40 },
 })

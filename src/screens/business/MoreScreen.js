@@ -1,27 +1,28 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
 const MENU_ITEMS = [
-  { key: 'Services', emoji: '🛠', label: 'Services', nav: 'Services' },
-  { key: 'Schedule', emoji: '📅', label: 'Schedule', nav: 'Schedule' },
-  { key: 'Staff', emoji: '👤', label: 'Staff', nav: 'Staff' },
-  { key: 'Analytics', emoji: '📊', label: 'Analytics', nav: 'Analytics' },
-  { key: 'Invoices', emoji: '🧾', label: 'Invoices', nav: 'Invoices' },
-  { key: 'Expenses', emoji: '💸', label: 'Expenses', nav: 'Expenses' },
-  { key: 'Promotions', emoji: '🎁', label: 'Promotions', nav: 'Promotions' },
-  { key: 'Notifications', emoji: '🔔', label: 'Notifications', nav: 'Notifications' },
-  { key: 'BookingLink', emoji: '🔗', label: 'Booking Link', nav: 'BookingLink' },
-  { key: 'Settings', emoji: '⚙️', label: 'Settings', nav: 'Settings' },
+  { key: 'WhatsApp', icon: 'whatsapp', color: '#25D366', label: 'Connect WhatsApp', nav: 'WhatsAppConnect' },
+  { key: 'Services', icon: 'wrench', color: '#60a5fa', label: 'Services', nav: 'Services' },
+  { key: 'Schedule', icon: 'calendar-clock', color: '#f59e0b', label: 'Schedule', nav: 'Schedule' },
+  { key: 'Staff', icon: 'account-group', color: '#a78bfa', label: 'Staff', nav: 'Staff' },
+  { key: 'Analytics', icon: 'chart-line', color: '#2dd4bf', label: 'Analytics', nav: 'Analytics' },
+  { key: 'Invoices', icon: 'file-document-outline', color: '#f59e0b', label: 'Invoices', nav: 'Invoices' },
+  { key: 'Expenses', icon: 'cash-minus', color: '#f43f5e', label: 'Expenses', nav: 'Expenses' },
+  { key: 'Promotions', icon: 'gift-outline', color: '#f97316', label: 'Promotions', nav: 'Promotions' },
+  { key: 'Loyalty', icon: 'star-outline', color: '#eab308', label: 'Loyalty & Rewards', nav: 'Loyalty' },
+  { key: 'Waitlist', icon: 'timer-sand', color: '#60a5fa', label: 'Digital Waitlist', nav: 'Waitlist' },
+  { key: 'Notifications', icon: 'bell-outline', color: '#a78bfa', label: 'Notifications', nav: 'Notifications' },
+  { key: 'BookingLink', icon: 'link-variant', color: '#2dd4bf', label: 'Booking Link', nav: 'BookingLink' },
+  { key: 'Settings', icon: 'cog-outline', color: '#8a8f9e', label: 'Settings', nav: 'Settings' },
 ]
 
-const COMING_SOON = [
-  { key: 'loyalty', emoji: '⭐', label: 'Loyalty & Rewards' },
-  { key: 'waitlist', emoji: '⏳', label: 'Digital Waitlist' },
-]
+const COMING_SOON = []
 
 export default function MoreScreen() {
   const { signOut } = useAuth()
@@ -60,7 +61,7 @@ export default function MoreScreen() {
               onPress={() => navigation.navigate(item.nav)}
             >
               <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
-                <Text style={s.menuEmoji}>{item.emoji}</Text>
+                <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
               </LinearGradient>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
@@ -78,7 +79,7 @@ export default function MoreScreen() {
                 onPress={() => Alert.alert(item.label, 'Coming soon!')}
               >
                 <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
-                  <Text style={s.menuEmoji}>{item.emoji}</Text>
+                  <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
                 </LinearGradient>
                 <Text style={s.menuLabel}>{item.label}</Text>
                 <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={s.soonBadge}>
@@ -141,7 +142,6 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
-  menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
   soonBadge: {

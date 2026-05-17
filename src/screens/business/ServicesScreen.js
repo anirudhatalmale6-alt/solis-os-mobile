@@ -14,6 +14,7 @@ import {
   Platform,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -221,7 +222,7 @@ export default function ServicesScreen() {
       >
         {services.length === 0 ? (
           <View style={s.empty}>
-            <Text style={s.emptyEmoji}>✂️</Text>
+            <MaterialCommunityIcons name="content-cut" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No services yet</Text>
             <Text style={s.emptyDesc}>Tap "Add Service" to create your first offering</Text>
           </View>
@@ -241,7 +242,7 @@ export default function ServicesScreen() {
               <View style={s.cardBottom}>
                 <View style={s.badgeRow}>
                   <View style={s.durationBadge}>
-                    <Text style={s.durationIcon}>🕐</Text>
+                    <MaterialCommunityIcons name="clock-outline" size={12} color={colors.textMuted} />
                     <Text style={s.durationText}>{formatDuration(service.duration)}</Text>
                   </View>
                   <TouchableOpacity
@@ -419,7 +420,7 @@ const s = StyleSheet.create({
     borderRadius: 8,
     gap: 5,
   },
-  durationIcon: { fontSize: 12 },
+  durationIcon: { },
   durationText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
   statusBadge: {
     flexDirection: 'row',
@@ -450,7 +451,7 @@ const s = StyleSheet.create({
     marginTop: 20,
     ...shadows.card,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingHorizontal: 40 },
 

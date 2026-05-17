@@ -1,13 +1,15 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
 const MENU_ITEMS = [
-  { key: 'notifications', emoji: '🔔', label: 'Notifications', nav: null },
-  { key: 'help', emoji: '💡', label: 'Help & Support', nav: null },
-  { key: 'about', emoji: '✨', label: 'About Solis OS', nav: null },
+  { key: 'notifications', icon: 'bell-outline', label: 'Notifications', nav: null },
+  { key: 'help', icon: 'lightbulb-outline', label: 'Help & Support', nav: null },
+  { key: 'about', icon: 'information-outline', label: 'About Solis OS', nav: null },
 ]
 
 export default function ProfileScreen({ navigation }) {
@@ -47,7 +49,7 @@ export default function ProfileScreen({ navigation }) {
         <ScrollView contentContainerStyle={s.scroll}>
           <View style={s.profileSection}>
             <View style={s.avatarGuest}>
-              <Text style={s.avatarGuestText}>👤</Text>
+              <Ionicons name="person-outline" size={36} color={colors.textMuted} />
             </View>
             <Text style={s.userName}>Guest</Text>
             <Text style={s.userEmail}>Sign in to manage your bookings</Text>
@@ -79,7 +81,7 @@ export default function ProfileScreen({ navigation }) {
                 onPress={() => handleMenuPress(item)}
               >
                 <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
-                  <Text style={s.menuEmoji}>{item.emoji}</Text>
+                  <MaterialCommunityIcons name={item.icon} size={18} color={colors.textMuted} />
                 </LinearGradient>
                 <Text style={s.menuLabel}>{item.label}</Text>
                 <Text style={s.chevron}>›</Text>
@@ -135,7 +137,7 @@ export default function ProfileScreen({ navigation }) {
               onPress={() => handleMenuPress(item)}
             >
               <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
-                <Text style={s.menuEmoji}>{item.emoji}</Text>
+                <MaterialCommunityIcons name={item.icon} size={18} color={colors.textMuted} />
               </LinearGradient>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
@@ -203,7 +205,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 14,
   },
-  avatarGuestText: { fontSize: 36 },
+  avatarGuestText: { },
   userName: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
   userEmail: { fontSize: 14, color: colors.textMuted },
   memberCard: {
@@ -260,7 +262,6 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
-  menuEmoji: { fontSize: 18 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
   signOutBtn: {

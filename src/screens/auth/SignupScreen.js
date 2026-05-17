@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -48,13 +50,13 @@ export default function SignupScreen({ navigation, route }) {
           {role === 'business' ? (
             <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={[s.roleTag, { borderColor: colors.borderGlow }]}>
               <Text style={[s.roleTagText, { color: colors.primary }]}>
-                🏢 Business
+                Business
               </Text>
             </LinearGradient>
           ) : (
             <View style={[s.roleTag, { backgroundColor: colors.blueLight, borderColor: 'rgba(59, 130, 246, 0.2)' }]}>
               <Text style={[s.roleTagText, { color: colors.blue }]}>
-                👤 Customer
+                Customer
               </Text>
             </View>
           )}

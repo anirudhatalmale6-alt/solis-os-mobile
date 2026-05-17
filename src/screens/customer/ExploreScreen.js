@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, RefreshControl } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
 const CATEGORIES = [
-  { key: 'salon', label: 'Salons', emoji: '💇', gradient: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)'] },
-  { key: 'barber', label: 'Barbers', emoji: '💈', gradient: ['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.05)'] },
-  { key: 'clinic', label: 'Clinics', emoji: '🏥', gradient: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.05)'] },
-  { key: 'garage', label: 'Garages', emoji: '🔧', gradient: ['rgba(168,85,247,0.15)', 'rgba(168,85,247,0.05)'] },
-  { key: 'lessons', label: 'Lessons', emoji: '🎓', gradient: ['rgba(20,184,166,0.15)', 'rgba(20,184,166,0.05)'] },
-  { key: 'other', label: 'Other', emoji: '🏢', gradient: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)'] },
+  { key: 'salon', label: 'Salons', icon: 'content-cut', gradient: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)'] },
+  { key: 'barber', label: 'Barbers', icon: 'razor-double-edge', gradient: ['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.05)'] },
+  { key: 'clinic', label: 'Clinics', icon: 'hospital-box-outline', gradient: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.05)'] },
+  { key: 'garage', label: 'Garages', icon: 'wrench', gradient: ['rgba(168,85,247,0.15)', 'rgba(168,85,247,0.05)'] },
+  { key: 'lessons', label: 'Lessons', icon: 'school-outline', gradient: ['rgba(20,184,166,0.15)', 'rgba(20,184,166,0.05)'] },
+  { key: 'other', label: 'Other', icon: 'office-building-outline', gradient: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)'] },
 ]
 
 const STOCK_IMAGES = {
@@ -71,7 +72,7 @@ export default function ExploreScreen({ navigation }) {
           colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
           style={s.searchInner}
         >
-          <Text style={s.searchIcon}>🔍</Text>
+          <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
             placeholder="Search by name, category, city..."
@@ -98,7 +99,7 @@ export default function ExploreScreen({ navigation }) {
                 colors={cat.gradient}
                 style={s.catCard}
               >
-                <Text style={s.catEmoji}>{cat.emoji}</Text>
+                <MaterialCommunityIcons name={cat.icon} size={24} color={colors.text} />
                 <Text style={s.catLabel}>{cat.label}</Text>
                 <Text style={s.catCount}>{categoryCounts[cat.key] || 0}</Text>
               </LinearGradient>
@@ -120,7 +121,7 @@ export default function ExploreScreen({ navigation }) {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.empty}
           >
-            <Text style={s.emptyEmoji}>🔍</Text>
+            <MaterialCommunityIcons name="magnify" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No businesses found</Text>
             <Text style={s.emptyDesc}>Try a different search term</Text>
           </LinearGradient>
@@ -144,12 +145,12 @@ export default function ExploreScreen({ navigation }) {
                 style={s.bizOverlay}
               />
               <View style={s.bizRating}>
-                <Text style={s.bizRatingText}>⭐ 4.{Math.floor(Math.random() * 3) + 7}</Text>
+                <Text style={s.bizRatingText}>★ 4.{Math.floor(Math.random() * 3) + 7}</Text>
               </View>
               <View style={s.bizInfo}>
                 <Text style={s.bizName}>{biz.name}</Text>
                 <Text style={s.bizMeta}>
-                  📍 {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
+                  {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -180,7 +181,6 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
     borderRadius: 16, paddingHorizontal: 14, gap: 10, ...shadows.card,
   },
-  searchIcon: { fontSize: 16 },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 14 },
@@ -198,7 +198,6 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center', gap: 6,
   },
-  catEmoji: { fontSize: 24 },
   catLabel: { fontSize: 12, fontWeight: '600', color: colors.text },
   catCount: { fontSize: 11, color: colors.textMuted },
   bizCard: {
@@ -220,7 +219,7 @@ const s = StyleSheet.create({
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

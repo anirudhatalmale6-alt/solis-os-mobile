@@ -1,18 +1,19 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 
 const NOTIF_TYPES = {
-  booking: { emoji: '📅', color: colors.blue, gradient: ['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.05)'] },
-  payment: { emoji: '💰', color: colors.green, gradient: ['rgba(34,197,94,0.2)', 'rgba(34,197,94,0.05)'] },
-  cancellation: { emoji: '❌', color: colors.red, gradient: ['rgba(239,68,68,0.2)', 'rgba(239,68,68,0.05)'] },
-  reminder: { emoji: '🔔', color: colors.primary, gradient: ['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.05)'] },
-  customer: { emoji: '👤', color: colors.purple, gradient: ['rgba(168,85,247,0.2)', 'rgba(168,85,247,0.05)'] },
-  system: { emoji: '⚙️', color: colors.teal, gradient: ['rgba(20,184,166,0.2)', 'rgba(20,184,166,0.05)'] },
+  booking: { icon: 'calendar-check', color: colors.blue, gradient: ['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.05)'] },
+  payment: { icon: 'cash-check', color: colors.green, gradient: ['rgba(34,197,94,0.2)', 'rgba(34,197,94,0.05)'] },
+  cancellation: { icon: 'calendar-remove', color: colors.red, gradient: ['rgba(239,68,68,0.2)', 'rgba(239,68,68,0.05)'] },
+  reminder: { icon: 'bell-outline', color: colors.primary, gradient: ['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.05)'] },
+  customer: { icon: 'account-outline', color: colors.purple, gradient: ['rgba(168,85,247,0.2)', 'rgba(168,85,247,0.05)'] },
+  system: { icon: 'cog-outline', color: colors.teal, gradient: ['rgba(20,184,166,0.2)', 'rgba(20,184,166,0.05)'] },
 }
 
 export default function NotificationsScreen() {
@@ -154,7 +155,7 @@ export default function NotificationsScreen() {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.empty}
           >
-            <Text style={s.emptyEmoji}>🔔</Text>
+            <MaterialCommunityIcons name="bell-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No notifications yet</Text>
             <Text style={s.emptyDesc}>Activity from bookings will appear here</Text>
           </LinearGradient>
@@ -165,7 +166,7 @@ export default function NotificationsScreen() {
               <View key={notif.id} style={[s.notifCard, !notif.read && s.notifUnread]}>
                 {!notif.read && <View style={[s.unreadDot, { backgroundColor: typeConfig.color }]} />}
                 <LinearGradient colors={typeConfig.gradient} style={s.notifIcon}>
-                  <Text style={s.notifEmoji}>{typeConfig.emoji}</Text>
+                  <MaterialCommunityIcons name={typeConfig.icon} size={20} color={typeConfig.color} />
                 </LinearGradient>
                 <View style={s.notifContent}>
                   <Text style={s.notifTitle}>{notif.title}</Text>
@@ -230,7 +231,6 @@ const s = StyleSheet.create({
     width: 44, height: 44, borderRadius: 14,
     alignItems: 'center', justifyContent: 'center',
   },
-  notifEmoji: { fontSize: 20 },
   notifContent: { flex: 1 },
   notifTitle: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 3 },
   notifMsg: { fontSize: 13, color: colors.textSecondary, lineHeight: 18, marginBottom: 4 },
@@ -239,7 +239,7 @@ const s = StyleSheet.create({
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

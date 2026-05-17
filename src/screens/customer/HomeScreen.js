@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, RefreshControl } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
 const CATEGORIES = [
-  { key: 'salon', emoji: '💇', label: 'Salon' },
-  { key: 'clinic', emoji: '🏥', label: 'Clinic' },
-  { key: 'barber', emoji: '💈', label: 'Barber' },
-  { key: 'garage', emoji: '🔧', label: 'Garage' },
-  { key: 'lessons', emoji: '🎓', label: 'Lessons' },
-  { key: 'other', emoji: '🏢', label: 'Other' },
+  { key: 'salon', icon: 'content-cut', label: 'Salon' },
+  { key: 'clinic', icon: 'hospital-box-outline', label: 'Clinic' },
+  { key: 'barber', icon: 'razor-double-edge', label: 'Barber' },
+  { key: 'garage', icon: 'wrench', label: 'Garage' },
+  { key: 'lessons', icon: 'school-outline', label: 'Lessons' },
+  { key: 'other', icon: 'office-building-outline', label: 'Other' },
 ]
 
 const STOCK_IMAGES = {
@@ -68,7 +69,7 @@ export default function HomeScreen({ navigation }) {
           colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
           style={s.searchInner}
         >
-          <Text style={s.searchIcon}>🔍</Text>
+          <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
             placeholder="Search businesses, services..."
@@ -100,12 +101,12 @@ export default function HomeScreen({ navigation }) {
           >
             {selectedCat === cat.key ? (
               <LinearGradient colors={['#f59e0b', '#f97316']} style={s.catChipGradient}>
-                <Text style={s.catEmoji}>{cat.emoji}</Text>
+                <MaterialCommunityIcons name={cat.icon} size={14} color="#000" />
                 <Text style={s.catChipTextActive}>{cat.label}</Text>
               </LinearGradient>
             ) : (
               <>
-                <Text style={s.catEmoji}>{cat.emoji}</Text>
+                <MaterialCommunityIcons name={cat.icon} size={14} color={colors.textSecondary} />
                 <Text style={s.catChipText}>{cat.label}</Text>
               </>
             )}
@@ -130,7 +131,7 @@ export default function HomeScreen({ navigation }) {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.empty}
           >
-            <Text style={s.emptyEmoji}>🔍</Text>
+            <MaterialCommunityIcons name="magnify" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No businesses found</Text>
             <Text style={s.emptyDesc}>Try a different search or category</Text>
           </LinearGradient>
@@ -151,12 +152,12 @@ export default function HomeScreen({ navigation }) {
                 style={s.bizImageOverlay}
               />
               <View style={s.bizRating}>
-                <Text style={s.bizRatingText}>⭐ 4.{Math.floor(Math.random() * 3) + 7}</Text>
+                <Text style={s.bizRatingText}>★ 4.{Math.floor(Math.random() * 3) + 7}</Text>
               </View>
               <View style={s.bizInfo}>
                 <Text style={s.bizName}>{biz.name}</Text>
                 <Text style={s.bizMeta}>
-                  📍 {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
+                  {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -208,7 +209,6 @@ const s = StyleSheet.create({
     gap: 10,
     ...shadows.card,
   },
-  searchIcon: { fontSize: 16 },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   catsScroll: { marginTop: 16, maxHeight: 50 },
   catsContainer: { paddingHorizontal: 20, gap: 8 },
@@ -237,7 +237,6 @@ const s = StyleSheet.create({
     gap: 6,
     borderRadius: 24,
   },
-  catEmoji: { fontSize: 14 },
   catChipText: { fontSize: 13, fontWeight: '600', color: colors.textSecondary },
   catChipTextActive: { fontSize: 13, fontWeight: '700', color: '#000' },
   list: { flex: 1, marginTop: 16 },
@@ -292,7 +291,7 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -57,10 +58,10 @@ export default function DashboardScreen() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
 
   const STAT_CARDS = [
-    { icon: '📅', value: stats.todayBookings, label: "Today's Bookings", gradient: ['#f59e0b', '#f97316'] },
-    { icon: '💰', value: `$${stats.todayRevenue}`, label: "Today's Revenue", gradient: ['#22c55e', '#10b981'] },
-    { icon: '👥', value: stats.totalCustomers, label: 'Total Customers', gradient: ['#3b82f6', '#6366f1'] },
-    { icon: '⭐', value: stats.rating, label: 'Rating', gradient: ['#a855f7', '#ec4899'] },
+    { icon: 'calendar-check', value: stats.todayBookings, label: "Today's Bookings", gradient: ['#f59e0b', '#f97316'] },
+    { icon: 'cash', value: `$${stats.todayRevenue}`, label: "Today's Revenue", gradient: ['#22c55e', '#10b981'] },
+    { icon: 'account-group', value: stats.totalCustomers, label: 'Total Customers', gradient: ['#3b82f6', '#6366f1'] },
+    { icon: 'star-outline', value: stats.rating, label: 'Rating', gradient: ['#a855f7', '#ec4899'] },
   ]
 
   const AVATAR_COLORS = [
@@ -115,7 +116,7 @@ export default function DashboardScreen() {
               />
               <View style={s.statContent}>
                 <View style={s.statHeader}>
-                  <Text style={s.statEmoji}>{st.icon}</Text>
+                  <MaterialCommunityIcons name={st.icon} size={18} color={colors.text} />
                   <Text style={s.statLabel}>{st.label}</Text>
                 </View>
                 <Text style={s.statVal}>{st.value}</Text>
@@ -136,7 +137,7 @@ export default function DashboardScreen() {
             colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
             style={s.emptyUpcoming}
           >
-            <Text style={s.emptyEmoji}>📅</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={40} color={colors.textMuted} />
             <Text style={s.emptyText}>No upcoming bookings</Text>
             <Text style={s.emptyDesc}>Bookings will show up here</Text>
           </LinearGradient>
@@ -263,7 +264,6 @@ const s = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  statEmoji: { fontSize: 18 },
   statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
   statVal: { fontSize: 28, fontWeight: '800', color: colors.text },
   sectionRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 10 },
@@ -323,7 +323,7 @@ const s = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
     ...shadows.card,
   },
-  emptyEmoji: { fontSize: 40, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyText: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

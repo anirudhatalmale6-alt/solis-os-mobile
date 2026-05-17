@@ -14,6 +14,7 @@ import {
   Platform,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -201,7 +202,7 @@ export default function StaffScreen() {
 
       {/* Search */}
       <View style={s.searchWrap}>
-        <Text style={s.searchIcon}>🔍</Text>
+        <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
         <TextInput
           style={s.searchInput}
           placeholder="Search by name, role, email..."
@@ -222,7 +223,7 @@ export default function StaffScreen() {
           </View>
         ) : filtered.length === 0 ? (
           <View style={s.empty}>
-            <Text style={s.emptyEmoji}>👥</Text>
+            <MaterialCommunityIcons name="account-group-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>{search ? 'No results found' : 'No staff members yet'}</Text>
             <Text style={s.emptyDesc}>
               {search ? 'Try a different search' : 'Add your team members to get started'}
@@ -396,7 +397,6 @@ const s = StyleSheet.create({
     gap: 10,
     ...shadows.card,
   },
-  searchIcon: { fontSize: 16 },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: '#f0f0f5' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   loadingWrap: { paddingVertical: 60, alignItems: 'center' },
@@ -439,7 +439,7 @@ const s = StyleSheet.create({
     marginTop: 20,
     ...shadows.card,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: '#f0f0f5', marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: '#555566' },
   // Modal styles

@@ -15,6 +15,7 @@ import {
   Clipboard,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -322,7 +323,7 @@ export default function PromotionsScreen() {
         {/* Promotions List */}
         {promotions.length === 0 ? (
           <View style={s.empty}>
-            <Text style={s.emptyEmoji}>🏷️</Text>
+            <MaterialCommunityIcons name="tag-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No promotions yet</Text>
             <Text style={s.emptyDesc}>Create your first discount code to attract customers</Text>
           </View>
@@ -343,7 +344,7 @@ export default function PromotionsScreen() {
                       activeOpacity={0.7}
                     >
                       <Text style={s.codeText}>{promo.code}</Text>
-                      <Text style={s.copyIcon}>📋</Text>
+                      <MaterialCommunityIcons name="content-copy" size={12} color={colors.primary} />
                     </TouchableOpacity>
                     <View style={[s.statusBadge, { backgroundColor: statusBg }]}>
                       <View style={[s.statusDot, { backgroundColor: statusColor }]} />
@@ -363,13 +364,13 @@ export default function PromotionsScreen() {
                 {/* Card details */}
                 <View style={s.cardDetails}>
                   <View style={s.detailItem}>
-                    <Text style={s.detailIcon}>📊</Text>
+                    <MaterialCommunityIcons name="chart-bar" size={12} color={colors.textSecondary} />
                     <Text style={s.detailText}>
                       {promo.used_count || 0}{promo.max_uses ? ` / ${promo.max_uses}` : ''} uses
                     </Text>
                   </View>
                   <View style={s.detailItem}>
-                    <Text style={s.detailIcon}>📅</Text>
+                    <MaterialCommunityIcons name="calendar-outline" size={12} color={colors.textSecondary} />
                     <Text style={s.detailText}>{formatDate(promo.expires_at)}</Text>
                   </View>
                 </View>
@@ -654,7 +655,6 @@ const s = StyleSheet.create({
     color: colors.primary,
     letterSpacing: 1,
   },
-  copyIcon: { fontSize: 12 },
   discountValue: {
     fontSize: 22,
     fontWeight: '800',
@@ -690,7 +690,6 @@ const s = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  detailIcon: { fontSize: 12 },
   detailText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
   cardActions: {
     flexDirection: 'row',
@@ -728,7 +727,7 @@ const s = StyleSheet.create({
     marginTop: 20,
     ...shadows.card,
   },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingHorizontal: 40 },
 

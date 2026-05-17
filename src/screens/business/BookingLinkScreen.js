@@ -8,8 +8,10 @@ import {
   Share,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -121,7 +123,7 @@ export default function BookingLinkScreen() {
             onPress={handleCopyLink}
             activeOpacity={0.7}
           >
-            <Text style={styles.copyButtonIcon}>📋</Text>
+            <MaterialCommunityIcons name="content-copy" size={18} color={colors.primary} />
             <Text style={styles.copyButtonText}>
               {copied ? 'Copied!' : 'Copy Link'}
             </Text>
@@ -133,7 +135,7 @@ export default function BookingLinkScreen() {
             activeOpacity={0.7}
           >
             <LinearGradient colors={['#f59e0b', '#f97316']} style={styles.shareButtonGradient}>
-              <Text style={styles.shareButtonIcon}>📤</Text>
+              <MaterialCommunityIcons name="share-variant" size={18} color={colors.textDark} />
               <Text style={styles.shareButtonText}>Share Link</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -146,42 +148,52 @@ export default function BookingLinkScreen() {
             Customers can book appointments directly from this link. They will see your available services, staff members, and open time slots.
           </Text>
           <View style={styles.previewBox}>
-            <Text style={styles.previewIcon}>📅</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.primary} />
             <Text style={styles.previewText}>
               Your public booking page — no app download required
             </Text>
           </View>
         </View>
 
-        {/* QR Info Section */}
+        {/* QR Code Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>QR Code</Text>
-          <View style={styles.qrPlaceholder}>
-            <Text style={styles.qrIcon}>⬜</Text>
-            <Text style={styles.qrText}>
-              Generate a QR code for your booking link to display in-store or on printed materials.
-            </Text>
-          </View>
-          <Text style={styles.qrHint}>Coming soon</Text>
+          <Text style={styles.cardDescription}>
+            Print this QR code and display it in-store. Customers scan it to book instantly.
+          </Text>
+          {bookingUrl ? (
+            <View style={styles.qrImageWrap}>
+              <Image
+                source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(bookingUrl)}` }}
+                style={styles.qrImage}
+                resizeMode="contain"
+              />
+            </View>
+          ) : (
+            <View style={styles.qrPlaceholder}>
+              <MaterialCommunityIcons name="qrcode" size={32} color={colors.textMuted} />
+              <Text style={styles.qrText}>QR code will appear once your business is set up.</Text>
+            </View>
+          )}
         </View>
 
         {/* Tips Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Tips for sharing</Text>
           <View style={styles.tipRow}>
-            <Text style={styles.tipIcon}>📱</Text>
+            <MaterialCommunityIcons name="cellphone" size={18} color={colors.textSecondary} />
             <Text style={styles.tipText}>Share on social media profiles and posts</Text>
           </View>
           <View style={styles.tipRow}>
-            <Text style={styles.tipIcon}>🌐</Text>
+            <MaterialCommunityIcons name="web" size={18} color={colors.textSecondary} />
             <Text style={styles.tipText}>Add to your website as a "Book Now" button</Text>
           </View>
           <View style={styles.tipRow}>
-            <Text style={styles.tipIcon}>💬</Text>
+            <MaterialCommunityIcons name="message-text-outline" size={18} color={colors.textSecondary} />
             <Text style={styles.tipText}>Send via WhatsApp to your customers</Text>
           </View>
           <View style={styles.tipRow}>
-            <Text style={styles.tipIcon}>✉️</Text>
+            <MaterialCommunityIcons name="email-outline" size={18} color={colors.textSecondary} />
             <Text style={styles.tipText}>Include in your email signature</Text>
           </View>
         </View>
@@ -301,7 +313,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderGlow,
   },
   copyButtonIcon: {
-    fontSize: 16,
   },
   copyButtonText: {
     fontSize: 15,
@@ -321,7 +332,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   shareButtonIcon: {
-    fontSize: 16,
   },
   shareButtonText: {
     fontSize: 15,
@@ -362,7 +372,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   previewIcon: {
-    fontSize: 20,
   },
   previewText: {
     flex: 1,
@@ -373,6 +382,17 @@ const styles = StyleSheet.create({
   },
 
   // QR
+  qrImageWrap: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 8,
+  },
+  qrImage: {
+    width: 200,
+    height: 200,
+  },
   qrPlaceholder: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -380,7 +400,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   qrIcon: {
-    fontSize: 32,
     opacity: 0.4,
   },
   qrText: {
@@ -388,11 +407,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 20,
-  },
-  qrHint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    fontStyle: 'italic',
   },
 
   // Tips
@@ -405,7 +419,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   tipIcon: {
-    fontSize: 18,
   },
   tipText: {
     flex: 1,

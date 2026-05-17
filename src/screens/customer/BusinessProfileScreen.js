@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
@@ -46,12 +47,12 @@ export default function BusinessProfileScreen({ navigation, route }) {
 
           <View style={[s.statsRow, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
             <View style={s.stat}>
-              <Text style={s.statVal}>⭐ 4.9</Text>
+              <Text style={s.statVal}>★ 4.9</Text>
               <Text style={s.statLabel}>(128)</Text>
             </View>
             <View style={s.statDivider} />
             <View style={s.stat}>
-              <Text style={s.statVal}>📍 0.3</Text>
+              <Text style={s.statVal}>0.3</Text>
               <Text style={s.statLabel}>mi</Text>
             </View>
             <View style={s.statDivider} />
@@ -100,12 +101,12 @@ export default function BusinessProfileScreen({ navigation, route }) {
             <Text style={s.detailsTitle}>Location</Text>
             <View style={[s.detailCard, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
               <View style={s.detailRow}>
-                <Text style={s.detailIcon}>📍</Text>
+                <MaterialCommunityIcons name="map-marker-outline" size={16} color={colors.textMuted} />
                 <Text style={s.detailText}>{business.address}</Text>
               </View>
               {business.phone && (
                 <View style={[s.detailRow, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 12, marginTop: 4 }]}>
-                  <Text style={s.detailIcon}>📞</Text>
+                  <MaterialCommunityIcons name="phone-outline" size={16} color={colors.textMuted} />
                   <Text style={s.detailText}>{business.phone}</Text>
                 </View>
               )}

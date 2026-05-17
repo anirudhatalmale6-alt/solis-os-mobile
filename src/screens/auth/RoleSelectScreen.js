@@ -1,6 +1,8 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -39,7 +41,7 @@ export default function RoleSelectScreen({ navigation }) {
           >
             <View style={s.cardGlow} />
             <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleIcon}>
-              <Text style={s.roleEmoji}>🏢</Text>
+              <MaterialCommunityIcons name="office-building-outline" size={28} color={colors.primary} />
             </LinearGradient>
             <Text style={s.roleTitle}>I'm a Business</Text>
             <Text style={s.roleDesc}>
@@ -57,7 +59,7 @@ export default function RoleSelectScreen({ navigation }) {
         >
           <View style={s.roleCard}>
             <LinearGradient colors={['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.08)']} style={s.roleIcon}>
-              <Text style={s.roleEmoji}>👤</Text>
+              <Ionicons name="person-outline" size={28} color={colors.blue} />
             </LinearGradient>
             <Text style={s.roleTitle}>I'm a Customer</Text>
             <Text style={s.roleDesc}>
@@ -181,7 +183,6 @@ const s = StyleSheet.create({
     marginBottom: 14,
   },
   roleEmoji: {
-    fontSize: 24,
   },
   roleTitle: {
     fontSize: 19,

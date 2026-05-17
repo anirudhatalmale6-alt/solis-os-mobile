@@ -3,6 +3,7 @@ import { Text, View, ActivityIndicator, StyleSheet } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import { useAuth } from '../lib/AuthContext'
 import { colors } from '../theme/colors'
@@ -35,6 +36,9 @@ import InvoicesScreen from '../screens/business/InvoicesScreen'
 import ExpensesScreen from '../screens/business/ExpensesScreen'
 import PromotionsScreen from '../screens/business/PromotionsScreen'
 import NotificationsScreen from '../screens/business/NotificationsScreen'
+import WhatsAppConnectScreen from '../screens/business/WhatsAppConnectScreen'
+import LoyaltyScreen from '../screens/business/LoyaltyScreen'
+import WaitlistScreen from '../screens/business/WaitlistScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -71,7 +75,7 @@ function CustomerTabs() {
         component={CustomerHomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>🏠</Text>
+            <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -80,7 +84,7 @@ function CustomerTabs() {
         component={ExploreScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>🔍</Text>
+            <Ionicons name={focused ? "compass" : "compass-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -89,7 +93,7 @@ function CustomerTabs() {
         component={MyBookingsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>📅</Text>
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -98,7 +102,7 @@ function CustomerTabs() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>👤</Text>
+            <Ionicons name={focused ? "person" : "person-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -121,6 +125,9 @@ function BusinessMoreStack() {
       <MoreStack.Screen name="Expenses" component={ExpensesScreen} />
       <MoreStack.Screen name="Promotions" component={PromotionsScreen} />
       <MoreStack.Screen name="Notifications" component={NotificationsScreen} />
+      <MoreStack.Screen name="WhatsAppConnect" component={WhatsAppConnectScreen} />
+      <MoreStack.Screen name="Loyalty" component={LoyaltyScreen} />
+      <MoreStack.Screen name="Waitlist" component={WaitlistScreen} />
     </MoreStack.Navigator>
   )
 }
@@ -142,7 +149,7 @@ function BusinessTabs() {
         component={DashboardScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>📊</Text>
+            <Ionicons name={focused ? "stats-chart" : "stats-chart-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -151,7 +158,7 @@ function BusinessTabs() {
         component={BookingsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>📅</Text>
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -160,7 +167,7 @@ function BusinessTabs() {
         component={CustomersScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>👥</Text>
+            <Ionicons name={focused ? "people" : "people-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -169,7 +176,7 @@ function BusinessTabs() {
         component={BusinessMoreStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>☰</Text>
+            <Ionicons name={focused ? "menu" : "menu-outline"} size={22} color={focused ? colors.primary : '#555'} />
           ),
         }}
       />
@@ -239,12 +246,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     marginTop: 2,
-  },
-  tabIcon: {
-    fontSize: 20,
-    opacity: 0.5,
-  },
-  tabIconActive: {
-    opacity: 1,
   },
 })
