@@ -26,9 +26,16 @@ export default function DashboardScreen() {
     setBusiness(biz)
 
     try {
-      const waResp = await fetch(`${BOT_URL}/api/whatsapp/status/${biz.id}`)
-      const waData = await waResp.json()
-      setWhatsappStatus(waData.status)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 8000)
+      const waResp = await fetch(`${BOT_URL}/api/whatsapp/status/${biz.id}`, { signal: controller.signal })
+      clearTimeout(timeout)
+      if (waResp.ok) {
+        const waData = await waResp.json()
+        setWhatsappStatus(waData.status)
+      } else {
+        setWhatsappStatus(null)
+      }
     } catch { setWhatsappStatus(null) }
 
     const today = new Date().toISOString().split('T')[0]

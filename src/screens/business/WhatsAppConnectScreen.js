@@ -20,16 +20,29 @@ export default function WhatsAppConnectScreen({ navigation }) {
   const [connected, setConnected] = useState(false)
   const [botConnected, setBotConnected] = useState(false)
 
-  // QR code state
   const [qrImage, setQrImage] = useState(null)
   const [waitingQR, setWaitingQR] = useState(false)
   const pollRef = useRef(null)
+  const mountedRef = useRef(true)
 
-  // Pairing code state
   const [pairingCode, setPairingCode] = useState(null)
   const [waitingCode, setWaitingCode] = useState(false)
 
   const [linkMethod, setLinkMethod] = useState(null)
+
+  const safeFetch = async (url, opts) => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    try {
+      const resp = await fetch(url, { ...opts, signal: controller.signal })
+      clearTimeout(timeout)
+      if (!resp.ok) return null
+      return await resp.json()
+    } catch (e) {
+      clearTimeout(timeout)
+      return null
+    }
+  }
 
   const fetchBusiness = async () => {
     if (!user?.id) return
@@ -37,7 +50,7 @@ export default function WhatsAppConnectScreen({ navigation }) {
     try {
       const { data: bizArr } = await supabase.from('businesses').select('id, whatsapp_number').eq('owner_id', user.id)
       const biz = bizArr?.[0]
-      if (biz) {
+      if (biz && mountedRef.current) {
         setBizId(biz.id)
         if (biz.whatsapp_number) {
           setWhatsappNumber(biz.whatsapp_number)
@@ -46,23 +59,20 @@ export default function WhatsAppConnectScreen({ navigation }) {
           checkBotStatus(biz.id)
         }
       }
-    } catch (e) {}
-    setLoading(false)
+    } catch (e) { console.log('fetchBusiness error:', e.message) }
+    if (mountedRef.current) setLoading(false)
   }
 
   const checkBotStatus = async (id) => {
-    try {
-      const resp = await fetch(`${BOT_URL}/api/whatsapp/status/${id}`)
-      const data = await resp.json()
-      setBotConnected(data.status === 'connected')
-    } catch (e) {
-      setBotConnected(false)
-    }
+    const data = await safeFetch(`${BOT_URL}/api/whatsapp/status/${id}`)
+    if (mountedRef.current) setBotConnected(data?.status === 'connected')
   }
 
   useFocusEffect(useCallback(() => {
+    mountedRef.current = true
     fetchBusiness()
     return () => {
+      mountedRef.current = false
       if (pollRef.current) clearInterval(pollRef.current)
     }
   }, [user]))
@@ -93,17 +103,18 @@ export default function WhatsAppConnectScreen({ navigation }) {
     setLinkMethod('qr')
     setWaitingQR(true)
     setQrImage(null)
-    try {
-      await fetch(`${BOT_URL}/api/whatsapp/connect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ business_id: bizId }),
-      })
-      startPollingQR()
-    } catch (e) {
+    const result = await safeFetch(`${BOT_URL}/api/whatsapp/connect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ business_id: bizId }),
+    })
+    if (!mountedRef.current) return
+    if (result === null) {
       setWaitingQR(false)
       Alert.alert('Error', 'Could not reach the bot server. Please try again later.')
+      return
     }
+    startPollingQR()
   }
 
 
@@ -111,29 +122,30 @@ export default function WhatsAppConnectScreen({ navigation }) {
     if (pollRef.current) clearInterval(pollRef.current)
     let attempts = 0
     pollRef.current = setInterval(async () => {
+      if (!mountedRef.current) { clearInterval(pollRef.current); return }
       attempts++
       if (attempts > 60) {
         clearInterval(pollRef.current)
-        setWaitingQR(false)
-        Alert.alert('Timeout', 'QR code expired. Please try again.')
+        if (mountedRef.current) {
+          setWaitingQR(false)
+          Alert.alert('Timeout', 'QR code expired. Please try again.')
+        }
         return
       }
-      try {
-        const resp = await fetch(`${BOT_URL}/api/whatsapp/qr/${bizId}`)
-        const data = await resp.json()
-        if (data.qr) {
-          setQrImage(data.qr)
-          setWaitingQR(false)
-        }
-        if (data.status === 'connected') {
-          clearInterval(pollRef.current)
-          setQrImage(null)
-          setWaitingQR(false)
-          setConnected(true)
-          setBotConnected(true)
-          Alert.alert('Connected!', 'Your WhatsApp AI chatbot is now live!')
-        }
-      } catch (e) {}
+      const data = await safeFetch(`${BOT_URL}/api/whatsapp/qr/${bizId}`)
+      if (!mountedRef.current) return
+      if (data?.qr) {
+        setQrImage(data.qr)
+        setWaitingQR(false)
+      }
+      if (data?.status === 'connected') {
+        clearInterval(pollRef.current)
+        setQrImage(null)
+        setWaitingQR(false)
+        setConnected(true)
+        setBotConnected(true)
+        Alert.alert('Connected!', 'Your WhatsApp AI chatbot is now live!')
+      }
     }, 2000)
   }
 
@@ -142,24 +154,23 @@ export default function WhatsAppConnectScreen({ navigation }) {
     if (pollRef.current) clearInterval(pollRef.current)
     let attempts = 0
     pollRef.current = setInterval(async () => {
+      if (!mountedRef.current) { clearInterval(pollRef.current); return }
       attempts++
       if (attempts > 90) {
         clearInterval(pollRef.current)
         return
       }
-      try {
-        const resp = await fetch(`${BOT_URL}/api/whatsapp/status/${bizId}`)
-        const data = await resp.json()
-        if (data.status === 'connected') {
-          clearInterval(pollRef.current)
-          setPairingCode(null)
-          setQrImage(null)
-          setLinkMethod(null)
-          setConnected(true)
-          setBotConnected(true)
-          Alert.alert('Connected!', 'Your WhatsApp AI chatbot is now live. Customers who message this number will get instant AI replies.')
-        }
-      } catch (e) {}
+      const data = await safeFetch(`${BOT_URL}/api/whatsapp/status/${bizId}`)
+      if (!mountedRef.current) return
+      if (data?.status === 'connected') {
+        clearInterval(pollRef.current)
+        setPairingCode(null)
+        setQrImage(null)
+        setLinkMethod(null)
+        setConnected(true)
+        setBotConnected(true)
+        Alert.alert('Connected!', 'Your WhatsApp AI chatbot is now live. Customers who message this number will get instant AI replies.')
+      }
     }, 3000)
   }
 
@@ -168,13 +179,11 @@ export default function WhatsAppConnectScreen({ navigation }) {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Disconnect', style: 'destructive', onPress: async () => {
-          try {
-            await fetch(`${BOT_URL}/api/whatsapp/disconnect`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ business_id: bizId }),
-            })
-          } catch (e) {}
+          await safeFetch(`${BOT_URL}/api/whatsapp/disconnect`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ business_id: bizId }),
+          })
           try {
             await supabase.from('businesses').update({ whatsapp_number: null }).eq('id', bizId)
           } catch (e) {}
