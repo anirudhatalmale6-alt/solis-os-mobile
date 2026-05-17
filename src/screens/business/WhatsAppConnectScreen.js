@@ -316,6 +316,12 @@ export default function WhatsAppConnectScreen({ navigation }) {
               <Text style={s.codeStep}>4. Tap "Link with phone number instead"</Text>
               <Text style={s.codeStep}>5. Enter the code above</Text>
             </View>
+            <View style={s.securityNoticeSmall}>
+              <MaterialCommunityIcons name="shield-check" size={16} color="#60a5fa" />
+              <Text style={s.securityNoticeSmallText}>
+                You may see a location security notice - this is normal. It's our secure cloud server. Tap "Link Device" to continue.
+              </Text>
+            </View>
             <View style={s.waitingRow}>
               <ActivityIndicator size="small" color="#25D366" />
               <Text style={s.waitingText}>Waiting for you to enter the code...</Text>
@@ -381,21 +387,28 @@ export default function WhatsAppConnectScreen({ navigation }) {
 
                 <Text style={s.methodTitle}>Choose how to link:</Text>
 
-                <TouchableOpacity activeOpacity={0.8} onPress={startQRLink} style={{ alignSelf: 'stretch', marginBottom: 10 }}>
+                <TouchableOpacity activeOpacity={0.8} onPress={startPairingLink} style={{ alignSelf: 'stretch', marginBottom: 10 }}>
                   <LinearGradient colors={['#25D366', '#128C7E']} style={s.connectBtn}>
-                    <MaterialCommunityIcons name="qrcode-scan" size={20} color="#fff" />
-                    <Text style={s.connectBtnText}>Link with QR Code</Text>
+                    <MaterialCommunityIcons name="dialpad" size={20} color="#fff" />
+                    <Text style={s.connectBtnText}>Link with Pairing Code</Text>
                   </LinearGradient>
                 </TouchableOpacity>
-                <Text style={s.methodHint}>Take a screenshot of the QR and scan it from your WhatsApp gallery</Text>
+                <Text style={s.methodHint}>Recommended for phone users - get an 8-digit code to enter in WhatsApp</Text>
 
-                <TouchableOpacity activeOpacity={0.8} onPress={startPairingLink} style={{ alignSelf: 'stretch', marginBottom: 10, marginTop: 12 }}>
+                <TouchableOpacity activeOpacity={0.8} onPress={startQRLink} style={{ alignSelf: 'stretch', marginBottom: 10, marginTop: 12 }}>
                   <View style={s.altBtn}>
-                    <MaterialCommunityIcons name="dialpad" size={20} color="#25D366" />
-                    <Text style={s.altBtnText}>Link with Pairing Code</Text>
+                    <MaterialCommunityIcons name="qrcode-scan" size={20} color="#25D366" />
+                    <Text style={s.altBtnText}>Link with QR Code</Text>
                   </View>
                 </TouchableOpacity>
-                <Text style={s.methodHint}>Get an 8-digit code and enter it in WhatsApp Linked Devices</Text>
+                <Text style={s.methodHint}>Requires a second device (laptop/tablet) to scan the QR code</Text>
+
+                <View style={s.securityNotice}>
+                  <MaterialCommunityIcons name="shield-check" size={20} color="#60a5fa" />
+                  <Text style={s.securityNoticeText}>
+                    During linking, WhatsApp may show a security notice about a device in another location. This is normal - it's our secure cloud server that powers your AI chatbot. Your messages remain encrypted and private. Simply tap "Link Device" to continue.
+                  </Text>
+                </View>
               </>
             )}
 
@@ -555,6 +568,18 @@ const s = StyleSheet.create({
 
   methodTitle: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 16, alignSelf: 'flex-start' },
   methodHint: { fontSize: 12, color: colors.textMuted, textAlign: 'center', marginBottom: 4 },
+  securityNotice: {
+    flexDirection: 'row', alignSelf: 'stretch', marginTop: 20, padding: 14,
+    backgroundColor: 'rgba(96,165,250,0.08)', borderRadius: 12,
+    borderWidth: 1, borderColor: 'rgba(96,165,250,0.2)', gap: 10, alignItems: 'flex-start',
+  },
+  securityNoticeText: { flex: 1, fontSize: 12, color: colors.textSecondary, lineHeight: 18 },
+  securityNoticeSmall: {
+    flexDirection: 'row', alignSelf: 'stretch', marginBottom: 20, padding: 12,
+    backgroundColor: 'rgba(96,165,250,0.08)', borderRadius: 10,
+    borderWidth: 1, borderColor: 'rgba(96,165,250,0.2)', gap: 8, alignItems: 'flex-start',
+  },
+  securityNoticeSmallText: { flex: 1, fontSize: 11, color: colors.textSecondary, lineHeight: 16 },
 
   statusList: { alignSelf: 'stretch', marginBottom: 24, marginTop: 16 },
   statusItem: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
