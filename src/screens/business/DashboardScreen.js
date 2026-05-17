@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
@@ -91,9 +91,13 @@ export default function DashboardScreen() {
             <Text style={s.greetingSub}>{greeting}</Text>
             <Text style={s.bizName}>{business?.name || 'My Business'}</Text>
           </View>
-          <LinearGradient colors={['#f59e0b', '#f97316']} style={s.avatar}>
-            <Text style={s.avatarText}>{initials}</Text>
-          </LinearGradient>
+          {business?.logo_url ? (
+            <Image source={{ uri: business.logo_url }} style={s.avatarImage} />
+          ) : (
+            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.avatar}>
+              <Text style={s.avatarText}>{initials}</Text>
+            </LinearGradient>
+          )}
         </View>
 
         <LinearGradient
@@ -222,6 +226,12 @@ const s = StyleSheet.create({
     ...shadows.button,
   },
   avatarText: { fontSize: 16, fontWeight: '800', color: '#000' },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    ...shadows.button,
+  },
   welcomeBanner: {
     borderRadius: 20,
     padding: 20,
