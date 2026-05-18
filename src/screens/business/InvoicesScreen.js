@@ -6,6 +6,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
+import RNHTMLtoPDF from 'react-native-html-to-pdf'
+import RNShare from 'react-native-share'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
@@ -54,6 +56,7 @@ export default function InvoicesScreen() {
   const [businessLogo, setBusinessLogo] = useState(null)
   const [businessPhone, setBusinessPhone] = useState('')
   const [businessEmail, setBusinessEmail] = useState('')
+  const [businessAddress, setBusinessAddress] = useState('')
   const [customers, setCustomers] = useState([])
 
   const [modalVisible, setModalVisible] = useState(false)
@@ -75,7 +78,7 @@ export default function InvoicesScreen() {
     try {
       const { data: bizArr } = await supabase
         .from('businesses')
-        .select('id, name, logo_url, phone, email')
+        .select('id, name, logo_url, phone, email, address')
         .eq('owner_id', user.id)
       const biz = bizArr?.[0]
       if (!biz) { setLoading(false); return }
@@ -84,6 +87,7 @@ export default function InvoicesScreen() {
       setBusinessLogo(biz.logo_url || null)
       setBusinessPhone(biz.phone || '')
       setBusinessEmail(biz.email || '')
+      setBusinessAddress(biz.address || '')
 
       const [invoicesRes, customersRes] = await Promise.all([
         supabase.from('invoices').select('*').eq('business_id', biz.id).order('created_at', { ascending: false }),
@@ -165,6 +169,77 @@ export default function InvoicesScreen() {
     return text
   }
 
+  const buildInvoiceHTML = (invoice) => {
+    const itemRows = (invoice.items || []).map((it, i) => {
+      const q = it.qty || 1
+      const p = it.price || 0
+      return `<tr><td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;">${it.name}</td><td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${q}</td><td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">${fmt(p)}</td><td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600;">${fmt(q*p)}</td></tr>`
+    }).join('')
+
+    const logoHtml = businessLogo
+      ? `<img src="${businessLogo}" style="width:60px;height:60px;border-radius:12px;object-fit:cover;" />`
+      : `<div style="width:60px;height:60px;border-radius:12px;background:#f59e0b;display:flex;align-items:center;justify-content:center;"><span style="font-size:24px;font-weight:800;color:#000;">${(businessName || 'B')[0]}</span></div>`
+
+    const statusColor = { draft: '#f59e0b', sent: '#3b82f6', paid: '#22c55e', overdue: '#ef4444' }[invoice.status] || '#f59e0b'
+    const statusLabel = (STATUS_STYLES[invoice.status] || STATUS_STYLES.draft).label
+
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;margin:0;padding:30px;color:#1f2937;background:#fff;}
+      .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;border-bottom:2px solid #f59e0b;padding-bottom:20px;}
+      .biz-info{display:flex;align-items:center;gap:16px;}
+      .biz-details h1{margin:0;font-size:20px;color:#111827;}
+      .biz-details p{margin:2px 0;font-size:12px;color:#6b7280;}
+      .invoice-title{text-align:right;}
+      .invoice-title h2{margin:0;font-size:28px;color:#f59e0b;font-weight:800;}
+      .invoice-title p{margin:4px 0;font-size:12px;color:#6b7280;}
+      .status-badge{display:inline-block;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;background:${statusColor};}
+      .bill-to{margin:20px 0;padding:16px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;}
+      .bill-to h3{margin:0 0 6px;font-size:13px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;}
+      .bill-to p{margin:2px 0;font-size:14px;color:#374151;}
+      table{width:100%;border-collapse:collapse;margin:20px 0;}
+      th{background:#f9fafb;padding:10px 12px;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e5e7eb;}
+      .total-row{display:flex;justify-content:flex-end;margin:10px 0 20px;}
+      .total-box{background:#111827;color:#fff;padding:16px 30px;border-radius:10px;text-align:right;}
+      .total-box span{font-size:12px;color:#9ca3af;display:block;}
+      .total-box strong{font-size:24px;color:#f59e0b;}
+      .notes{margin:16px 0;padding:14px;background:#fffbeb;border-radius:8px;border:1px solid #fde68a;}
+      .notes h4{margin:0 0 4px;font-size:12px;color:#92400e;}
+      .notes p{margin:0;font-size:13px;color:#78350f;}
+      .footer{margin-top:30px;padding-top:16px;border-top:1px solid #e5e7eb;text-align:center;font-size:11px;color:#9ca3af;}
+    </style></head><body>
+      <div class="header">
+        <div class="biz-info">${logoHtml}<div class="biz-details"><h1>${businessName || 'Business'}</h1>${businessAddress ? `<p>${businessAddress}</p>` : ''}${businessPhone ? `<p>${businessPhone}</p>` : ''}${businessEmail ? `<p>${businessEmail}</p>` : ''}</div></div>
+        <div class="invoice-title"><h2>INVOICE</h2>${invoice.invoice_number ? `<p>${invoice.invoice_number}</p>` : ''}<p>Date: ${fmtDate(invoice.created_at)}</p><p>Due: ${fmtDate(invoice.due_date)}</p><div style="margin-top:8px;"><span class="status-badge">${statusLabel}</span></div></div>
+      </div>
+      <div class="bill-to"><h3>Bill To</h3><p style="font-weight:600;font-size:16px;">${invoice.customer_name}</p>${invoice.customer_email ? `<p>${invoice.customer_email}</p>` : ''}${invoice.customer_phone ? `<p>${invoice.customer_phone}</p>` : ''}</div>
+      <table><thead><tr><th style="text-align:left;">Description</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Price</th><th style="text-align:right;">Total</th></tr></thead><tbody>${itemRows}</tbody></table>
+      <div class="total-row"><div class="total-box"><span>Total Amount</span><strong>${fmt(invoice.total)}</strong></div></div>
+      ${invoice.notes ? `<div class="notes"><h4>Notes</h4><p>${invoice.notes}</p></div>` : ''}
+      <div class="footer"><p>Thank you for your business!</p><p>Generated by Solis OS</p></div>
+    </body></html>`
+  }
+
+  const shareInvoicePDF = async (invoice) => {
+    try {
+      const html = buildInvoiceHTML(invoice)
+      const pdf = await RNHTMLtoPDF.convert({
+        html,
+        fileName: `Invoice_${invoice.invoice_number || invoice.customer_name || 'document'}`,
+        base64: false,
+      })
+      await RNShare.open({
+        url: `file://${pdf.filePath}`,
+        type: 'application/pdf',
+        title: `Invoice - ${invoice.customer_name}`,
+      })
+    } catch (e) {
+      if (e.message !== 'User did not share') {
+        const text = buildInvoiceText(invoice)
+        Share.share({ message: text, title: `Invoice - ${invoice.customer_name}` }).catch(() => {})
+      }
+    }
+  }
+
   const shareInvoice = async (invoice) => {
     const text = buildInvoiceText(invoice)
     try {
@@ -172,11 +247,28 @@ export default function InvoicesScreen() {
     } catch (e) {}
   }
 
-  const sendViaWhatsApp = (invoice) => {
-    const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
-    const text = encodeURIComponent(buildInvoiceText(invoice))
-    const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
-    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+  const sendViaWhatsApp = async (invoice) => {
+    try {
+      const html = buildInvoiceHTML(invoice)
+      const pdf = await RNHTMLtoPDF.convert({
+        html,
+        fileName: `Invoice_${invoice.invoice_number || 'document'}`,
+        base64: false,
+      })
+      const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+      await RNShare.open({
+        url: `file://${pdf.filePath}`,
+        type: 'application/pdf',
+        social: RNShare.Social.WHATSAPP,
+        whatsAppNumber: phone || undefined,
+        title: `Invoice - ${invoice.customer_name}`,
+      })
+    } catch (e) {
+      const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+      const text = encodeURIComponent(buildInvoiceText(invoice))
+      const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+      Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+    }
   }
 
   const sendReminder = (invoice) => {
@@ -535,6 +627,7 @@ export default function InvoicesScreen() {
                     )}
                     <View style={s.detailBizInfo}>
                       <Text style={s.detailBizName}>{businessName || 'Your Business'}</Text>
+                      {businessAddress ? <Text style={s.detailBizContact}>{businessAddress}</Text> : null}
                       {businessPhone ? <Text style={s.detailBizContact}>{businessPhone}</Text> : null}
                       {businessEmail ? <Text style={s.detailBizContact}>{businessEmail}</Text> : null}
                     </View>
@@ -603,9 +696,13 @@ export default function InvoicesScreen() {
                       <MaterialCommunityIcons name="whatsapp" size={20} color="#25D366" />
                       <Text style={[s.shareBtnText, { color: '#25D366' }]}>WhatsApp</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={s.shareBtn} onPress={() => shareInvoicePDF(detailInvoice)} activeOpacity={0.7}>
+                      <MaterialCommunityIcons name="file-pdf-box" size={20} color={colors.red} />
+                      <Text style={[s.shareBtnText, { color: colors.red }]}>PDF</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={s.shareBtn} onPress={() => shareInvoice(detailInvoice)} activeOpacity={0.7}>
                       <MaterialCommunityIcons name="share-variant" size={20} color={colors.blue} />
-                      <Text style={[s.shareBtnText, { color: colors.blue }]}>Share</Text>
+                      <Text style={[s.shareBtnText, { color: colors.blue }]}>Text</Text>
                     </TouchableOpacity>
                     {(detailInvoice.status === 'sent' || detailInvoice.status === 'overdue') && (
                       <TouchableOpacity style={s.shareBtn} onPress={() => sendReminder(detailInvoice)} activeOpacity={0.7}>

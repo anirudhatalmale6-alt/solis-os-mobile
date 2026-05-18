@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, Text, TextInput, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
@@ -55,6 +55,31 @@ export default function CustomersScreen() {
     )
   })
 
+  const deleteCustomer = (customer) => {
+    Alert.alert('Delete Customer', `Remove ${customer.name || 'this customer'}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        await supabase.from('customers').delete().eq('id', customer.id)
+        setCustomers(prev => prev.filter(c => c.id !== customer.id))
+      }},
+    ])
+  }
+
+  const clearAllCustomers = () => {
+    if (customers.length === 0) return
+    Alert.alert('Clear All Customers', `Delete all ${customers.length} customers? This cannot be undone.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete All', style: 'destructive', onPress: async () => {
+        const { data: bizArr } = await supabase.from('businesses').select('id').eq('owner_id', user.id)
+        const bizId = bizArr?.[0]?.id
+        if (bizId) {
+          await supabase.from('customers').delete().eq('business_id', bizId)
+          setCustomers([])
+        }
+      }},
+    ])
+  }
+
   const getInitials = (name) => {
     if (!name) return '?'
     return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -70,8 +95,15 @@ export default function CustomersScreen() {
       <View style={s.glowOrb2} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Customers</Text>
-        <View style={s.headerBadge}>
-          <Text style={s.headerBadgeText}>{customers.length} total</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {customers.length > 0 && (
+            <TouchableOpacity style={s.clearAllBtn} onPress={clearAllCustomers} activeOpacity={0.7}>
+              <Text style={s.clearAllBtnText}>Clear All</Text>
+            </TouchableOpacity>
+          )}
+          <View style={s.headerBadge}>
+            <Text style={s.headerBadgeText}>{customers.length} total</Text>
+          </View>
         </View>
       </View>
 
@@ -108,7 +140,7 @@ export default function CustomersScreen() {
           filtered.map((customer, index) => {
             const ac = AVATAR_COLORS[index % AVATAR_COLORS.length]
             return (
-              <TouchableOpacity key={customer.id} style={s.customerRow} activeOpacity={0.8}>
+              <TouchableOpacity key={customer.id} style={s.customerRow} activeOpacity={0.8} onLongPress={() => deleteCustomer(customer)}>
                 <LinearGradient colors={ac.gradient} style={s.avatar}>
                   <Text style={[s.avatarText, { color: ac.color }]}>{getInitials(customer.name)}</Text>
                 </LinearGradient>
@@ -148,6 +180,11 @@ const s = StyleSheet.create({
     borderRadius: 10, borderWidth: 1, borderColor: 'rgba(59,130,246,0.2)',
   },
   headerBadgeText: { fontSize: 11, color: colors.blue, fontWeight: '600' },
+  clearAllBtn: {
+    paddingHorizontal: 12, paddingVertical: 5, borderRadius: 10,
+    backgroundColor: 'rgba(239,68,68,0.12)', borderWidth: 1, borderColor: 'rgba(239,68,68,0.2)',
+  },
+  clearAllBtnText: { fontSize: 11, color: colors.red, fontWeight: '600' },
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 16 },
   searchInner: {
     flexDirection: 'row', alignItems: 'center',

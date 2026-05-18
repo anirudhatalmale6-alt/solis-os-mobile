@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
@@ -105,17 +105,31 @@ export default function NotificationsScreen() {
       <View style={s.glowOrb2} />
 
       <View style={s.header}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={s.headerTitle}>Notifications</Text>
           {unreadCount > 0 && (
             <Text style={s.headerSub}>{unreadCount} unread</Text>
           )}
         </View>
-        {unreadCount > 0 && (
-          <View style={s.unreadBadge}>
-            <Text style={s.unreadBadgeText}>{unreadCount}</Text>
-          </View>
-        )}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          {notifications.length > 0 && (
+            <TouchableOpacity
+              style={s.clearBtn}
+              activeOpacity={0.7}
+              onPress={() => Alert.alert('Clear All', 'Delete all notifications?', [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Clear All', style: 'destructive', onPress: () => setNotifications([]) },
+              ])}
+            >
+              <Text style={s.clearBtnText}>Clear All</Text>
+            </TouchableOpacity>
+          )}
+          {unreadCount > 0 && (
+            <View style={s.unreadBadge}>
+              <Text style={s.unreadBadgeText}>{unreadCount}</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <ScrollView
@@ -163,7 +177,15 @@ export default function NotificationsScreen() {
           filtered.map(notif => {
             const typeConfig = NOTIF_TYPES[notif.type] || NOTIF_TYPES.system
             return (
-              <View key={notif.id} style={[s.notifCard, !notif.read && s.notifUnread]}>
+              <TouchableOpacity
+                key={notif.id}
+                style={[s.notifCard, !notif.read && s.notifUnread]}
+                activeOpacity={0.8}
+                onLongPress={() => Alert.alert('Delete', 'Remove this notification?', [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Delete', style: 'destructive', onPress: () => setNotifications(prev => prev.filter(n => n.id !== notif.id)) },
+                ])}
+              >
                 {!notif.read && <View style={[s.unreadDot, { backgroundColor: typeConfig.color }]} />}
                 <LinearGradient colors={typeConfig.gradient} style={s.notifIcon}>
                   <MaterialCommunityIcons name={typeConfig.icon} size={20} color={typeConfig.color} />
@@ -173,7 +195,7 @@ export default function NotificationsScreen() {
                   <Text style={s.notifMsg} numberOfLines={2}>{notif.message}</Text>
                   <Text style={s.notifTime}>{timeAgo(notif.time)}</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             )
           })
         )}
@@ -204,10 +226,15 @@ const s = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   unreadBadgeText: { fontSize: 12, fontWeight: '700', color: '#fff' },
-  filterScroll: { maxHeight: 50, marginTop: 12 },
+  clearBtn: {
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10,
+    backgroundColor: 'rgba(239,68,68,0.12)', borderWidth: 1, borderColor: 'rgba(239,68,68,0.2)',
+  },
+  clearBtnText: { fontSize: 11, color: colors.red, fontWeight: '600' },
+  filterScroll: { maxHeight: 56, marginTop: 12 },
   filterRow: { paddingHorizontal: 20, gap: 8, flexDirection: 'row', alignItems: 'center' },
   filterChip: {
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
+    paddingHorizontal: 18, paddingVertical: 9, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
   filterChipActive: { borderColor: colors.borderGlow },

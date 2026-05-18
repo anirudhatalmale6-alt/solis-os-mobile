@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
@@ -41,6 +41,29 @@ export default function BookingsScreen() {
     setRefreshing(true)
     await fetchBookings()
     setRefreshing(false)
+  }
+
+  const deleteBooking = (booking) => {
+    Alert.alert('Delete Booking', `Delete ${booking.customer_name || 'this'} booking?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        await supabase.from('bookings').delete().eq('id', booking.id)
+        setBookings(prev => prev.filter(b => b.id !== booking.id))
+        setExpandedId(null)
+      }},
+    ])
+  }
+
+  const clearPastBookings = () => {
+    const pastBookings = bookings.filter(b => b.date < today)
+    if (pastBookings.length === 0) { Alert.alert('No Past Bookings', 'There are no past bookings to clear.'); return }
+    Alert.alert('Clear Past Bookings', `Delete ${pastBookings.length} past booking${pastBookings.length > 1 ? 's' : ''}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete All', style: 'destructive', onPress: async () => {
+        await Promise.all(pastBookings.map(b => supabase.from('bookings').delete().eq('id', b.id)))
+        setBookings(prev => prev.filter(b => b.date >= today))
+      }},
+    ])
   }
 
   const today = new Date().toISOString().split('T')[0]
@@ -98,6 +121,10 @@ export default function BookingsScreen() {
                 <Text style={s.detailValue}>{booking.notes}</Text>
               </View>
             )}
+            <TouchableOpacity style={s.deleteBtn} onPress={() => deleteBooking(booking)} activeOpacity={0.7}>
+              <MaterialCommunityIcons name="delete-outline" size={16} color={colors.red} />
+              <Text style={s.deleteBtnText}>Delete Booking</Text>
+            </TouchableOpacity>
           </View>
         )}
       </TouchableOpacity>
@@ -129,8 +156,15 @@ export default function BookingsScreen() {
       <View style={s.glowOrb2} />
       <View style={s.header}>
         <Text style={s.headerTitle}>Bookings</Text>
-        <View style={s.headerBadge}>
-          <Text style={s.headerBadgeText}>{bookings.length} total</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {bookings.filter(b => b.date < today).length > 0 && (
+            <TouchableOpacity style={s.clearPastBtn} onPress={clearPastBookings} activeOpacity={0.7}>
+              <Text style={s.clearPastBtnText}>Clear Past</Text>
+            </TouchableOpacity>
+          )}
+          <View style={s.headerBadge}>
+            <Text style={s.headerBadgeText}>{bookings.length} total</Text>
+          </View>
         </View>
       </View>
 
@@ -203,6 +237,17 @@ const s = StyleSheet.create({
   bookingTime: { fontSize: 13, fontWeight: '700', color: colors.text },
   badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
   badgeText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
+  clearPastBtn: {
+    paddingHorizontal: 12, paddingVertical: 5, borderRadius: 10,
+    backgroundColor: 'rgba(239,68,68,0.12)', borderWidth: 1, borderColor: 'rgba(239,68,68,0.2)',
+  },
+  clearPastBtnText: { fontSize: 11, color: colors.red, fontWeight: '600' },
+  deleteBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    marginTop: 12, paddingVertical: 10, borderRadius: 10,
+    borderWidth: 1, borderColor: 'rgba(239,68,68,0.25)', backgroundColor: 'rgba(239,68,68,0.08)',
+  },
+  deleteBtnText: { fontSize: 13, color: colors.red, fontWeight: '600' },
   details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)' },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   detailLabel: { fontSize: 12, color: colors.textMuted },
