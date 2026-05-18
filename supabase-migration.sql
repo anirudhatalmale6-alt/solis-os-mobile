@@ -42,6 +42,11 @@ CREATE TABLE IF NOT EXISTS promotions (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Add new invoice columns (v1.1.8)
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_number TEXT;
+
 -- Enable Row Level Security
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import {
   View, Text, TextInput, StyleSheet, ScrollView, RefreshControl,
-  TouchableOpacity, Modal, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image,
+  TouchableOpacity, Modal, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image, Share, Linking,
 } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -19,6 +19,29 @@ const STATUS_STYLES = {
 
 const FILTER_OPTIONS = ['all', 'draft', 'sent', 'paid', 'overdue']
 
+const todayStr = () => {
+  const d = new Date()
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`
+}
+
+const todayISO = () => new Date().toISOString().split('T')[0]
+
+const genInvoiceNum = () => {
+  const d = new Date()
+  return `INV-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*900+100)}`
+}
+
+const resolveInvoice = (inv) => {
+  const metaItem = (inv.items || []).find(it => it && it.__meta)
+  return {
+    ...inv,
+    invoice_number: inv.invoice_number || (metaItem && metaItem.invoice_number) || '',
+    customer_phone: inv.customer_phone || (metaItem && metaItem.customer_phone) || '',
+    notes: inv.notes || (metaItem && metaItem.notes) || '',
+    items: (inv.items || []).filter(it => !it || !it.__meta),
+  }
+}
+
 export default function InvoicesScreen() {
   const { user } = useAuth()
   const [invoices, setInvoices] = useState([])
@@ -31,6 +54,7 @@ export default function InvoicesScreen() {
   const [businessLogo, setBusinessLogo] = useState(null)
   const [businessPhone, setBusinessPhone] = useState('')
   const [businessEmail, setBusinessEmail] = useState('')
+  const [customers, setCustomers] = useState([])
 
   const [modalVisible, setModalVisible] = useState(false)
   const [creating, setCreating] = useState(false)
@@ -38,9 +62,12 @@ export default function InvoicesScreen() {
   const [newInvoice, setNewInvoice] = useState({
     customer_name: '',
     customer_email: '',
+    customer_phone: '',
     items: [{ name: '', qty: '1', price: '' }],
-    due_date: '',
+    due_date: todayStr(),
+    notes: '',
     status: 'draft',
+    invoice_number: genInvoiceNum(),
   })
 
   const fetchData = async () => {
@@ -58,12 +85,24 @@ export default function InvoicesScreen() {
       setBusinessPhone(biz.phone || '')
       setBusinessEmail(biz.email || '')
 
-      const { data } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('business_id', biz.id)
-        .order('created_at', { ascending: false })
-      setInvoices(data || [])
+      const [invoicesRes, customersRes] = await Promise.all([
+        supabase.from('invoices').select('*').eq('business_id', biz.id).order('created_at', { ascending: false }),
+        supabase.from('customers').select('name, phone, email').eq('business_id', biz.id).order('name'),
+      ])
+      const rawData = invoicesRes.data || []
+      const invData = rawData.map(resolveInvoice)
+
+      const todayDate = todayISO()
+      const overdueUpdates = invData.filter(inv => inv.status === 'sent' && inv.due_date && inv.due_date < todayDate)
+      if (overdueUpdates.length > 0) {
+        await Promise.all(overdueUpdates.map(inv =>
+          supabase.from('invoices').update({ status: 'overdue' }).eq('id', inv.id)
+        ))
+        overdueUpdates.forEach(inv => { inv.status = 'overdue' })
+      }
+
+      setInvoices(invData)
+      setCustomers(customersRes.data || [])
     } catch (err) {
       console.error('Error fetching invoices:', err)
     } finally {
@@ -89,11 +128,13 @@ export default function InvoicesScreen() {
     .filter(inv => inv.status === 'paid' && new Date(inv.created_at) >= thisMonthStart)
     .reduce((sum, inv) => sum + (inv.total || 0), 0)
 
+  const overdueCount = invoices.filter(inv => inv.status === 'overdue').length
+
   const filtered = invoices.filter(inv => {
     if (filter !== 'all' && inv.status !== filter) return false
     if (!search) return true
     const q = search.toLowerCase()
-    return (inv.customer_name || '').toLowerCase().includes(q) || (inv.customer_email || '').toLowerCase().includes(q)
+    return (inv.customer_name || '').toLowerCase().includes(q) || (inv.customer_email || '').toLowerCase().includes(q) || (inv.invoice_number || '').toLowerCase().includes(q)
   })
 
   const fmt = (amount) => '$' + (amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -101,11 +142,71 @@ export default function InvoicesScreen() {
 
   const calcTotal = (items) => items.reduce((sum, it) => sum + (parseFloat(it.qty) || 0) * (parseFloat(it.price) || 0), 0)
 
+  const buildInvoiceText = (invoice) => {
+    const items = (invoice.items || []).map((it, i) => {
+      const q = it.qty || 1
+      const p = it.price || 0
+      return `${i+1}. ${it.name} x${q} - ${fmt(p)} = ${fmt(q*p)}`
+    }).join('\n')
+
+    let text = `INVOICE${invoice.invoice_number ? ' #' + invoice.invoice_number : ''}\n`
+    text += `From: ${businessName || 'Business'}\n`
+    if (businessPhone) text += `Phone: ${businessPhone}\n`
+    if (businessEmail) text += `Email: ${businessEmail}\n`
+    text += `\nBill To: ${invoice.customer_name}\n`
+    if (invoice.customer_email) text += `Email: ${invoice.customer_email}\n`
+    if (invoice.customer_phone) text += `Phone: ${invoice.customer_phone}\n`
+    text += `\nItems:\n${items}\n`
+    text += `\nTotal: ${fmt(invoice.total)}\n`
+    text += `Due: ${fmtDate(invoice.due_date)}\n`
+    text += `Status: ${(STATUS_STYLES[invoice.status] || STATUS_STYLES.draft).label}\n`
+    if (invoice.notes) text += `\nNotes: ${invoice.notes}\n`
+    text += `\nThank you for your business!`
+    return text
+  }
+
+  const shareInvoice = async (invoice) => {
+    const text = buildInvoiceText(invoice)
+    try {
+      await Share.share({ message: text, title: `Invoice - ${invoice.customer_name}` })
+    } catch (e) {}
+  }
+
+  const sendViaWhatsApp = (invoice) => {
+    const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+    const text = encodeURIComponent(buildInvoiceText(invoice))
+    const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+  }
+
+  const sendReminder = (invoice) => {
+    const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+    const text = encodeURIComponent(
+      `Hi ${invoice.customer_name},\n\nThis is a friendly reminder that your invoice${invoice.invoice_number ? ' #' + invoice.invoice_number : ''} for ${fmt(invoice.total)} was due on ${fmtDate(invoice.due_date)}.\n\nPlease let us know if you have any questions.\n\nThank you,\n${businessName || 'Business'}`
+    )
+    const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+  }
+
+  const duplicateInvoice = (invoice) => {
+    setNewInvoice({
+      customer_name: invoice.customer_name || '',
+      customer_email: invoice.customer_email || '',
+      customer_phone: invoice.customer_phone || '',
+      items: (invoice.items || [{ name: '', qty: '1', price: '' }]).map(it => ({ name: it.name || '', qty: String(it.qty || 1), price: String(it.price || '') })),
+      due_date: todayStr(),
+      notes: invoice.notes || '',
+      status: 'draft',
+      invoice_number: genInvoiceNum(),
+    })
+    setDetailInvoice(null)
+    setModalVisible(true)
+  }
+
   const handleCreate = async () => {
     if (!newInvoice.customer_name.trim()) { Alert.alert('Required', 'Enter customer name'); return }
     const validItems = newInvoice.items.filter(it => it.name.trim() && parseFloat(it.price) > 0)
     if (validItems.length === 0) { Alert.alert('Required', 'Add at least one item with name and price'); return }
-    if (!newInvoice.due_date.trim()) { Alert.alert('Required', 'Enter due date (DD/MM/YYYY)'); return }
 
     setCreating(true)
     try {
@@ -117,21 +218,47 @@ export default function InvoicesScreen() {
       const total = items.reduce((sum, it) => sum + it.qty * it.price, 0)
 
       let dueDate = newInvoice.due_date.trim()
+      if (!dueDate) dueDate = todayStr()
       const ddmmyyyy = dueDate.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/)
       if (ddmmyyyy) {
         dueDate = `${ddmmyyyy[3]}-${ddmmyyyy[2].padStart(2, '0')}-${ddmmyyyy[1].padStart(2, '0')}`
       }
 
-      const { error } = await supabase.from('invoices').insert({
+      const meta = { __meta: true }
+      if (newInvoice.invoice_number) meta.invoice_number = newInvoice.invoice_number
+      if (newInvoice.customer_phone.trim()) meta.customer_phone = newInvoice.customer_phone.trim()
+      if (newInvoice.notes.trim()) meta.notes = newInvoice.notes.trim()
+      const itemsWithMeta = Object.keys(meta).length > 1 ? [...items, meta] : items
+
+      const fullInsert = {
         business_id: businessId,
         customer_name: newInvoice.customer_name.trim(),
         customer_email: newInvoice.customer_email.trim(),
-        items,
+        customer_phone: newInvoice.customer_phone.trim(),
+        items: itemsWithMeta,
         total,
         status: newInvoice.status,
         due_date: dueDate,
-      })
-      if (error) throw error
+        notes: newInvoice.notes.trim(),
+        invoice_number: newInvoice.invoice_number,
+      }
+
+      let { error } = await supabase.from('invoices').insert(fullInsert)
+      if (error && error.message && (error.message.includes('column') || error.code === '42703')) {
+        const baseInsert = {
+          business_id: businessId,
+          customer_name: newInvoice.customer_name.trim(),
+          customer_email: newInvoice.customer_email.trim(),
+          items: itemsWithMeta,
+          total,
+          status: newInvoice.status,
+          due_date: dueDate,
+        }
+        const { error: err2 } = await supabase.from('invoices').insert(baseInsert)
+        if (err2) throw err2
+      } else if (error) {
+        throw error
+      }
 
       setModalVisible(false)
       resetForm()
@@ -145,7 +272,11 @@ export default function InvoicesScreen() {
   }
 
   const resetForm = () => {
-    setNewInvoice({ customer_name: '', customer_email: '', items: [{ name: '', qty: '1', price: '' }], due_date: '', status: 'draft' })
+    setNewInvoice({
+      customer_name: '', customer_email: '', customer_phone: '',
+      items: [{ name: '', qty: '1', price: '' }],
+      due_date: todayStr(), notes: '', status: 'draft', invoice_number: genInvoiceNum(),
+    })
   }
 
   const addLineItem = () => {
@@ -182,6 +313,15 @@ export default function InvoicesScreen() {
     ])
   }
 
+  const selectCustomer = (cust) => {
+    setNewInvoice(prev => ({
+      ...prev,
+      customer_name: cust.name || prev.customer_name,
+      customer_email: cust.email || prev.customer_email,
+      customer_phone: cust.phone || prev.customer_phone,
+    }))
+  }
+
   if (loading) {
     return <View style={[s.container, s.center]}><ActivityIndicator size="large" color={colors.primary} /></View>
   }
@@ -192,7 +332,12 @@ export default function InvoicesScreen() {
 
       <View style={s.header}>
         <Text style={s.headerTitle}>Invoices</Text>
-        <View style={s.headerBadge}><Text style={s.headerBadgeText}>{invoices.length} total</Text></View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {overdueCount > 0 && (
+            <View style={s.overdueBadge}><Text style={s.overdueBadgeText}>{overdueCount} overdue</Text></View>
+          )}
+          <View style={s.headerBadge}><Text style={s.headerBadgeText}>{invoices.length} total</Text></View>
+        </View>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.statsRow} contentContainerStyle={s.statsContent}>
@@ -204,6 +349,10 @@ export default function InvoicesScreen() {
           <Text style={s.statLabel}>Paid This Month</Text>
           <Text style={[s.statValue, { color: colors.green }]}>{fmt(totalPaidThisMonth)}</Text>
         </LinearGradient>
+        <LinearGradient colors={['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)']} style={s.statCard}>
+          <Text style={s.statLabel}>Overdue</Text>
+          <Text style={[s.statValue, { color: colors.red }]}>{overdueCount}</Text>
+        </LinearGradient>
         <LinearGradient colors={['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.05)']} style={s.statCard}>
           <Text style={s.statLabel}>Total Invoices</Text>
           <Text style={[s.statValue, { color: colors.blue }]}>{invoices.length}</Text>
@@ -213,7 +362,7 @@ export default function InvoicesScreen() {
       <View style={s.searchWrap}>
         <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.searchInner}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
-          <TextInput style={s.searchInput} placeholder="Search invoices..." placeholderTextColor={colors.textMuted} value={search} onChangeText={setSearch} />
+          <TextInput style={s.searchInput} placeholder="Search by name, email, or invoice #..." placeholderTextColor={colors.textMuted} value={search} onChangeText={setSearch} />
         </LinearGradient>
       </View>
 
@@ -241,6 +390,7 @@ export default function InvoicesScreen() {
                 <View style={s.invoiceTop}>
                   <View style={s.invoiceInfo}>
                     <Text style={s.invoiceName}>{invoice.customer_name || 'Unknown'}</Text>
+                    {invoice.invoice_number && <Text style={s.invoiceNum}>{invoice.invoice_number}</Text>}
                     <Text style={s.invoiceDate}>{fmtDate(invoice.due_date || invoice.created_at)}</Text>
                     <Text style={s.invoiceItemCount}>{itemCount} item{itemCount !== 1 ? 's' : ''}</Text>
                   </View>
@@ -257,7 +407,7 @@ export default function InvoicesScreen() {
         )}
       </ScrollView>
 
-      <TouchableOpacity style={s.fab} activeOpacity={0.85} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={s.fab} activeOpacity={0.85} onPress={() => { resetForm(); setModalVisible(true) }}>
         <LinearGradient colors={[colors.primary, 'rgba(245,158,11,0.8)']} style={s.fabGradient}>
           <Text style={s.fabText}>+</Text>
         </LinearGradient>
@@ -274,11 +424,29 @@ export default function InvoicesScreen() {
               </View>
 
               <ScrollView style={s.modalScroll} showsVerticalScrollIndicator={false}>
+                <View style={s.invoiceNumRow}>
+                  <Text style={s.invoiceNumLabel}>Invoice #</Text>
+                  <Text style={s.invoiceNumValue}>{newInvoice.invoice_number}</Text>
+                </View>
+
                 <Text style={s.fieldLabel}>Customer Name</Text>
                 <TextInput style={s.input} placeholder="John Smith" placeholderTextColor={colors.textMuted} value={newInvoice.customer_name} onChangeText={(v) => setNewInvoice(prev => ({ ...prev, customer_name: v }))} />
 
+                {customers.length > 0 && !newInvoice.customer_name && (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12, marginTop: -4 }}>
+                    {customers.slice(0, 10).map((c, i) => (
+                      <TouchableOpacity key={i} onPress={() => selectCustomer(c)} style={s.customerChip} activeOpacity={0.7}>
+                        <Text style={s.customerChipText}>{c.name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                )}
+
                 <Text style={s.fieldLabel}>Customer Email (optional)</Text>
                 <TextInput style={s.input} placeholder="john@email.com" placeholderTextColor={colors.textMuted} value={newInvoice.customer_email} onChangeText={(v) => setNewInvoice(prev => ({ ...prev, customer_email: v }))} keyboardType="email-address" autoCapitalize="none" />
+
+                <Text style={s.fieldLabel}>Customer Phone (for WhatsApp)</Text>
+                <TextInput style={s.input} placeholder="+61 400 000 000" placeholderTextColor={colors.textMuted} value={newInvoice.customer_phone} onChangeText={(v) => setNewInvoice(prev => ({ ...prev, customer_phone: v }))} keyboardType="phone-pad" />
 
                 <Text style={[s.fieldLabel, { marginTop: 16 }]}>Items</Text>
                 <View style={s.itemsHeader}>
@@ -313,14 +481,18 @@ export default function InvoicesScreen() {
                 </TouchableOpacity>
 
                 <View style={s.totalRow}>
-                  <Text style={s.totalLabel}>Subtotal</Text>
+                  <Text style={s.totalLabel}>Total</Text>
                   <Text style={s.totalValue}>{fmt(calcTotal(newInvoice.items))}</Text>
                 </View>
 
                 <Text style={[s.fieldLabel, { marginTop: 16 }]}>Due Date</Text>
                 <TextInput style={s.input} placeholder="DD/MM/YYYY" placeholderTextColor={colors.textMuted} value={newInvoice.due_date} onChangeText={(v) => setNewInvoice(prev => ({ ...prev, due_date: v }))} keyboardType="number-pad" />
+                <Text style={s.fieldHint}>Defaults to today. Change if needed.</Text>
 
-                <Text style={[s.fieldLabel, { marginTop: 16 }]}>Status</Text>
+                <Text style={[s.fieldLabel, { marginTop: 12 }]}>Notes (optional)</Text>
+                <TextInput style={[s.input, { minHeight: 60, textAlignVertical: 'top' }]} placeholder="Payment terms, thank you message, etc." placeholderTextColor={colors.textMuted} value={newInvoice.notes} onChangeText={(v) => setNewInvoice(prev => ({ ...prev, notes: v }))} multiline />
+
+                <Text style={[s.fieldLabel, { marginTop: 12 }]}>Status</Text>
                 <View style={s.statusPicker}>
                   {['draft', 'sent'].map(st => (
                     <TouchableOpacity key={st} style={[s.statusOption, newInvoice.status === st && s.statusOptionActive]} onPress={() => setNewInvoice(prev => ({ ...prev, status: st }))} activeOpacity={0.7}>
@@ -368,6 +540,10 @@ export default function InvoicesScreen() {
                     </View>
                   </View>
 
+                  {detailInvoice.invoice_number && (
+                    <Text style={s.detailInvoiceNum}>{detailInvoice.invoice_number}</Text>
+                  )}
+
                   <View style={s.detailDivider} />
 
                   {/* Invoice status + dates */}
@@ -382,6 +558,7 @@ export default function InvoicesScreen() {
                   <Text style={s.detailSectionLabel}>Bill To</Text>
                   <Text style={s.detailCustomerName}>{detailInvoice.customer_name}</Text>
                   {detailInvoice.customer_email ? <Text style={s.detailCustomerEmail}>{detailInvoice.customer_email}</Text> : null}
+                  {detailInvoice.customer_phone ? <Text style={s.detailCustomerEmail}>{detailInvoice.customer_phone}</Text> : null}
 
                   {/* Items table */}
                   <Text style={[s.detailSectionLabel, { marginTop: 20 }]}>Items</Text>
@@ -410,9 +587,36 @@ export default function InvoicesScreen() {
                     <Text style={s.detailTotalValue}>{fmt(detailInvoice.total)}</Text>
                   </View>
 
+                  {detailInvoice.notes ? (
+                    <View style={s.notesBox}>
+                      <Text style={s.noteLabel}>Notes</Text>
+                      <Text style={s.noteText}>{detailInvoice.notes}</Text>
+                    </View>
+                  ) : null}
+
                   <Text style={s.detailCreatedDate}>Created: {fmtDate(detailInvoice.created_at)}</Text>
 
+                  {/* Share / Send buttons */}
+                  <Text style={[s.detailSectionLabel, { marginTop: 8 }]}>Send & Share</Text>
+                  <View style={s.shareRow}>
+                    <TouchableOpacity style={s.shareBtn} onPress={() => sendViaWhatsApp(detailInvoice)} activeOpacity={0.7}>
+                      <MaterialCommunityIcons name="whatsapp" size={20} color="#25D366" />
+                      <Text style={[s.shareBtnText, { color: '#25D366' }]}>WhatsApp</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={s.shareBtn} onPress={() => shareInvoice(detailInvoice)} activeOpacity={0.7}>
+                      <MaterialCommunityIcons name="share-variant" size={20} color={colors.blue} />
+                      <Text style={[s.shareBtnText, { color: colors.blue }]}>Share</Text>
+                    </TouchableOpacity>
+                    {(detailInvoice.status === 'sent' || detailInvoice.status === 'overdue') && (
+                      <TouchableOpacity style={s.shareBtn} onPress={() => sendReminder(detailInvoice)} activeOpacity={0.7}>
+                        <MaterialCommunityIcons name="bell-ring-outline" size={20} color={colors.primary} />
+                        <Text style={[s.shareBtnText, { color: colors.primary }]}>Remind</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
                   {/* Action buttons */}
+                  <Text style={[s.detailSectionLabel, { marginTop: 16 }]}>Actions</Text>
                   <View style={s.detailActions}>
                     {detailInvoice.status === 'draft' && (
                       <TouchableOpacity style={s.actionBtn} onPress={() => { updateStatus(detailInvoice, 'sent'); setDetailInvoice(prev => prev ? { ...prev, status: 'sent' } : null) }}>
@@ -426,6 +630,10 @@ export default function InvoicesScreen() {
                         <Text style={[s.actionBtnText, { color: colors.green }]}>Mark Paid</Text>
                       </TouchableOpacity>
                     )}
+                    <TouchableOpacity style={s.actionBtn} onPress={() => duplicateInvoice(detailInvoice)}>
+                      <MaterialCommunityIcons name="content-copy" size={18} color={colors.textSecondary} />
+                      <Text style={[s.actionBtnText, { color: colors.textSecondary }]}>Duplicate</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={[s.actionBtn, { borderColor: 'rgba(239,68,68,0.3)' }]} onPress={() => deleteInvoice(detailInvoice)}>
                       <MaterialCommunityIcons name="delete-outline" size={18} color={colors.red} />
                       <Text style={[s.actionBtnText, { color: colors.red }]}>Delete</Text>
@@ -449,6 +657,8 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerBadge: { backgroundColor: 'rgba(245,158,11,0.12)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)' },
   headerBadgeText: { fontSize: 11, color: colors.primary, fontWeight: '600' },
+  overdueBadge: { backgroundColor: 'rgba(239,68,68,0.12)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(239,68,68,0.2)' },
+  overdueBadgeText: { fontSize: 11, color: colors.red, fontWeight: '600' },
 
   statsRow: { marginTop: 16, maxHeight: 90 },
   statsContent: { paddingHorizontal: 20, gap: 10 },
@@ -471,7 +681,8 @@ const s = StyleSheet.create({
   invoiceCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 10 },
   invoiceTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   invoiceInfo: { flex: 1 },
-  invoiceName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 3 },
+  invoiceName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  invoiceNum: { fontSize: 11, color: colors.primary, fontWeight: '500', marginBottom: 2 },
   invoiceDate: { fontSize: 12, color: colors.textMuted },
   invoiceItemCount: { fontSize: 11, color: colors.textMuted, marginTop: 2 },
   invoiceRight: { alignItems: 'flex-end' },
@@ -483,7 +694,7 @@ const s = StyleSheet.create({
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: 12, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 
-  fab: { position: 'absolute', bottom: 90, right: 24 },
+  fab: { position: 'absolute', bottom: 110, right: 24 },
   fabGradient: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
   fabText: { fontSize: 28, fontWeight: '600', color: '#000', marginTop: -2 },
 
@@ -494,8 +705,16 @@ const s = StyleSheet.create({
   modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
   modalScroll: { paddingHorizontal: 24 },
 
+  invoiceNumRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)' },
+  invoiceNumLabel: { fontSize: 12, fontWeight: '600', color: colors.textMuted },
+  invoiceNumValue: { fontSize: 14, fontWeight: '700', color: colors.primary },
+
   fieldLabel: { fontSize: 12, fontWeight: '600', color: colors.textSecondary, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldHint: { fontSize: 11, color: colors.textMuted, marginTop: -8, marginBottom: 8 },
   input: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 14, fontSize: 14, color: colors.text, marginBottom: 12 },
+
+  customerChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: 'rgba(59,130,246,0.12)', borderWidth: 1, borderColor: 'rgba(59,130,246,0.2)', marginRight: 8 },
+  customerChipText: { fontSize: 12, color: colors.blue, fontWeight: '500' },
 
   itemsHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)', marginBottom: 8 },
   itemsHeaderText: { fontSize: 11, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase' },
@@ -522,12 +741,13 @@ const s = StyleSheet.create({
   createBtnText: { fontSize: 15, fontWeight: '700', color: '#000' },
 
   // Detail modal
-  detailBizHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 16 },
+  detailBizHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 8 },
   detailLogo: { width: 50, height: 50, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.1)' },
   detailLogoPlaceholder: { width: 50, height: 50, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' },
   detailBizInfo: { flex: 1 },
   detailBizName: { fontSize: 18, fontWeight: '700', color: colors.text },
   detailBizContact: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  detailInvoiceNum: { fontSize: 13, fontWeight: '600', color: colors.primary, marginBottom: 8 },
   detailDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 16 },
 
   detailStatusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
@@ -546,7 +766,15 @@ const s = StyleSheet.create({
   detailTotalLabel: { fontSize: 16, fontWeight: '700', color: colors.text },
   detailTotalValue: { fontSize: 22, fontWeight: '800', color: colors.primary },
 
-  detailCreatedDate: { fontSize: 11, color: colors.textMuted, marginBottom: 20 },
+  notesBox: { backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', marginBottom: 12 },
+  noteLabel: { fontSize: 10, fontWeight: '600', color: colors.textMuted, textTransform: 'uppercase', marginBottom: 4 },
+  noteText: { fontSize: 13, color: colors.textSecondary, lineHeight: 20 },
+
+  detailCreatedDate: { fontSize: 11, color: colors.textMuted, marginBottom: 12 },
+
+  shareRow: { flexDirection: 'row', gap: 10, marginBottom: 8, flexWrap: 'wrap' },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
+  shareBtnText: { fontSize: 13, fontWeight: '600' },
 
   detailActions: { flexDirection: 'row', gap: 10, marginBottom: 20, flexWrap: 'wrap' },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
