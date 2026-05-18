@@ -299,9 +299,17 @@ export default function WhatsAppConnectScreen({ navigation }) {
             <Text style={s.connectedNumber}>{savedNumber}</Text>
 
             {botConnected ? (
-              <Text style={s.connectedDesc}>
-                Your AI chatbot is live. Customers who message you get instant replies, booking, pricing, and more.
-              </Text>
+              <>
+                <Text style={s.connectedDesc}>
+                  Your AI chatbot is live. Customers who message you get instant replies, booking, pricing, and more.
+                </Text>
+                <View style={s.cloudNotice}>
+                  <MaterialCommunityIcons name="information-outline" size={18} color="#f59e0b" />
+                  <Text style={s.cloudNoticeText}>
+                    WhatsApp may show a security notice on some messages sent by your AI assistant. This is standard for all WhatsApp-integrated business tools and occurs because your chatbot operates from our secure cloud infrastructure. It does not affect message delivery or your account. Your customers can safely disregard this notice.
+                  </Text>
+                </View>
+              </>
             ) : (
               <>
                 <Text style={s.connectedDesc}>
@@ -465,6 +473,12 @@ const s = StyleSheet.create({
 
   methodTitle: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 16, alignSelf: 'flex-start' },
   methodHint: { fontSize: 12, color: colors.textMuted, textAlign: 'center', marginBottom: 4 },
+  cloudNotice: {
+    flexDirection: 'row', alignSelf: 'stretch', marginTop: 12, padding: 14,
+    backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: 12,
+    borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)', gap: 10, alignItems: 'flex-start',
+  },
+  cloudNoticeText: { flex: 1, fontSize: 12, color: colors.textSecondary, lineHeight: 18 },
   securityNotice: {
     flexDirection: 'row', alignSelf: 'stretch', marginTop: 20, padding: 14,
     backgroundColor: 'rgba(96,165,250,0.08)', borderRadius: 12,
