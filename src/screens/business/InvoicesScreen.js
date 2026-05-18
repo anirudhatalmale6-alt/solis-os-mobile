@@ -62,6 +62,7 @@ export default function InvoicesScreen() {
   const [modalVisible, setModalVisible] = useState(false)
   const [creating, setCreating] = useState(false)
   const [detailInvoice, setDetailInvoice] = useState(null)
+  const [editingId, setEditingId] = useState(null)
   const [newInvoice, setNewInvoice] = useState({
     customer_name: '',
     customer_email: '',
@@ -222,18 +223,23 @@ export default function InvoicesScreen() {
   const shareInvoicePDF = async (invoice) => {
     try {
       const html = buildInvoiceHTML(invoice)
+      const cleanName = (invoice.invoice_number || invoice.customer_name || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
       const pdf = await RNHTMLtoPDF.convert({
         html,
-        fileName: `Invoice_${invoice.invoice_number || invoice.customer_name || 'document'}`,
+        fileName: cleanName,
+        directory: Platform.OS === 'android' ? 'Download' : 'Documents',
         base64: false,
       })
-      await RNShare.open({
-        url: `file://${pdf.filePath}`,
-        type: 'application/pdf',
-        title: `Invoice - ${invoice.customer_name}`,
-      })
+      if (pdf && pdf.filePath) {
+        await RNShare.open({
+          url: Platform.OS === 'android' ? `file://${pdf.filePath}` : pdf.filePath,
+          type: 'application/pdf',
+          title: `Invoice - ${invoice.customer_name}`,
+          failOnCancel: false,
+        })
+      }
     } catch (e) {
-      if (e.message !== 'User did not share') {
+      if (e && e.message && !e.message.includes('cancel') && !e.message.includes('dismiss')) {
         const text = buildInvoiceText(invoice)
         Share.share({ message: text, title: `Invoice - ${invoice.customer_name}` }).catch(() => {})
       }
@@ -250,25 +256,30 @@ export default function InvoicesScreen() {
   const sendViaWhatsApp = async (invoice) => {
     try {
       const html = buildInvoiceHTML(invoice)
+      const cleanName = (invoice.invoice_number || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
       const pdf = await RNHTMLtoPDF.convert({
         html,
-        fileName: `Invoice_${invoice.invoice_number || 'document'}`,
+        fileName: cleanName,
+        directory: Platform.OS === 'android' ? 'Download' : 'Documents',
         base64: false,
       })
-      const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
-      await RNShare.open({
-        url: `file://${pdf.filePath}`,
-        type: 'application/pdf',
-        social: RNShare.Social.WHATSAPP,
-        whatsAppNumber: phone || undefined,
-        title: `Invoice - ${invoice.customer_name}`,
-      })
-    } catch (e) {
-      const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
-      const text = encodeURIComponent(buildInvoiceText(invoice))
-      const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
-      Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
-    }
+      if (pdf && pdf.filePath) {
+        const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+        await RNShare.open({
+          url: Platform.OS === 'android' ? `file://${pdf.filePath}` : pdf.filePath,
+          type: 'application/pdf',
+          social: RNShare.Social.WHATSAPP,
+          whatsAppNumber: phone || undefined,
+          title: `Invoice - ${invoice.customer_name}`,
+          failOnCancel: false,
+        })
+        return
+      }
+    } catch (e) {}
+    const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+    const text = encodeURIComponent(buildInvoiceText(invoice))
+    const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
   }
 
   const sendReminder = (invoice) => {
@@ -278,6 +289,25 @@ export default function InvoicesScreen() {
     )
     const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
     Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+  }
+
+  const editInvoice = (invoice) => {
+    const dueDateStr = invoice.due_date
+      ? (() => { const d = new Date(invoice.due_date); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` })()
+      : todayStr()
+    setEditingId(invoice.id)
+    setNewInvoice({
+      customer_name: invoice.customer_name || '',
+      customer_email: invoice.customer_email || '',
+      customer_phone: invoice.customer_phone || '',
+      items: (invoice.items || [{ name: '', qty: '1', price: '' }]).map(it => ({ name: it.name || '', qty: String(it.qty || 1), price: String(it.price || '') })),
+      due_date: dueDateStr,
+      notes: invoice.notes || '',
+      status: invoice.status || 'draft',
+      invoice_number: invoice.invoice_number || genInvoiceNum(),
+    })
+    setDetailInvoice(null)
+    setModalVisible(true)
   }
 
   const duplicateInvoice = (invoice) => {
@@ -335,27 +365,31 @@ export default function InvoicesScreen() {
         invoice_number: newInvoice.invoice_number,
       }
 
-      let { error } = await supabase.from('invoices').insert(fullInsert)
-      if (error && error.message && (error.message.includes('column') || error.code === '42703')) {
-        const baseInsert = {
-          business_id: businessId,
-          customer_name: newInvoice.customer_name.trim(),
-          customer_email: newInvoice.customer_email.trim(),
-          items: itemsWithMeta,
-          total,
-          status: newInvoice.status,
-          due_date: dueDate,
+      if (editingId) {
+        let { error } = await supabase.from('invoices').update(fullInsert).eq('id', editingId)
+        if (error && error.message && (error.message.includes('column') || error.code === '42703')) {
+          const baseUpdate = { customer_name: fullInsert.customer_name, customer_email: fullInsert.customer_email, items: itemsWithMeta, total, status: fullInsert.status, due_date: dueDate }
+          const { error: err2 } = await supabase.from('invoices').update(baseUpdate).eq('id', editingId)
+          if (err2) throw err2
+        } else if (error) {
+          throw error
         }
-        const { error: err2 } = await supabase.from('invoices').insert(baseInsert)
-        if (err2) throw err2
-      } else if (error) {
-        throw error
+      } else {
+        let { error } = await supabase.from('invoices').insert(fullInsert)
+        if (error && error.message && (error.message.includes('column') || error.code === '42703')) {
+          const baseInsert = { business_id: businessId, customer_name: fullInsert.customer_name, customer_email: fullInsert.customer_email, items: itemsWithMeta, total, status: fullInsert.status, due_date: dueDate }
+          const { error: err2 } = await supabase.from('invoices').insert(baseInsert)
+          if (err2) throw err2
+        } else if (error) {
+          throw error
+        }
       }
 
       setModalVisible(false)
+      setEditingId(null)
       resetForm()
       await fetchData()
-      Alert.alert('Created', 'Invoice created successfully')
+      Alert.alert(editingId ? 'Updated' : 'Created', `Invoice ${editingId ? 'updated' : 'created'} successfully`)
     } catch (err) {
       Alert.alert('Error', err.message || 'Failed to create invoice')
     } finally {
@@ -364,6 +398,7 @@ export default function InvoicesScreen() {
   }
 
   const resetForm = () => {
+    setEditingId(null)
     setNewInvoice({
       customer_name: '', customer_email: '', customer_phone: '',
       items: [{ name: '', qty: '1', price: '' }],
@@ -511,7 +546,7 @@ export default function InvoicesScreen() {
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.modalContainer}>
             <LinearGradient colors={['rgba(20,20,30,0.99)', 'rgba(8,8,13,0.99)']} style={s.modalContent}>
               <View style={s.modalHeader}>
-                <Text style={s.modalTitle}>New Invoice</Text>
+                <Text style={s.modalTitle}>{editingId ? 'Edit Invoice' : 'New Invoice'}</Text>
                 <TouchableOpacity onPress={() => { setModalVisible(false); resetForm() }}><MaterialCommunityIcons name="close" size={22} color={colors.textMuted} /></TouchableOpacity>
               </View>
 
@@ -586,7 +621,7 @@ export default function InvoicesScreen() {
 
                 <Text style={[s.fieldLabel, { marginTop: 12 }]}>Status</Text>
                 <View style={s.statusPicker}>
-                  {['draft', 'sent'].map(st => (
+                  {(editingId ? ['draft', 'sent', 'paid', 'overdue'] : ['draft', 'sent']).map(st => (
                     <TouchableOpacity key={st} style={[s.statusOption, newInvoice.status === st && s.statusOptionActive]} onPress={() => setNewInvoice(prev => ({ ...prev, status: st }))} activeOpacity={0.7}>
                       <Text style={[s.statusOptionText, newInvoice.status === st && { color: colors.primary }]}>{st.charAt(0).toUpperCase() + st.slice(1)}</Text>
                     </TouchableOpacity>
@@ -595,7 +630,7 @@ export default function InvoicesScreen() {
 
                 <TouchableOpacity style={s.createBtn} onPress={handleCreate} disabled={creating} activeOpacity={0.85}>
                   <LinearGradient colors={[colors.primary, 'rgba(245,158,11,0.8)']} style={s.createBtnGradient}>
-                    {creating ? <ActivityIndicator color="#000" /> : <Text style={s.createBtnText}>Create Invoice</Text>}
+                    {creating ? <ActivityIndicator color="#000" /> : <Text style={s.createBtnText}>{editingId ? 'Update Invoice' : 'Create Invoice'}</Text>}
                   </LinearGradient>
                 </TouchableOpacity>
               </ScrollView>
@@ -715,6 +750,10 @@ export default function InvoicesScreen() {
                   {/* Action buttons */}
                   <Text style={[s.detailSectionLabel, { marginTop: 16 }]}>Actions</Text>
                   <View style={s.detailActions}>
+                    <TouchableOpacity style={s.actionBtn} onPress={() => editInvoice(detailInvoice)}>
+                      <MaterialCommunityIcons name="pencil" size={18} color={colors.primary} />
+                      <Text style={[s.actionBtnText, { color: colors.primary }]}>Edit</Text>
+                    </TouchableOpacity>
                     {detailInvoice.status === 'draft' && (
                       <TouchableOpacity style={s.actionBtn} onPress={() => { updateStatus(detailInvoice, 'sent'); setDetailInvoice(prev => prev ? { ...prev, status: 'sent' } : null) }}>
                         <MaterialCommunityIcons name="send" size={18} color={colors.blue} />
