@@ -83,8 +83,8 @@ android {
         applicationId "com.solisos"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName "1.1.6"
+        versionCode 28
+        versionName "1.1.7"
     }
     signingConfigs {
         debug {
