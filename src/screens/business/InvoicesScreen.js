@@ -6,7 +6,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useFocusEffect } from '@react-navigation/native'
-import RNHTMLtoPDF from 'react-native-html-to-pdf'
+import { generatePDF } from 'react-native-html-to-pdf'
 import RNShare from 'react-native-share'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -224,7 +224,7 @@ export default function InvoicesScreen() {
     try {
       const html = buildInvoiceHTML(invoice)
       const cleanName = (invoice.invoice_number || invoice.customer_name || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
-      const pdf = await RNHTMLtoPDF.convert({
+      const pdf = await generatePDF({
         html,
         fileName: cleanName,
         directory: Platform.OS === 'android' ? 'Download' : 'Documents',
@@ -257,7 +257,7 @@ export default function InvoicesScreen() {
     try {
       const html = buildInvoiceHTML(invoice)
       const cleanName = (invoice.invoice_number || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
-      const pdf = await RNHTMLtoPDF.convert({
+      const pdf = await generatePDF({
         html,
         fileName: cleanName,
         directory: Platform.OS === 'android' ? 'Download' : 'Documents',
