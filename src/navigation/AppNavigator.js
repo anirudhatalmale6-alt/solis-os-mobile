@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, ActivityIndicator, StyleSheet } from 'react-native'
+import { Text, View, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabBar: {
-    backgroundColor: 'rgba(8, 8, 13, 0.95)',
+    backgroundColor: 'rgba(8, 8, 13, 0.98)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.06)',
     paddingTop: 8,
-    paddingBottom: 8,
-    height: 66,
+    paddingBottom: Platform.OS === 'android' ? 16 : 8,
+    height: Platform.OS === 'android' ? 76 : 66,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -8 },
     shadowOpacity: 0.4,
