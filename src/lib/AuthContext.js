@@ -11,18 +11,26 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const [storedType, storedGuest] = await Promise.all([
+        AsyncStorage.getItem('solis_user_type'),
+        AsyncStorage.getItem('solis_guest_mode'),
+      ])
       if (session?.user) {
         setUser({
           id: session.user.id,
           email: session.user.email,
           full_name: session.user.user_metadata?.full_name,
         })
-        AsyncStorage.getItem('solis_user_type').then(t => setUserType(t))
+        setUserType(storedType)
+        if (storedType === 'business') {
+          await AsyncStorage.removeItem('solis_guest_mode')
+        } else if (storedGuest === 'true') {
+          setGuestMode(true)
+        }
+      } else if (storedGuest === 'true') {
+        setGuestMode(true)
       }
-      AsyncStorage.getItem('solis_guest_mode').then(v => {
-        if (v === 'true') setGuestMode(true)
-      })
       setLoading(false)
     })
 
@@ -45,6 +53,8 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) return { error: error.message }
+    await AsyncStorage.removeItem('solis_guest_mode')
+    setGuestMode(false)
     const type = await AsyncStorage.getItem('solis_user_type')
     setUserType(type)
     return { data }
@@ -73,6 +83,10 @@ export function AuthProvider({ children }) {
 
   const setType = async (type) => {
     await AsyncStorage.setItem('solis_user_type', type)
+    if (type === 'business') {
+      await AsyncStorage.removeItem('solis_guest_mode')
+      setGuestMode(false)
+    }
     setUserType(type)
   }
 
