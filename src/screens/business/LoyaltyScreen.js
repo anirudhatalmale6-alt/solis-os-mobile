@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const DEFAULT_TIERS = [
   { name: 'Bronze', minPoints: 0, color: '#CD7F32', icon: 'shield-outline' },
@@ -117,12 +118,7 @@ export default function LoyaltyScreen() {
   const topCustomer = customers[0]
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(245,158,11,0.1)', 'rgba(244,63,94,0.05)', 'transparent']}
-        style={s.headerGlow}
-      />
-
+    <ScreenBackground theme="royal">
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Loyalty & Rewards</Text>
@@ -296,13 +292,11 @@ export default function LoyaltyScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerSub: { fontSize: 13, color: colors.primary, marginTop: 4, fontWeight: '500' },

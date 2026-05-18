@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const BOT_URL = 'http://146.190.26.115:3003'
 
@@ -265,17 +266,16 @@ export default function WhatsAppConnectScreen({ navigation }) {
 
   if (loading) {
     return (
-      <View style={s.container}>
+      <ScreenBackground theme="sapphire">
         <View style={s.loadingWrap}><ActivityIndicator size="large" color="#25D366" /></View>
-      </View>
+      </ScreenBackground>
     )
   }
 
   // QR Code display screen
   if (qrImage) {
     return (
-      <View style={s.container}>
-        <LinearGradient colors={['rgba(37,211,102,0.1)', 'rgba(37,211,102,0.03)', 'transparent']} style={s.headerGlow} />
+      <ScreenBackground theme="sapphire">
         <View style={s.header}>
           <TouchableOpacity onPress={cancelLink} style={s.backBtn}>
             <Ionicons name="arrow-back" size={20} color={colors.text} />
@@ -305,7 +305,7 @@ export default function WhatsAppConnectScreen({ navigation }) {
             </View>
           </View>
         </ScrollView>
-      </View>
+      </ScreenBackground>
     )
   }
 
@@ -313,8 +313,7 @@ export default function WhatsAppConnectScreen({ navigation }) {
   // Pairing code display screen
   if (pairingCode) {
     return (
-      <View style={s.container}>
-        <LinearGradient colors={['rgba(37,211,102,0.1)', 'rgba(37,211,102,0.03)', 'transparent']} style={s.headerGlow} />
+      <ScreenBackground theme="sapphire">
         <View style={s.header}>
           <TouchableOpacity onPress={cancelLink} style={s.backBtn}>
             <Ionicons name="arrow-back" size={20} color={colors.text} />
@@ -348,15 +347,14 @@ export default function WhatsAppConnectScreen({ navigation }) {
             </View>
           </View>
         </ScrollView>
-      </View>
+      </ScreenBackground>
     )
   }
 
   // Waiting for QR or code
   if (waitingQR || waitingCode) {
     return (
-      <View style={s.container}>
-        <LinearGradient colors={['rgba(37,211,102,0.1)', 'rgba(37,211,102,0.03)', 'transparent']} style={s.headerGlow} />
+      <ScreenBackground theme="sapphire">
         <View style={s.header}>
           <TouchableOpacity onPress={cancelLink} style={s.backBtn}>
             <Ionicons name="arrow-back" size={20} color={colors.text} />
@@ -367,17 +365,12 @@ export default function WhatsAppConnectScreen({ navigation }) {
           <ActivityIndicator size="large" color="#25D366" />
           <Text style={s.loadingText}>{waitingQR ? 'Generating QR code...' : 'Generating pairing code...'}</Text>
         </View>
-      </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(37,211,102,0.1)', 'rgba(37,211,102,0.03)', 'transparent']}
-        style={s.headerGlow}
-      />
-
+    <ScreenBackground theme="sapphire">
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
           <Ionicons name="arrow-back" size={20} color={colors.text} />
@@ -529,13 +522,11 @@ export default function WhatsAppConnectScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 200 },
   loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   loadingText: { fontSize: 15, color: colors.textSecondary, marginTop: 16 },
   header: {

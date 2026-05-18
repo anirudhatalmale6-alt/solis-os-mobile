@@ -5,6 +5,7 @@ import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 import { useFocusEffect } from '@react-navigation/native'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const C = colors
 
@@ -140,16 +141,16 @@ export default function AnalyticsScreen() {
 
   if (loading) {
     return (
-      <View style={[s.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={C.primary} />
-      </View>
+      <ScreenBackground theme="sapphire">
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={C.primary} />
+        </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
-      <View style={s.glowOrb1} />
+    <ScreenBackground theme="sapphire">
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={
@@ -265,31 +266,11 @@ export default function AnalyticsScreen() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: C.bg,
-  },
-  headerGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 250,
-  },
-  glowOrb1: {
-    position: 'absolute',
-    top: 20,
-    right: -30,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(245,158,11,0.1)',
-  },
   scroll: {
     padding: 20,
     paddingTop: 60,

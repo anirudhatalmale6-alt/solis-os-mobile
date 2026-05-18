@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert 
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
+import ScreenBackground from '../../components/ScreenBackground'
 
 export default function WaitlistScreen() {
   const [queue, setQueue] = useState([])
@@ -49,12 +50,7 @@ export default function WaitlistScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(96,165,250,0.1)', 'rgba(96,165,250,0.03)', 'transparent']}
-        style={s.headerGlow}
-      />
-
+    <ScreenBackground theme="golden">
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Digital Waitlist</Text>
@@ -151,13 +147,11 @@ export default function WaitlistScreen() {
           </>
         )}
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
   header: {
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

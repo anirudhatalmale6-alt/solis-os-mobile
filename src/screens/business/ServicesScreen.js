@@ -19,6 +19,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 export default function ServicesScreen() {
   const { user } = useAuth()
@@ -191,15 +192,16 @@ export default function ServicesScreen() {
 
   if (loading) {
     return (
-      <View style={[s.container, s.centered]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <ScreenBackground theme="sapphire">
+        <View style={s.centered}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
+    <ScreenBackground theme="sapphire">
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Services</Text>
@@ -358,14 +360,12 @@ export default function ServicesScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  centered: { justifyContent: 'center', alignItems: 'center' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

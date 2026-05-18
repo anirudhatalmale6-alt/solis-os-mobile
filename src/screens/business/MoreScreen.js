@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const MENU_ITEMS = [
   { key: 'WhatsApp', icon: 'whatsapp', color: '#25D366', label: 'Connect WhatsApp', nav: 'WhatsAppConnect' },
@@ -40,13 +41,7 @@ export default function MoreScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(245,158,11,0.1)', 'rgba(168,85,247,0.04)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
+    <ScreenBackground theme="royal">
       <View style={s.header}>
         <Text style={s.headerTitle}>More</Text>
       </View>
@@ -97,21 +92,11 @@ export default function MoreScreen() {
 
         <Text style={s.version}>Solis OS v1.0</Text>
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 40, right: -30, width: 160, height: 160,
-    borderRadius: 80, backgroundColor: 'rgba(245, 158, 11, 0.1)',
-  },
-  glowOrb2: {
-    position: 'absolute', bottom: 150, left: -40, width: 120, height: 120,
-    borderRadius: 60, backgroundColor: 'rgba(168, 85, 247, 0.06)',
-  },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },

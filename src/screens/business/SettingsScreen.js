@@ -18,6 +18,7 @@ import { launchImageLibrary } from 'react-native-image-picker'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const INDUSTRIES = [
   { label: 'Salon', value: 'salon' },
@@ -191,18 +192,16 @@ export default function SettingsScreen() {
 
   if (loading) {
     return (
-      <View style={s.container}>
+      <ScreenBackground theme="royal">
         <View style={s.loadingWrap}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
-      </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
-      <View style={s.glowOrb1} />
+    <ScreenBackground theme="royal">
       <View style={s.header}>
         <Text style={s.headerTitle}>Settings</Text>
       </View>
@@ -436,15 +435,11 @@ export default function SettingsScreen() {
           </View>
         </TouchableOpacity>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
   logoRow: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
   },
@@ -465,22 +460,6 @@ const s = StyleSheet.create({
     ...shadows.button,
   },
   logoUploadText: { fontSize: 13, fontWeight: '700', color: '#000' },
-  headerGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 250,
-  },
-  glowOrb1: {
-    position: 'absolute',
-    top: 20,
-    right: -30,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(245,158,11,0.1)',
-  },
   loadingWrap: {
     flex: 1,
     justifyContent: 'center',

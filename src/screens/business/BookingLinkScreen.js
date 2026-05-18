@@ -16,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 export default function BookingLinkScreen() {
   const { user } = useAuth()
@@ -80,18 +81,16 @@ export default function BookingLinkScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <ScreenBackground theme="golden">
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
-      </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={styles.headerGlow} />
-      <View style={styles.glowOrb1} />
+    <ScreenBackground theme="golden">
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -200,31 +199,11 @@ export default function BookingLinkScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  headerGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 250,
-  },
-  glowOrb1: {
-    position: 'absolute',
-    top: 20,
-    right: -30,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(245,158,11,0.1)',
-  },
   centered: {
     flex: 1,
     justifyContent: 'center',

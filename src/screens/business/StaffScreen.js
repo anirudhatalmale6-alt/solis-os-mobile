@@ -19,6 +19,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const AVATAR_COLORS = [
   { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
@@ -183,10 +184,7 @@ export default function StaffScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
-      <View style={s.glowOrb} />
-
+    <ScreenBackground theme="sapphire">
       {/* Header */}
       <View style={s.header}>
         <View>
@@ -346,22 +344,11 @@ export default function StaffScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#08080d' },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb: {
-    position: 'absolute',
-    top: 30,
-    right: -50,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(245, 158, 11, 0.08)',
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

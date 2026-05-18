@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const STATUS_STYLES = {
   confirmed: { gradient: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.05)'], color: colors.green, border: 'rgba(34,197,94,0.25)', label: 'Confirmed' },
@@ -147,13 +148,7 @@ export default function BookingsScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
+    <ScreenBackground theme="golden">
       <View style={s.header}>
         <Text style={s.headerTitle}>Bookings</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -189,21 +184,11 @@ export default function BookingsScreen() {
           </>
         )}
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 20, left: -40, width: 160, height: 160,
-    borderRadius: 80, backgroundColor: 'rgba(245, 158, 11, 0.08)',
-  },
-  glowOrb2: {
-    position: 'absolute', bottom: 200, right: -30, width: 120, height: 120,
-    borderRadius: 60, backgroundColor: 'rgba(59, 130, 246, 0.05)',
-  },
   header: {
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

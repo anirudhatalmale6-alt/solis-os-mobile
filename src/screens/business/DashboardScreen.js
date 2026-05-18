@@ -6,6 +6,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const BOT_URL = 'http://146.190.26.115:3003'
 
@@ -90,15 +91,7 @@ export default function DashboardScreen() {
   ]
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)', 'transparent']}
-        style={s.headerGradient}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
-      <View style={s.glowOrb3} />
-
+    <ScreenBackground theme="golden">
       <ScrollView
         contentContainerStyle={s.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
@@ -205,46 +198,11 @@ export default function DashboardScreen() {
           })
         )}
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 280,
-  },
-  glowOrb1: {
-    position: 'absolute',
-    top: -30,
-    right: -40,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(245, 158, 11, 0.12)',
-  },
-  glowOrb2: {
-    position: 'absolute',
-    top: 200,
-    left: -60,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(59, 130, 246, 0.06)',
-  },
-  glowOrb3: {
-    position: 'absolute',
-    bottom: 120,
-    right: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(168, 85, 247, 0.05)',
-  },
   scroll: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 100 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   greetingSub: { fontSize: 14, color: colors.primary, marginBottom: 2, fontWeight: '600' },

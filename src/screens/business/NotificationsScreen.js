@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const NOTIF_TYPES = {
   booking: { icon: 'calendar-check', color: colors.blue, gradient: ['rgba(59,130,246,0.2)', 'rgba(59,130,246,0.05)'] },
@@ -96,14 +97,7 @@ export default function NotificationsScreen() {
   ]
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(168,85,247,0.1)', 'rgba(59,130,246,0.05)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
-
+    <ScreenBackground theme="sapphire">
       <View style={s.header}>
         <View style={{ flex: 1 }}>
           <Text style={s.headerTitle}>Notifications</Text>
@@ -200,21 +194,11 @@ export default function NotificationsScreen() {
           })
         )}
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 30, right: -40, width: 160, height: 160,
-    borderRadius: 80, backgroundColor: 'rgba(168, 85, 247, 0.08)',
-  },
-  glowOrb2: {
-    position: 'absolute', bottom: 200, left: -50, width: 130, height: 130,
-    borderRadius: 65, backgroundColor: 'rgba(59, 130, 246, 0.06)',
-  },
   header: {
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

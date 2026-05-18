@@ -11,6 +11,7 @@ import RNShare from 'react-native-share'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const STATUS_STYLES = {
   draft: { label: 'Draft', gradient: ['rgba(245,158,11,0.25)', 'rgba(245,158,11,0.10)'], color: colors.primary, border: 'rgba(245,158,11,0.3)' },
@@ -224,12 +225,20 @@ export default function InvoicesScreen() {
     try {
       const html = buildInvoiceHTML(invoice)
       const cleanName = (invoice.invoice_number || invoice.customer_name || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
-      const pdf = await generatePDF({
-        html,
-        fileName: cleanName,
-        directory: Platform.OS === 'android' ? 'Download' : 'Documents',
-        base64: false,
-      })
+      let pdf
+      try {
+        pdf = await generatePDF({
+          html,
+          fileName: cleanName,
+          directory: Platform.OS === 'android' ? 'Download' : 'Documents',
+          base64: false,
+        })
+      } catch (pdfErr) {
+        Alert.alert('PDF Error', `Could not generate PDF: ${pdfErr?.message || 'Unknown error'}. Sharing as text instead.`)
+        const text = buildInvoiceText(invoice)
+        Share.share({ message: text, title: `Invoice - ${invoice.customer_name}` }).catch(() => {})
+        return
+      }
       if (pdf && pdf.filePath) {
         await RNShare.open({
           url: Platform.OS === 'android' ? `file://${pdf.filePath}` : pdf.filePath,
@@ -237,6 +246,10 @@ export default function InvoicesScreen() {
           title: `Invoice - ${invoice.customer_name}`,
           failOnCancel: false,
         })
+      } else {
+        Alert.alert('PDF Error', 'PDF generated but no file path returned. Sharing as text instead.')
+        const text = buildInvoiceText(invoice)
+        Share.share({ message: text, title: `Invoice - ${invoice.customer_name}` }).catch(() => {})
       }
     } catch (e) {
       if (e && e.message && !e.message.includes('cancel') && !e.message.includes('dismiss')) {
@@ -254,6 +267,7 @@ export default function InvoicesScreen() {
   }
 
   const sendViaWhatsApp = async (invoice) => {
+    let pdfSent = false
     try {
       const html = buildInvoiceHTML(invoice)
       const cleanName = (invoice.invoice_number || 'invoice').replace(/[^a-zA-Z0-9_-]/g, '_')
@@ -273,13 +287,19 @@ export default function InvoicesScreen() {
           title: `Invoice - ${invoice.customer_name}`,
           failOnCancel: false,
         })
-        return
+        pdfSent = true
       }
-    } catch (e) {}
-    const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
-    const text = encodeURIComponent(buildInvoiceText(invoice))
-    const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
-    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+    } catch (e) {
+      if (e && e.message && !e.message.includes('cancel') && !e.message.includes('dismiss')) {
+        console.warn('WhatsApp PDF failed:', e.message)
+      }
+    }
+    if (!pdfSent) {
+      const phone = (invoice.customer_phone || '').replace(/[^0-9]/g, '')
+      const text = encodeURIComponent(buildInvoiceText(invoice))
+      const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+      Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open WhatsApp'))
+    }
   }
 
   const sendReminder = (invoice) => {
@@ -450,12 +470,11 @@ export default function InvoicesScreen() {
   }
 
   if (loading) {
-    return <View style={[s.container, s.center]}><ActivityIndicator size="large" color={colors.primary} /></View>
+    return <ScreenBackground theme="warm"><View style={s.center}><ActivityIndicator size="large" color={colors.primary} /></View></ScreenBackground>
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.08)', 'rgba(59,130,246,0.04)', 'transparent']} style={s.headerGlow} />
+    <ScreenBackground theme="warm">
 
       <View style={s.header}>
         <Text style={s.headerTitle}>Invoices</Text>
@@ -781,14 +800,12 @@ export default function InvoicesScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  center: { justifyContent: 'center', alignItems: 'center' },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   headerBadge: { backgroundColor: 'rgba(245,158,11,0.12)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)' },

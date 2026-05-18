@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const CATEGORIES = [
   { key: 'rent', label: 'Rent', icon: 'home-outline' },
@@ -89,13 +90,7 @@ export default function ExpensesScreen() {
   })
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(239,68,68,0.08)', 'rgba(245,158,11,0.05)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-
+    <ScreenBackground theme="warm">
       <View style={s.header}>
         <Text style={s.headerTitle}>Expenses</Text>
         <TouchableOpacity activeOpacity={0.8} onPress={() => setShowModal(true)}>
@@ -235,17 +230,11 @@ export default function ExpensesScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 40, right: -30, width: 150, height: 150,
-    borderRadius: 75, backgroundColor: 'rgba(239, 68, 68, 0.06)',
-  },
   header: {
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

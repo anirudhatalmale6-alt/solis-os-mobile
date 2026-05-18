@@ -20,6 +20,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 export default function PromotionsScreen() {
   const { user } = useAuth()
@@ -253,21 +254,16 @@ export default function PromotionsScreen() {
 
   if (loading) {
     return (
-      <View style={[s.container, s.centered]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <ScreenBackground theme="royal">
+        <View style={s.centered}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      {/* Header glow */}
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
-
-      {/* Decorative glow orbs */}
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
-
+    <ScreenBackground theme="royal">
       {/* Header */}
       <View style={s.header}>
         <View>
@@ -534,34 +530,12 @@ export default function PromotionsScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  centered: { justifyContent: 'center', alignItems: 'center' },
-
-  // Decorative glow orbs
-  glowOrb1: {
-    position: 'absolute',
-    top: 80,
-    right: -40,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(245, 158, 11, 0.06)',
-  },
-  glowOrb2: {
-    position: 'absolute',
-    top: 200,
-    left: -60,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(168, 85, 247, 0.04)',
-  },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: {
     flexDirection: 'row',

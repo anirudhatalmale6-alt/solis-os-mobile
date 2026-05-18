@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const AVATAR_COLORS = [
   { gradient: ['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)'], color: colors.primary },
@@ -86,13 +87,7 @@ export default function CustomersScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(59,130,246,0.08)', 'rgba(245,158,11,0.04)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
+    <ScreenBackground theme="warm">
       <View style={s.header}>
         <Text style={s.headerTitle}>Customers</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -155,21 +150,11 @@ export default function CustomersScreen() {
           })
         )}
       </ScrollView>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 30, right: -50, width: 180, height: 180,
-    borderRadius: 90, backgroundColor: 'rgba(59, 130, 246, 0.08)',
-  },
-  glowOrb2: {
-    position: 'absolute', bottom: 150, left: -40, width: 120, height: 120,
-    borderRadius: 60, backgroundColor: 'rgba(245, 158, 11, 0.06)',
-  },
   header: {
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

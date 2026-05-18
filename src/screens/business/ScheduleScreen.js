@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
+import ScreenBackground from '../../components/ScreenBackground'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const DAY_LABELS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -139,15 +140,16 @@ export default function ScheduleScreen() {
 
   if (loading) {
     return (
-      <View style={[s.container, s.center]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <ScreenBackground theme="golden">
+        <View style={s.center}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </ScreenBackground>
     )
   }
 
   return (
-    <View style={s.container}>
-      <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(245,158,11,0.03)', 'transparent']} style={s.headerGlow} />
+    <ScreenBackground theme="golden">
       <View style={s.header}>
         <Text style={s.headerTitle}>Schedule</Text>
       </View>
@@ -290,14 +292,12 @@ export default function ScheduleScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScreenBackground>
   )
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  center: { justifyContent: 'center', alignItems: 'center' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
