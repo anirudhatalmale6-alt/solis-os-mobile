@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>SolisOS</string>
+	<string>Solis OS</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,12 +26,30 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>supabase.co</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<false/>
+			</dict>
+			<key>146.190.26.115</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Solis OS needs camera access to take photos for your business profile and services.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Solis OS needs photo library access to upload images for your business.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>
