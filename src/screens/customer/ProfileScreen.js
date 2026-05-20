@@ -7,9 +7,9 @@ import { colors, shadows } from '../../theme/colors'
 import { useAuth } from '../../lib/AuthContext'
 
 const MENU_ITEMS = [
-  { key: 'notifications', icon: 'bell-outline', label: 'Notifications', nav: null },
-  { key: 'help', icon: 'lightbulb-outline', label: 'Help & Support', nav: null },
-  { key: 'about', icon: 'information-outline', label: 'About Solis OS', nav: null },
+  { key: 'notifications', icon: 'bell-outline', label: 'Notifications', nav: 'CustomerNotifications' },
+  { key: 'help', icon: 'lightbulb-outline', label: 'Help & Support', nav: 'CustomerHelp' },
+  { key: 'about', icon: 'information-outline', label: 'About Solis OS', nav: 'CustomerAbout' },
 ]
 
 export default function ProfileScreen({ navigation }) {
@@ -18,8 +18,6 @@ export default function ProfileScreen({ navigation }) {
   const handleMenuPress = (item) => {
     if (item.nav) {
       navigation.navigate(item.nav)
-    } else {
-      Alert.alert(item.label, 'Coming soon!')
     }
   }
 
@@ -57,7 +55,10 @@ export default function ProfileScreen({ navigation }) {
 
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={() => navigation.getParent()?.navigate('Home', { screen: 'Login', params: { role: 'customer' } })}
+            onPress={() => {
+              const tab = navigation.getParent()?.getParent?.() || navigation.getParent()
+              tab?.navigate('Home', { screen: 'Login', params: { role: 'customer' } })
+            }}
           >
             <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signInBtn}>
               <Text style={s.signInText}>Sign In</Text>
@@ -67,7 +68,10 @@ export default function ProfileScreen({ navigation }) {
           <TouchableOpacity
             style={s.createBtn}
             activeOpacity={0.85}
-            onPress={() => navigation.getParent()?.navigate('Home', { screen: 'Signup', params: { role: 'customer' } })}
+            onPress={() => {
+              const tab = navigation.getParent()?.getParent?.() || navigation.getParent()
+              tab?.navigate('Home', { screen: 'Signup', params: { role: 'customer' } })
+            }}
           >
             <Text style={s.createBtnText}>Create Account</Text>
           </TouchableOpacity>

@@ -20,6 +20,9 @@ import BusinessProfileScreen from '../screens/customer/BusinessProfileScreen'
 import BookAppointmentScreen from '../screens/customer/BookAppointmentScreen'
 import MyBookingsScreen from '../screens/customer/MyBookingsScreen'
 import ProfileScreen from '../screens/customer/ProfileScreen'
+import CustomerNotificationsScreen from '../screens/customer/NotificationsScreen'
+import HelpSupportScreen from '../screens/customer/HelpSupportScreen'
+import AboutScreen from '../screens/customer/AboutScreen'
 
 // Business Screens
 import DashboardScreen from '../screens/business/DashboardScreen'
@@ -44,6 +47,7 @@ const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 const HomeStack = createNativeStackNavigator()
 const MoreStack = createNativeStackNavigator()
+const ProfileStack = createNativeStackNavigator()
 
 // Customer Home Stack (Home > BusinessProfile > BookAppointment > Login/Signup)
 function CustomerHomeStack() {
@@ -55,6 +59,18 @@ function CustomerHomeStack() {
       <HomeStack.Screen name="Login" component={LoginScreen} />
       <HomeStack.Screen name="Signup" component={SignupScreen} />
     </HomeStack.Navigator>
+  )
+}
+
+// Customer Profile Stack (Profile > Notifications, Help, About)
+function CustomerProfileStack() {
+  return (
+    <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+      <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} />
+      <ProfileStack.Screen name="CustomerNotifications" component={CustomerNotificationsScreen} />
+      <ProfileStack.Screen name="CustomerHelp" component={HelpSupportScreen} />
+      <ProfileStack.Screen name="CustomerAbout" component={AboutScreen} />
+    </ProfileStack.Navigator>
   )
 }
 
@@ -99,7 +115,7 @@ function CustomerTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={CustomerProfileStack}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons name={focused ? "person" : "person-outline"} size={22} color={focused ? colors.primary : '#555'} />
