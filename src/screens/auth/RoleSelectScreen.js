@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Image } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -21,9 +21,7 @@ export default function RoleSelectScreen({ navigation }) {
       <View style={s.glowOrb3} />
 
       <View style={s.logoWrap}>
-        <LinearGradient colors={['#f59e0b', '#f97316']} style={s.logoCircle}>
-          <Text style={s.logoText}>S</Text>
-        </LinearGradient>
+        <Image source={require('../../assets/logo_solis.png')} style={s.logoImage} />
         <Text style={s.brandName}>Solis OS</Text>
         <Text style={s.tagline}>The future of business management</Text>
       </View>
@@ -120,19 +118,11 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 48,
   },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 22,
     marginBottom: 16,
-    ...shadows.button,
-  },
-  logoText: {
-    fontSize: 36,
-    fontWeight: '800',
-    color: '#000',
   },
   brandName: {
     fontSize: 32,
