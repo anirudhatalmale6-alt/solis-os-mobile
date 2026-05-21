@@ -97,7 +97,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={s.signOutText}>Back to Start</Text>
           </TouchableOpacity>
 
-          <Text style={s.version}>Solis OS v1.0</Text>
+          <Text style={s.version}>Solis OS v1.3.0</Text>
         </ScrollView>
       </View>
     )
@@ -153,7 +153,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={s.signOutText}>Sign Out</Text>
         </TouchableOpacity>
 
-        <Text style={s.version}>Solis OS v1.0</Text>
+        <Text style={s.version}>Solis OS v1.3.0</Text>
       </ScrollView>
     </View>
   )
@@ -228,7 +228,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     ...shadows.button,
   },
-  signInText: { fontSize: 16, fontWeight: '700', color: '#000' },
+  signInText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   createBtn: {
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
