@@ -51,6 +51,7 @@ export default function SettingsScreen() {
   const [industry, setIndustry] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [website, setWebsite] = useState('')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
   const [country, setCountry] = useState('')
@@ -75,6 +76,7 @@ export default function SettingsScreen() {
         setIndustry(biz.industry || '')
         setPhone(biz.phone || '')
         setEmail(biz.email || '')
+        setWebsite(biz.website || '')
         setAddress(biz.address || '')
         setCity(biz.city || '')
         setCountry(biz.country || '')
@@ -100,6 +102,7 @@ export default function SettingsScreen() {
         industry,
         phone: phone.trim(),
         email: email.trim(),
+        website: website.trim(),
         address: address.trim(),
         city: city.trim(),
         country: country.trim(),
@@ -282,6 +285,19 @@ export default function SettingsScreen() {
               placeholder="business@example.com"
               placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={s.fieldGroup}>
+            <Text style={s.label}>Website</Text>
+            <TextInput
+              style={s.input}
+              value={website}
+              onChangeText={setWebsite}
+              placeholder="https://www.yourbusiness.com"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="url"
               autoCapitalize="none"
             />
           </View>
