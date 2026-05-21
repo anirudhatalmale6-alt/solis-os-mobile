@@ -24,7 +24,7 @@ export default function AboutScreen({ navigation }) {
         <View style={s.logoWrap}>
           <Image source={require('../../assets/logo_solis.png')} style={s.logo} />
           <Text style={s.appName}>Solis OS</Text>
-          <Text style={s.version}>Version 1.2.1</Text>
+          <Text style={s.version}>Version 1.3.0</Text>
         </View>
 
         <LinearGradient
