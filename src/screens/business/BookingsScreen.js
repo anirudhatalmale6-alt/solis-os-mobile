@@ -168,14 +168,11 @@ export default function BookingsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {bookings.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="calendar-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No bookings yet</Text>
             <Text style={s.emptyDesc}>Bookings from customers will appear here</Text>
-          </LinearGradient>
+          </View>
         ) : (
           <>
             {renderSection('Today', grouped.today)}
@@ -204,13 +201,13 @@ const s = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 },
   sectionCountWrap: {
-    backgroundColor: 'rgba(255,255,255,0.08)', paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgInput, paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 10, borderWidth: 1, borderColor: colors.border,
   },
   sectionCount: { fontSize: 12, color: colors.textMuted, fontWeight: '600' },
   bookingCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: 18, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', marginBottom: 8, ...shadows.card,
+    backgroundColor: colors.bgCard, borderRadius: 18, padding: 16,
+    borderWidth: 1, borderColor: colors.border, marginBottom: 8, ...shadows.card,
   },
   bookingRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatar: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
@@ -233,13 +230,13 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(239,68,68,0.25)', backgroundColor: 'rgba(239,68,68,0.08)',
   },
   deleteBtnText: { fontSize: 13, color: colors.red, fontWeight: '600' },
-  details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)' },
+  details: { marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.borderLight },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   detailLabel: { fontSize: 12, color: colors.textMuted },
   detailValue: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', marginTop: 20, ...shadows.card,
+    backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border, marginTop: 20, ...shadows.card,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

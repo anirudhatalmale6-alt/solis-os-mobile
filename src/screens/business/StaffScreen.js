@@ -204,7 +204,7 @@ export default function StaffScreen() {
         <TextInput
           style={s.searchInput}
           placeholder="Search by name, role, email..."
-          placeholderTextColor="#555566"
+          placeholderTextColor={colors.textMuted}
           value={search}
           onChangeText={setSearch}
         />
@@ -213,11 +213,11 @@ export default function StaffScreen() {
       {/* Staff List */}
       <ScrollView
         contentContainerStyle={s.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#f59e0b" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {loading ? (
           <View style={s.loadingWrap}>
-            <ActivityIndicator size="large" color="#f59e0b" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : filtered.length === 0 ? (
           <View style={s.empty}>
@@ -284,7 +284,7 @@ export default function StaffScreen() {
               <TextInput
                 style={s.formInput}
                 placeholder="e.g. Sarah Johnson"
-                placeholderTextColor="#555566"
+                placeholderTextColor={colors.textMuted}
                 value={formName}
                 onChangeText={setFormName}
                 autoCapitalize="words"
@@ -296,7 +296,7 @@ export default function StaffScreen() {
               <TextInput
                 style={s.formInput}
                 placeholder="e.g. Senior Stylist"
-                placeholderTextColor="#555566"
+                placeholderTextColor={colors.textMuted}
                 value={formRole}
                 onChangeText={setFormRole}
                 autoCapitalize="words"
@@ -308,7 +308,7 @@ export default function StaffScreen() {
               <TextInput
                 style={s.formInput}
                 placeholder="e.g. sarah@example.com"
-                placeholderTextColor="#555566"
+                placeholderTextColor={colors.textMuted}
                 value={formEmail}
                 onChangeText={setFormEmail}
                 keyboardType="email-address"
@@ -334,7 +334,7 @@ export default function StaffScreen() {
               >
                 <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveBtnGradient}>
                   {saving ? (
-                    <ActivityIndicator size="small" color="#08080d" />
+                    <ActivityIndicator size="small" color="#fff" />
                   ) : (
                     <Text style={s.saveBtnText}>{editingStaff ? 'Update' : 'Add Member'}</Text>
                   )}
@@ -357,8 +357,8 @@ const s = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 8,
   },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: '#f0f0f5', letterSpacing: 0.3 },
-  headerSub: { fontSize: 13, color: '#555566', marginTop: 4 },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
+  headerSub: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
   addBtn: {
     borderRadius: 12,
     overflow: 'hidden',
@@ -369,13 +369,13 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
   },
-  addBtnText: { color: '#08080d', fontSize: 13, fontWeight: '700' },
+  addBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     borderRadius: 14,
     marginHorizontal: 20,
     marginTop: 16,
@@ -384,17 +384,17 @@ const s = StyleSheet.create({
     gap: 10,
     ...shadows.card,
   },
-  searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: '#f0f0f5' },
+  searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   loadingWrap: { paddingVertical: 60, alignItems: 'center' },
   staffRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     marginBottom: 8,
     gap: 12,
     ...shadows.card,
@@ -402,9 +402,9 @@ const s = StyleSheet.create({
   avatar: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 15, fontWeight: '700' },
   staffInfo: { flex: 1 },
-  staffName: { fontSize: 15, fontWeight: '600', color: '#f0f0f5', marginBottom: 2 },
-  staffRole: { fontSize: 13, color: '#9999aa', marginBottom: 1 },
-  staffDetail: { fontSize: 12, color: '#555566', marginTop: 1 },
+  staffName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  staffRole: { fontSize: 13, color: colors.textSecondary, marginBottom: 1 },
+  staffDetail: { fontSize: 12, color: colors.textMuted, marginTop: 1 },
   rightCol: { alignItems: 'flex-end' },
   badge: {
     paddingHorizontal: 10,
@@ -412,38 +412,38 @@ const s = StyleSheet.create({
     borderRadius: 8,
   },
   badgeActive: { backgroundColor: 'rgba(34,197,94,0.12)' },
-  badgeInactive: { backgroundColor: 'rgba(255,255,255,0.06)' },
+  badgeInactive: { backgroundColor: colors.bgInput },
   badgeText: { fontSize: 11, fontWeight: '600' },
   badgeTextActive: { color: '#22c55e' },
-  badgeTextInactive: { color: '#555566' },
+  badgeTextInactive: { color: colors.textMuted },
   empty: {
     alignItems: 'center',
     paddingVertical: 60,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     marginTop: 20,
     ...shadows.card,
   },
   emptyEmoji: { marginBottom: 12 },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: '#f0f0f5', marginBottom: 4 },
-  emptyDesc: { fontSize: 13, color: '#555566' },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
+  emptyDesc: { fontSize: 13, color: colors.textMuted },
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#12121a',
+    backgroundColor: colors.bgCard,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 40,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     borderBottomWidth: 0,
   },
   modalHeader: {
@@ -452,19 +452,19 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  modalTitle: { fontSize: 20, fontWeight: '700', color: '#f0f0f5' },
-  modalClose: { fontSize: 20, color: '#555566', padding: 4 },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
+  modalClose: { fontSize: 20, color: colors.textMuted, padding: 4 },
   formGroup: { marginBottom: 18 },
-  formLabel: { fontSize: 13, fontWeight: '600', color: '#9999aa', marginBottom: 8 },
+  formLabel: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 8 },
   formInput: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: '#f0f0f5',
+    color: colors.text,
   },
   modalActions: {
     flexDirection: 'row',
@@ -493,5 +493,5 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   saveBtnDisabled: { opacity: 0.6 },
-  saveBtnText: { color: '#08080d', fontSize: 14, fontWeight: '700' },
+  saveBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 })

@@ -138,18 +138,9 @@ export default function NotificationsScreen() {
             activeOpacity={0.8}
             onPress={() => setFilter(f.key)}
           >
-            {filter === f.key ? (
-              <LinearGradient
-                colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']}
-                style={[s.filterChip, s.filterChipActive]}
-              >
-                <Text style={[s.filterText, s.filterTextActive]}>{f.label}</Text>
-              </LinearGradient>
-            ) : (
-              <View style={s.filterChip}>
-                <Text style={s.filterText}>{f.label}</Text>
-              </View>
-            )}
+            <View style={[s.filterChip, filter === f.key && s.filterChipActive]}>
+              <Text style={[s.filterText, filter === f.key && s.filterTextActive]}>{f.label}</Text>
+            </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -159,14 +150,11 @@ export default function NotificationsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {filtered.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="bell-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No notifications yet</Text>
             <Text style={s.emptyDesc}>Activity from bookings will appear here</Text>
-          </LinearGradient>
+          </View>
         ) : (
           filtered.map(notif => {
             const typeConfig = NOTIF_TYPES[notif.type] || NOTIF_TYPES.system
@@ -219,21 +207,21 @@ const s = StyleSheet.create({
   filterRow: { paddingHorizontal: 20, gap: 8, flexDirection: 'row', alignItems: 'center' },
   filterChip: {
     paddingHorizontal: 18, paddingVertical: 9, borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border,
   },
-  filterChipActive: { borderColor: colors.borderGlow },
+  filterChipActive: { borderColor: 'rgba(245,158,11,0.3)', backgroundColor: 'rgba(245,158,11,0.1)' },
   filterText: { fontSize: 13, fontWeight: '500', color: colors.textMuted },
   filterTextActive: { color: colors.primary, fontWeight: '600' },
   scroll: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 100 },
   notifCard: {
     flexDirection: 'row', alignItems: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 18,
-    padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: colors.bgCard, borderRadius: 18,
+    padding: 16, borderWidth: 1, borderColor: colors.border,
     marginBottom: 8, gap: 12, ...shadows.card,
   },
   notifUnread: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: colors.bgCard,
+    borderColor: colors.primary + '30',
   },
   unreadDot: {
     position: 'absolute', top: 16, left: 8, width: 6, height: 6, borderRadius: 3,
@@ -248,7 +236,7 @@ const s = StyleSheet.create({
   notifTime: { fontSize: 11, color: colors.textMuted },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20,
+    borderWidth: 1, borderColor: colors.border, marginTop: 20, backgroundColor: colors.bgCard,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

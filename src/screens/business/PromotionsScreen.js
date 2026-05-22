@@ -520,7 +520,7 @@ export default function PromotionsScreen() {
               >
                 <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
                   {saving ? (
-                    <ActivityIndicator size="small" color={colors.bg} />
+                    <ActivityIndicator size="small" color="#fff" />
                   ) : (
                     <Text style={s.saveButtonText}>Create Promotion</Text>
                   )}
@@ -557,7 +557,7 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
   },
-  addButtonText: { fontSize: 14, fontWeight: '700', color: colors.bg },
+  addButtonText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
 
   // Stats
@@ -572,7 +572,7 @@ const s = StyleSheet.create({
     borderRadius: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: colors.border,
     ...shadows.card,
   },
   statGradient: {
@@ -594,11 +594,11 @@ const s = StyleSheet.create({
 
   // Promo cards
   promoCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginBottom: 12,
     ...shadows.card,
   },
@@ -657,7 +657,7 @@ const s = StyleSheet.create({
     marginBottom: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.06)',
+    borderTopColor: colors.borderLight,
   },
   detailItem: {
     flexDirection: 'row',
@@ -694,10 +694,10 @@ const s = StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingVertical: 80,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginTop: 20,
     ...shadows.card,
   },
@@ -708,16 +708,16 @@ const s = StyleSheet.create({
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.bgCardSolid,
+    backgroundColor: colors.bgCard,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.borderGlow,
+    borderColor: colors.border,
     borderBottomWidth: 0,
     maxHeight: '85%',
     ...shadows.deep,
@@ -782,7 +782,7 @@ const s = StyleSheet.create({
     color: colors.textSecondary,
   },
   typeOptionTextActive: {
-    color: colors.bg,
+    color: '#fff',
   },
 
   saveButton: {
@@ -798,5 +798,5 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { fontSize: 16, fontWeight: '700', color: colors.bg },
+  saveButtonText: { fontSize: 16, fontWeight: '700', color: '#fff' },
 })

@@ -227,7 +227,7 @@ export default function SettingsScreen() {
               <TouchableOpacity activeOpacity={0.8} onPress={handleLogoUpload} disabled={uploadingLogo}>
                 <LinearGradient colors={['#f59e0b', '#f97316']} style={s.logoUploadBtn}>
                   {uploadingLogo ? (
-                    <ActivityIndicator size="small" color="#000" />
+                    <ActivityIndicator size="small" color="#fff" />
                   ) : (
                     <Text style={s.logoUploadText}>{logoUrl ? 'Change Logo' : 'Upload Logo'}</Text>
                   )}
@@ -359,7 +359,7 @@ export default function SettingsScreen() {
         >
           <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
             {saving ? (
-              <ActivityIndicator size="small" color="#000" />
+              <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={s.saveButtonText}>Save Changes</Text>
             )}
@@ -475,7 +475,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, alignSelf: 'flex-start',
     ...shadows.button,
   },
-  logoUploadText: { fontSize: 13, fontWeight: '700', color: '#000' },
+  logoUploadText: { fontSize: 13, fontWeight: '700', color: '#fff' },
   loadingWrap: {
     flex: 1,
     justifyContent: 'center',
@@ -505,10 +505,10 @@ const s = StyleSheet.create({
     marginTop: 8,
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     padding: 20,
     marginBottom: 20,
     ...shadows.card,
@@ -531,7 +531,7 @@ const s = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgInput,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
@@ -541,7 +541,7 @@ const s = StyleSheet.create({
     color: colors.text,
   },
   pickerButton: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgInput,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
@@ -580,7 +580,7 @@ const s = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#000',
+    color: '#fff',
   },
   accountRow: {
     flexDirection: 'row',
@@ -612,13 +612,13 @@ const s = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 30,
   },
   modalContent: {
-    backgroundColor: '#16161e',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,

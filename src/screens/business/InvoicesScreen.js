@@ -506,10 +506,10 @@ export default function InvoicesScreen() {
       </ScrollView>
 
       <View style={s.searchWrap}>
-        <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.searchInner}>
+        <View style={s.searchInner}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput style={s.searchInput} placeholder="Search by name, email, or invoice #..." placeholderTextColor={colors.textMuted} value={search} onChangeText={setSearch} />
-        </LinearGradient>
+        </View>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.filterRow} contentContainerStyle={s.filterContent}>
@@ -522,11 +522,11 @@ export default function InvoicesScreen() {
 
       <ScrollView contentContainerStyle={s.scroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}>
         {filtered.length === 0 ? (
-          <LinearGradient colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']} style={s.empty}>
+          <View style={s.empty}>
             <MaterialCommunityIcons name="file-document-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>{search || filter !== 'all' ? 'No invoices found' : 'No invoices yet'}</Text>
             <Text style={s.emptyDesc}>{search || filter !== 'all' ? 'Try adjusting your search or filter' : 'Tap + to create your first invoice'}</Text>
-          </LinearGradient>
+          </View>
         ) : (
           filtered.map((invoice) => {
             const ss = STATUS_STYLES[invoice.status] || STATUS_STYLES.draft
@@ -563,7 +563,7 @@ export default function InvoicesScreen() {
       <Modal visible={modalVisible} animationType="slide" transparent onRequestClose={() => { setModalVisible(false); resetForm() }}>
         <View style={s.modalOverlay}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.modalContainer}>
-            <LinearGradient colors={['rgba(20,20,30,0.99)', 'rgba(8,8,13,0.99)']} style={s.modalContent}>
+            <View style={s.modalContent}>
               <View style={s.modalHeader}>
                 <Text style={s.modalTitle}>{editingId ? 'Edit Invoice' : 'New Invoice'}</Text>
                 <TouchableOpacity onPress={() => { setModalVisible(false); resetForm() }}><MaterialCommunityIcons name="close" size={22} color={colors.textMuted} /></TouchableOpacity>
@@ -649,11 +649,11 @@ export default function InvoicesScreen() {
 
                 <TouchableOpacity style={s.createBtn} onPress={handleCreate} disabled={creating} activeOpacity={0.85}>
                   <LinearGradient colors={[colors.primary, 'rgba(245,158,11,0.8)']} style={s.createBtnGradient}>
-                    {creating ? <ActivityIndicator color="#000" /> : <Text style={s.createBtnText}>{editingId ? 'Update Invoice' : 'Create Invoice'}</Text>}
+                    {creating ? <ActivityIndicator color="#fff" /> : <Text style={s.createBtnText}>{editingId ? 'Update Invoice' : 'Create Invoice'}</Text>}
                   </LinearGradient>
                 </TouchableOpacity>
               </ScrollView>
-            </LinearGradient>
+            </View>
           </KeyboardAvoidingView>
         </View>
       </Modal>
@@ -662,7 +662,7 @@ export default function InvoicesScreen() {
       <Modal visible={!!detailInvoice} animationType="slide" transparent onRequestClose={() => setDetailInvoice(null)}>
         <View style={s.modalOverlay}>
           <View style={s.modalContainer}>
-            <LinearGradient colors={['rgba(20,20,30,0.99)', 'rgba(8,8,13,0.99)']} style={s.modalContent}>
+            <View style={s.modalContent}>
               <View style={s.modalHeader}>
                 <Text style={s.modalTitle}>Invoice</Text>
                 <TouchableOpacity onPress={() => setDetailInvoice(null)}><MaterialCommunityIcons name="close" size={22} color={colors.textMuted} /></TouchableOpacity>
@@ -796,7 +796,7 @@ export default function InvoicesScreen() {
                   </View>
                 </ScrollView>
               )}
-            </LinearGradient>
+            </View>
           </View>
         </View>
       </Modal>
@@ -815,23 +815,23 @@ const s = StyleSheet.create({
 
   statsRow: { marginTop: 16, maxHeight: 90 },
   statsContent: { paddingHorizontal: 20, gap: 10 },
-  statCard: { paddingHorizontal: 18, paddingVertical: 14, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginRight: 10, minWidth: 140 },
+  statCard: { paddingHorizontal: 18, paddingVertical: 14, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginRight: 10, minWidth: 140 },
   statLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '500', marginBottom: 4 },
   statValue: { fontSize: 18, fontWeight: '700' },
 
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 8 },
-  searchInner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 16, paddingHorizontal: 14, gap: 10 },
+  searchInner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 14, gap: 10, backgroundColor: colors.bgInput },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
 
   filterRow: { maxHeight: 44, marginBottom: 8 },
   filterContent: { paddingHorizontal: 20, gap: 8 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginRight: 8 },
+  filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border, marginRight: 8 },
   filterChipActive: { backgroundColor: 'rgba(245,158,11,0.15)', borderColor: 'rgba(245,158,11,0.3)' },
   filterChipText: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
   filterChipTextActive: { color: colors.primary },
 
   scroll: { paddingHorizontal: 20, paddingBottom: 120 },
-  invoiceCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 10 },
+  invoiceCard: { backgroundColor: colors.bgCard, borderRadius: 18, padding: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 10 },
   invoiceTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   invoiceInfo: { flex: 1 },
   invoiceName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
@@ -843,17 +843,17 @@ const s = StyleSheet.create({
   statusBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 8, borderWidth: 1 },
   statusText: { fontSize: 11, fontWeight: '600' },
 
-  empty: { alignItems: 'center', paddingVertical: 60, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20 },
+  empty: { alignItems: 'center', paddingVertical: 60, borderRadius: 20, borderWidth: 1, borderColor: colors.border, marginTop: 20, backgroundColor: colors.bgCard },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: 12, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 
   fab: { position: 'absolute', bottom: 110, right: 24 },
   fabGradient: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
-  fabText: { fontSize: 28, fontWeight: '600', color: '#000', marginTop: -2 },
+  fabText: { fontSize: 28, fontWeight: '600', color: '#fff', marginTop: -2 },
 
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContainer: { maxHeight: '92%' },
-  modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingTop: 20, paddingBottom: 40 },
+  modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: colors.border, paddingTop: 20, paddingBottom: 40, backgroundColor: colors.bgCard },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, marginBottom: 20 },
   modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
   modalScroll: { paddingHorizontal: 24 },
@@ -864,44 +864,44 @@ const s = StyleSheet.create({
 
   fieldLabel: { fontSize: 12, fontWeight: '600', color: colors.textSecondary, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
   fieldHint: { fontSize: 11, color: colors.textMuted, marginTop: -8, marginBottom: 8 },
-  input: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 14, fontSize: 14, color: colors.text, marginBottom: 12 },
+  input: { backgroundColor: colors.bgInput, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 14, fontSize: 14, color: colors.text, marginBottom: 12 },
 
   customerChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: 'rgba(59,130,246,0.12)', borderWidth: 1, borderColor: 'rgba(59,130,246,0.2)', marginRight: 8 },
   customerChipText: { fontSize: 12, color: colors.blue, fontWeight: '500' },
 
-  itemsHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)', marginBottom: 8 },
+  itemsHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.borderLight, marginBottom: 8 },
   itemsHeaderText: { fontSize: 11, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase' },
 
   lineItemRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  lineInput: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 10, fontSize: 13, color: colors.text },
+  lineInput: { backgroundColor: colors.bgInput, borderRadius: 10, borderWidth: 1, borderColor: colors.border, padding: 10, fontSize: 13, color: colors.text },
   lineTotalText: { fontSize: 13, color: colors.primary, fontWeight: '600', textAlign: 'right' },
   removeBtn: { width: 28, alignItems: 'center', justifyContent: 'center' },
 
   addItemBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)', borderStyle: 'dashed', marginBottom: 12, marginTop: 4 },
   addItemText: { fontSize: 13, color: colors.primary, fontWeight: '600' },
 
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 4, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)' },
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 4, borderTopWidth: 1, borderTopColor: colors.borderLight },
   totalLabel: { fontSize: 14, fontWeight: '600', color: colors.textSecondary },
   totalValue: { fontSize: 20, fontWeight: '700', color: colors.primary },
 
   statusPicker: { flexDirection: 'row', gap: 10, marginBottom: 10 },
-  statusOption: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  statusOption: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: colors.bgInput, borderWidth: 1, borderColor: colors.border },
   statusOptionActive: { backgroundColor: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.3)' },
   statusOptionText: { fontSize: 13, color: colors.textMuted, fontWeight: '500' },
 
   createBtn: { marginTop: 24, marginBottom: 20 },
   createBtnGradient: { paddingVertical: 16, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  createBtnText: { fontSize: 15, fontWeight: '700', color: '#000' },
+  createBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 
   // Detail modal
   detailBizHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 8 },
-  detailLogo: { width: 50, height: 50, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.1)' },
-  detailLogoPlaceholder: { width: 50, height: 50, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' },
+  detailLogo: { width: 50, height: 50, borderRadius: 12, backgroundColor: colors.bgInput },
+  detailLogoPlaceholder: { width: 50, height: 50, borderRadius: 12, backgroundColor: colors.bgInput, alignItems: 'center', justifyContent: 'center' },
   detailBizInfo: { flex: 1 },
   detailBizName: { fontSize: 18, fontWeight: '700', color: colors.text },
   detailBizContact: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   detailInvoiceNum: { fontSize: 13, fontWeight: '600', color: colors.primary, marginBottom: 8 },
-  detailDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 16 },
+  detailDivider: { height: 1, backgroundColor: colors.borderLight, marginBottom: 16 },
 
   detailStatusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   detailDate: { fontSize: 13, color: colors.textSecondary },
@@ -910,26 +910,26 @@ const s = StyleSheet.create({
   detailCustomerName: { fontSize: 16, fontWeight: '600', color: colors.text },
   detailCustomerEmail: { fontSize: 13, color: colors.textSecondary, marginTop: 2 },
 
-  detailTableHeader: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
+  detailTableHeader: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.borderLight },
   detailTableHeaderText: { fontSize: 10, color: colors.textMuted, fontWeight: '600', textTransform: 'uppercase' },
-  detailTableRow: { flexDirection: 'row', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
+  detailTableRow: { flexDirection: 'row', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.borderLight },
   detailTableCell: { fontSize: 13, color: colors.text },
 
   detailTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 14, marginTop: 8 },
   detailTotalLabel: { fontSize: 16, fontWeight: '700', color: colors.text },
   detailTotalValue: { fontSize: 22, fontWeight: '800', color: colors.primary },
 
-  notesBox: { backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', marginBottom: 12 },
+  notesBox: { backgroundColor: colors.bgInput, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: colors.borderLight, marginBottom: 12 },
   noteLabel: { fontSize: 10, fontWeight: '600', color: colors.textMuted, textTransform: 'uppercase', marginBottom: 4 },
   noteText: { fontSize: 13, color: colors.textSecondary, lineHeight: 20 },
 
   detailCreatedDate: { fontSize: 11, color: colors.textMuted, marginBottom: 12 },
 
   shareRow: { flexDirection: 'row', gap: 10, marginBottom: 8, flexWrap: 'wrap' },
-  shareBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bgInput },
   shareBtnText: { fontSize: 13, fontWeight: '600' },
 
   detailActions: { flexDirection: 'row', gap: 10, marginBottom: 20, flexWrap: 'wrap' },
-  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bgInput },
   actionBtnText: { fontSize: 13, fontWeight: '600' },
 })

@@ -103,10 +103,7 @@ export default function CustomersScreen() {
       </View>
 
       <View style={s.searchWrap}>
-        <LinearGradient
-          colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
-          style={s.searchInner}
-        >
+        <View style={s.searchInner}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
@@ -115,7 +112,7 @@ export default function CustomersScreen() {
             value={search}
             onChangeText={setSearch}
           />
-        </LinearGradient>
+        </View>
       </View>
 
       <ScrollView
@@ -123,14 +120,11 @@ export default function CustomersScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {filtered.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="account-group-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>{search ? 'No results found' : 'No customers yet'}</Text>
             <Text style={s.emptyDesc}>{search ? 'Try a different search' : 'Customers who book will appear here'}</Text>
-          </LinearGradient>
+          </View>
         ) : (
           filtered.map((customer, index) => {
             const ac = AVATAR_COLORS[index % AVATAR_COLORS.length]
@@ -173,15 +167,16 @@ const s = StyleSheet.create({
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 16 },
   searchInner: {
     flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: colors.bgInput,
+    borderWidth: 1, borderColor: colors.border,
     borderRadius: 16, paddingHorizontal: 14, gap: 10, ...shadows.card,
   },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   customerRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: 18,
-    padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgCard, borderRadius: 18,
+    padding: 16, borderWidth: 1, borderColor: colors.border,
     marginBottom: 8, gap: 12, ...shadows.card,
   },
   avatar: { width: 48, height: 48, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
@@ -192,7 +187,7 @@ const s = StyleSheet.create({
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginTop: 20, ...shadows.card,
+    backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border, marginTop: 20, ...shadows.card,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

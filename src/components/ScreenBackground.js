@@ -1,31 +1,18 @@
 import React from 'react'
-import { ImageBackground, View, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
+import { colors } from '../theme/colors'
 
-const BG_IMAGES = {
-  golden: require('../assets/backgrounds/bg_bokeh.jpg'),
-  sapphire: require('../assets/backgrounds/bg_glow.jpg'),
-  warm: require('../assets/backgrounds/bg_marble.jpg'),
-  royal: require('../assets/backgrounds/bg_geometric.jpg'),
-}
-
-export default function ScreenBackground({ theme = 'golden', children, style, overlay = 0.45 }) {
+export default function ScreenBackground({ children, style }) {
   return (
-    <ImageBackground
-      source={BG_IMAGES[theme] || BG_IMAGES.golden}
-      style={[styles.container, style]}
-      resizeMode="cover"
-    >
-      <View style={[styles.overlay, { backgroundColor: `rgba(8,8,13,${overlay})` }]} />
+    <View style={[styles.container, style]}>
       {children}
-    </ImageBackground>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.bg,
   },
 })

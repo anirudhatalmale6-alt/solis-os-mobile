@@ -35,16 +35,16 @@ export default function SignupScreen({ navigation, route }) {
 
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
       <LinearGradient colors={['rgba(245,158,11,0.1)', 'rgba(168,85,247,0.04)', 'transparent']} style={s.headerGlow} />
       <View style={s.glowOrb} />
       <View style={s.glowOrb2} />
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
-        <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.backBtn}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+          <View style={s.backBtn}>
             <Text style={s.backText}>←</Text>
-          </TouchableOpacity>
-        </LinearGradient>
+          </View>
+        </TouchableOpacity>
 
         <View style={s.header}>
           {role === 'business' ? (
@@ -110,7 +110,7 @@ export default function SignupScreen({ navigation, route }) {
           <TouchableOpacity onPress={handleSignup} disabled={loading} activeOpacity={0.85}>
             <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signupBtn}>
               {loading ? (
-                <ActivityIndicator color={colors.textDark} />
+                <ActivityIndicator color={colors.white} />
               ) : (
                 <Text style={s.signupBtnText}>
                   {role === 'business' ? 'Create Business Account' : 'Create Account'}
@@ -172,6 +172,9 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 32,
+    backgroundColor: colors.bgInput,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   backText: {
     fontSize: 18,
@@ -203,11 +206,11 @@ const s = StyleSheet.create({
     color: colors.textMuted,
   },
   formCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     gap: 16,
     ...shadows.card,
   },
@@ -220,9 +223,9 @@ const s = StyleSheet.create({
     color: colors.textSecondary,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -244,7 +247,7 @@ const s = StyleSheet.create({
   signupBtnText: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.textDark,
+    color: colors.white,
   },
   switchWrap: {
     alignItems: 'center',

@@ -162,14 +162,11 @@ export default function DashboardScreen() {
         </View>
 
         {upcoming.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.emptyUpcoming}
-          >
+          <View style={s.emptyUpcoming}>
             <MaterialCommunityIcons name="calendar-outline" size={40} color={colors.textMuted} />
             <Text style={s.emptyText}>No upcoming bookings</Text>
             <Text style={s.emptyDesc}>Bookings will show up here</Text>
-          </LinearGradient>
+          </View>
         ) : (
           upcoming.map((b, i) => {
             const ac = AVATAR_COLORS[i % AVATAR_COLORS.length]
@@ -215,7 +212,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     ...shadows.button,
   },
-  avatarText: { fontSize: 16, fontWeight: '800', color: '#000' },
+  avatarText: { fontSize: 16, fontWeight: '800', color: '#fff' },
   avatarImage: {
     width: 48,
     height: 48,
@@ -244,11 +241,11 @@ const s = StyleSheet.create({
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28 },
   statCard: {
     width: '48%',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     ...shadows.card,
   },
   statAccent: {
@@ -290,11 +287,11 @@ const s = StyleSheet.create({
   bookingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     marginBottom: 8,
     gap: 12,
     overflow: 'hidden',
@@ -329,8 +326,9 @@ const s = StyleSheet.create({
     borderRadius: 18,
     padding: 40,
     alignItems: 'center',
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     ...shadows.card,
   },
   emptyEmoji: { marginBottom: 12 },

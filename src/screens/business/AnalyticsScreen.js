@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
@@ -260,7 +259,7 @@ export default function AnalyticsScreen() {
             <Text style={s.statusCount}>{analytics.statusBreakdown.completed}</Text>
           </View>
           <View style={s.statusRow}>
-            <View style={s.statusDot('#ef4444')} />
+            <View style={s.statusDot(C.red)} />
             <Text style={s.statusLabel}>Cancelled</Text>
             <Text style={s.statusCount}>{analytics.statusBreakdown.cancelled}</Text>
           </View>
@@ -289,11 +288,11 @@ const s = StyleSheet.create({
   },
   statCard: {
     width: '47%',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: C.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: C.border,
     borderLeftWidth: 3,
     ...shadows.card,
   },
@@ -309,12 +308,12 @@ const s = StyleSheet.create({
     fontWeight: '500',
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: C.bgCard,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: C.border,
     ...shadows.card,
   },
   sectionTitle: {
@@ -371,7 +370,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: C.border,
+    borderBottomColor: C.borderLight,
   },
   serviceRank: {
     width: 24,
@@ -447,7 +446,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: C.border,
+    borderBottomColor: C.borderLight,
   },
   statusDot: (color) => ({
     width: 10,

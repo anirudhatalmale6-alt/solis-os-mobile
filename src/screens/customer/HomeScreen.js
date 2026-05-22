@@ -65,10 +65,7 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <View style={s.searchWrap}>
-        <LinearGradient
-          colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
-          style={s.searchInner}
-        >
+        <View style={s.searchInner}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
@@ -77,7 +74,7 @@ export default function HomeScreen({ navigation }) {
             value={search}
             onChangeText={setSearch}
           />
-        </LinearGradient>
+        </View>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.catsScroll} contentContainerStyle={s.catsContainer}>
@@ -127,14 +124,11 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         {filtered.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="magnify" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No businesses found</Text>
             <Text style={s.emptyDesc}>Try a different search or category</Text>
-          </LinearGradient>
+          </View>
         ) : (
           filtered.map(biz => (
             <TouchableOpacity
@@ -148,7 +142,7 @@ export default function HomeScreen({ navigation }) {
                 style={s.bizImage}
               />
               <LinearGradient
-                colors={['transparent', 'rgba(8,8,13,0.8)', 'rgba(8,8,13,0.95)']}
+                colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.7)']}
                 style={s.bizImageOverlay}
               />
               <View style={s.bizRating}>
@@ -202,12 +196,12 @@ const s = StyleSheet.create({
   searchInner: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: colors.border,
     borderRadius: 16,
     paddingHorizontal: 14,
     gap: 10,
-    ...shadows.card,
   },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   catsScroll: { marginTop: 16, maxHeight: 50 },
@@ -215,9 +209,9 @@ const s = StyleSheet.create({
   catChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -253,12 +247,12 @@ const s = StyleSheet.create({
   },
   countText: { fontSize: 11, color: colors.primary, fontWeight: '600' },
   bizCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     ...shadows.card,
   },
   bizImage: { width: '100%', height: 160 },
@@ -273,12 +267,10 @@ const s = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   bizRatingText: { fontSize: 12, fontWeight: '600', color: colors.text },
   bizInfo: { padding: 16 },
@@ -288,8 +280,9 @@ const s = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 60,
     borderRadius: 20,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },

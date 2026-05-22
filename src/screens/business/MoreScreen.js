@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useNavigation } from '@react-navigation/native'
 import { colors, shadows } from '../../theme/colors'
@@ -55,9 +54,9 @@ export default function MoreScreen() {
               activeOpacity={0.7}
               onPress={() => navigation.navigate(item.nav)}
             >
-              <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
+              <View style={s.menuIconWrap}>
                 <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
-              </LinearGradient>
+              </View>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
             </TouchableOpacity>
@@ -73,13 +72,13 @@ export default function MoreScreen() {
                 activeOpacity={0.7}
                 onPress={() => Alert.alert(item.label, 'Coming soon!')}
               >
-                <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']} style={s.menuIconWrap}>
+                <View style={s.menuIconWrap}>
                   <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
-                </LinearGradient>
+                </View>
                 <Text style={s.menuLabel}>{item.label}</Text>
-                <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={s.soonBadge}>
+                <View style={s.soonBadge}>
                   <Text style={s.soonText}>Soon</Text>
-                </LinearGradient>
+                </View>
                 <Text style={s.chevron}>›</Text>
               </TouchableOpacity>
             ))}
@@ -101,10 +100,10 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   menuContainer: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     overflow: 'hidden',
     ...shadows.card,
   },
@@ -114,7 +113,7 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: colors.borderLight,
     gap: 14,
   },
   menuItemLast: { borderBottomWidth: 0 },
@@ -124,8 +123,9 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
   },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
@@ -133,6 +133,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
+    backgroundColor: colors.primaryLight,
     borderWidth: 1,
     borderColor: colors.borderGlow,
   },

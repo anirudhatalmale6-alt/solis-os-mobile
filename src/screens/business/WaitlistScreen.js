@@ -100,14 +100,11 @@ export default function WaitlistScreen() {
 
       <ScrollView contentContainerStyle={s.scroll}>
         {waiting.length === 0 && served.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="timer-sand-empty" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No one waiting</Text>
             <Text style={s.emptyDesc}>Tap + Add when walk-in customers arrive</Text>
-          </LinearGradient>
+          </View>
         ) : (
           <>
             {waiting.map((entry, idx) => (
@@ -163,23 +160,23 @@ const s = StyleSheet.create({
   addForm: { marginHorizontal: 20, marginBottom: 16 },
   formRow: { flexDirection: 'row', gap: 10 },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 14,
-    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 10,
+    backgroundColor: colors.bgInput, borderRadius: 12, padding: 14,
+    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: colors.border, marginBottom: 10,
   },
   joinBtn: { paddingVertical: 14, borderRadius: 12, alignItems: 'center', ...shadows.button },
   joinBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bgCard,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
   entryCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgCard,
     borderRadius: 14, padding: 14, marginBottom: 8, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', gap: 12, ...shadows.card,
+    borderColor: colors.border, gap: 12, ...shadows.card,
   },
   entryServed: { opacity: 0.5 },
   position: {

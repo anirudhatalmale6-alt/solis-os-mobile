@@ -210,7 +210,7 @@ export default function ScheduleScreen() {
         >
           <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
             {saving ? (
-              <ActivityIndicator color={colors.bg} />
+              <ActivityIndicator color="#fff" />
             ) : (
               <Text style={s.saveButtonText}>Save Schedule</Text>
             )}
@@ -276,9 +276,9 @@ export default function ScheduleScreen() {
                 style={s.modalCancel}
                 onPress={() => setPickerVisible(false)}
               >
-                <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.modalCancelGradient}>
+                <View style={s.modalCancelInner}>
                   <Text style={s.modalCancelText}>Cancel</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
               <TouchableOpacity
                 style={s.modalConfirm}
@@ -303,11 +303,11 @@ const s = StyleSheet.create({
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
 
   dayCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginBottom: 10,
     ...shadows.card,
   },
@@ -384,19 +384,19 @@ const s = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.bg,
+    color: '#fff',
   },
 
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
     width: '80%',
-    backgroundColor: '#111118',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     padding: 24,
     borderWidth: 1,
@@ -467,10 +467,13 @@ const s = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
   },
-  modalCancelGradient: {
+  modalCancelInner: {
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+    backgroundColor: colors.bgInput,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   modalCancelText: {
     fontSize: 15,
@@ -490,6 +493,6 @@ const s = StyleSheet.create({
   modalConfirmText: {
     fontSize: 15,
     fontWeight: '700',
-    color: colors.bg,
+    color: '#fff',
   },
 })

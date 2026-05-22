@@ -349,7 +349,7 @@ export default function ServicesScreen() {
             >
               <LinearGradient colors={['#f59e0b', '#f97316']} style={s.saveButtonGradient}>
                 {saving ? (
-                  <ActivityIndicator size="small" color={colors.bg} />
+                  <ActivityIndicator size="small" color="#fff" />
                 ) : (
                   <Text style={s.saveButtonText}>
                     {editingService ? 'Update Service' : 'Create Service'}
@@ -386,14 +386,14 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
   },
-  addButtonText: { fontSize: 14, fontWeight: '700', color: colors.bg },
+  addButtonText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   serviceCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginBottom: 10,
     ...shadows.card,
   },
@@ -444,10 +444,10 @@ const s = StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingVertical: 80,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginTop: 20,
     ...shadows.card,
   },
@@ -458,16 +458,16 @@ const s = StyleSheet.create({
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.bgCardSolid,
+    backgroundColor: colors.bgCard,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: colors.borderGlow,
+    borderColor: colors.border,
     borderBottomWidth: 0,
     ...shadows.deep,
   },
@@ -503,5 +503,5 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { fontSize: 16, fontWeight: '700', color: colors.bg },
+  saveButtonText: { fontSize: 16, fontWeight: '700', color: '#fff' },
 })

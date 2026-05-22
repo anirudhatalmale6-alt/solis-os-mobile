@@ -173,14 +173,11 @@ export default function LoyaltyScreen() {
         <Text style={[s.sectionTitle, { marginTop: 20 }]}>Loyalty Members</Text>
 
         {customers.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="star-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No loyalty members yet</Text>
             <Text style={s.emptyDesc}>Customers earn points automatically with each visit</Text>
-          </LinearGradient>
+          </View>
         ) : (
           customers.map((cust, idx) => {
             const tier = getTier(cust.points)
@@ -307,8 +304,8 @@ const s = StyleSheet.create({
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
   statCard: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 14,
-    alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', ...shadows.card,
+    flex: 1, backgroundColor: colors.bgCard, borderRadius: 14, padding: 14,
+    alignItems: 'center', borderWidth: 1, borderColor: colors.border, ...shadows.card,
   },
   statValue: { fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 4 },
   statLabel: { fontSize: 11, color: colors.textMuted },
@@ -316,15 +313,15 @@ const s = StyleSheet.create({
 
   tierCard: {
     paddingHorizontal: 18, paddingVertical: 12, borderRadius: 14, marginRight: 10,
-    backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, alignItems: 'center', gap: 4, minWidth: 90,
+    backgroundColor: colors.bgCard, borderWidth: 1, alignItems: 'center', gap: 4, minWidth: 90,
   },
   tierName: { fontSize: 13, fontWeight: '700' },
   tierMin: { fontSize: 10, color: colors.textMuted },
 
   rewardCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14,
-    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', marginBottom: 8,
+    backgroundColor: colors.bgCard, borderRadius: 12, borderWidth: 1,
+    borderColor: colors.border, marginBottom: 8,
   },
   rewardName: { fontSize: 14, fontWeight: '600', color: colors.text },
   rewardPts: { fontSize: 11, color: colors.textMuted, marginTop: 2 },
@@ -334,17 +331,17 @@ const s = StyleSheet.create({
 
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bgCard,
   },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
   custCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgCard,
     borderRadius: 14, padding: 14, marginBottom: 8, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', gap: 12, ...shadows.card,
+    borderColor: colors.border, gap: 12, ...shadows.card,
   },
   rank: {
-    width: 32, height: 32, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.08)',
+    width: 32, height: 32, borderRadius: 10, backgroundColor: colors.bgInput,
     alignItems: 'center', justifyContent: 'center',
   },
   rankGold: { backgroundColor: 'rgba(245,158,11,0.15)' },
@@ -354,22 +351,22 @@ const s = StyleSheet.create({
   custMeta: { fontSize: 12, color: colors.textMuted },
   pointsBadge: { backgroundColor: 'rgba(245,158,11,0.1)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
   pointsText: { fontSize: 13, fontWeight: '700', color: colors.primary },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#111118', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: colors.bgCard, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 },
   modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 4 },
   modalSub: { fontSize: 14, color: colors.textSecondary, marginBottom: 20 },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 14,
-    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 12,
+    backgroundColor: colors.bgInput, borderRadius: 12, padding: 14,
+    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: colors.border, marginBottom: 12,
   },
   modalActions: { flexDirection: 'row', gap: 12 },
   cancelBtn: {
     flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgInput, borderWidth: 1, borderColor: colors.border,
   },
   cancelText: { fontSize: 15, fontWeight: '600', color: colors.textSecondary },
   saveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', ...shadows.button },
-  saveBtnText: { fontSize: 15, fontWeight: '700', color: '#000' },
+  saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
   resetBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     marginTop: 16, paddingVertical: 12, borderRadius: 12,
@@ -379,8 +376,8 @@ const s = StyleSheet.create({
   settingLabel: { fontSize: 12, fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   settingHint: { fontSize: 11, color: colors.textMuted, marginTop: -8, marginBottom: 8 },
   rewardRow: {
-    flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: colors.bgInput,
+    borderRadius: 10, borderWidth: 1, borderColor: colors.borderLight, marginBottom: 8,
   },
   rewardRowName: { fontSize: 14, fontWeight: '600', color: colors.text },
   rewardRowPts: { fontSize: 11, color: colors.textMuted, marginTop: 2 },

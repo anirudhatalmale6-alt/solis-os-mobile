@@ -31,11 +31,11 @@ export default function BusinessProfileScreen({ navigation, route }) {
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.heroWrap}>
           <Image source={{ uri: heroImage }} style={s.heroImage} />
-          <LinearGradient colors={['transparent', 'rgba(8,8,13,0.6)', 'rgba(8,8,13,0.98)']} style={s.heroOverlay} />
+          <LinearGradient colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']} style={s.heroOverlay} />
           <TouchableOpacity style={s.backBtnWrap} onPress={() => navigation.goBack()} activeOpacity={0.8}>
-            <LinearGradient colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.4)']} style={s.backBtn}>
+            <View style={s.backBtn}>
               <Text style={s.backText}>←</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -45,7 +45,7 @@ export default function BusinessProfileScreen({ navigation, route }) {
             {(business.industry || 'Business').charAt(0).toUpperCase() + (business.industry || 'business').slice(1)} · {business.city || 'Local'}
           </Text>
 
-          <View style={[s.statsRow, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
+          <View style={s.statsRow}>
             <View style={s.stat}>
               <Text style={s.statVal}>★ 4.9</Text>
               <Text style={s.statLabel}>(128)</Text>
@@ -66,11 +66,11 @@ export default function BusinessProfileScreen({ navigation, route }) {
         <View style={s.servicesSection}>
           <Text style={s.servicesTitle}>Services</Text>
           {services.length === 0 ? (
-            <View style={[s.noServices, { backgroundColor: 'rgba(255,255,255,0.06)' }]}>
+            <View style={s.noServices}>
               <Text style={s.noServicesText}>No services listed yet</Text>
             </View>
           ) : (
-            <View style={[s.servicesCard, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
+            <View style={s.servicesCard}>
               {services.map((svc, idx) => (
                 <TouchableOpacity
                   key={svc.id}
@@ -99,7 +99,7 @@ export default function BusinessProfileScreen({ navigation, route }) {
         {business.address && (
           <View style={s.detailsSection}>
             <Text style={s.detailsTitle}>Location</Text>
-            <View style={[s.detailCard, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
+            <View style={s.detailCard}>
               <View style={s.detailRow}>
                 <MaterialCommunityIcons name="map-marker-outline" size={16} color={colors.textMuted} />
                 <Text style={s.detailText}>{business.address}</Text>
@@ -164,8 +164,7 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     alignItems: 'center',
     justifyContent: 'center',
   },

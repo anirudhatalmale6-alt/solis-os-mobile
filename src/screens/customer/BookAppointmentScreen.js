@@ -98,9 +98,9 @@ export default function BookAppointmentScreen({ navigation, route }) {
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.topBar}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <LinearGradient colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.04)']} style={s.backBtn}>
+            <View style={s.backBtn}>
               <Text style={s.backText}>←</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
           <Text style={s.topTitle}>Select Time</Text>
           <View style={{ width: 40 }} />
@@ -278,8 +278,9 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -311,11 +312,11 @@ const s = StyleSheet.create({
     color: colors.textMuted,
   },
   calCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     marginBottom: 20,
     ...shadows.card,
   },
@@ -338,7 +339,7 @@ const s = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: colors.bgInput,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -404,9 +405,9 @@ const s = StyleSheet.create({
   },
   slot: {
     width: '31%',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
@@ -434,7 +435,7 @@ const s = StyleSheet.create({
     color: colors.primary,
   },
   summaryCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,

@@ -84,9 +84,9 @@ export default function ProfileScreen({ navigation }) {
                 activeOpacity={0.7}
                 onPress={() => handleMenuPress(item)}
               >
-                <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
+                <View style={s.menuIconWrap}>
                   <MaterialCommunityIcons name={item.icon} size={18} color={colors.textMuted} />
-                </LinearGradient>
+                </View>
                 <Text style={s.menuLabel}>{item.label}</Text>
                 <Text style={s.chevron}>›</Text>
               </TouchableOpacity>
@@ -124,13 +124,10 @@ export default function ProfileScreen({ navigation }) {
           <Text style={s.userEmail}>{user.email || ''}</Text>
         </View>
 
-        <LinearGradient
-          colors={['rgba(245,158,11,0.08)', 'rgba(245,158,11,0.02)']}
-          style={s.memberCard}
-        >
+        <View style={s.memberCard}>
           <Text style={s.memberLabel}>MEMBER SINCE</Text>
           <Text style={s.memberDate}>{user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently'}</Text>
-        </LinearGradient>
+        </View>
 
         <View style={s.menuContainer}>
           {MENU_ITEMS.map((item, index) => (
@@ -140,9 +137,9 @@ export default function ProfileScreen({ navigation }) {
               activeOpacity={0.7}
               onPress={() => handleMenuPress(item)}
             >
-              <LinearGradient colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']} style={s.menuIconWrap}>
+              <View style={s.menuIconWrap}>
                 <MaterialCommunityIcons name={item.icon} size={18} color={colors.textMuted} />
-              </LinearGradient>
+              </View>
               <Text style={s.menuLabel}>{item.label}</Text>
               <Text style={s.chevron}>›</Text>
             </TouchableOpacity>
@@ -202,9 +199,9 @@ const s = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: colors.bgInput,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -213,12 +210,13 @@ const s = StyleSheet.create({
   userName: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
   userEmail: { fontSize: 14, color: colors.textMuted },
   memberCard: {
+    backgroundColor: colors.primaryLight,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.15)',
+    borderColor: colors.borderGlow,
   },
   memberLabel: { fontSize: 10, fontWeight: '700', color: colors.textMuted, letterSpacing: 1.5, marginBottom: 4 },
   memberDate: { fontSize: 15, fontWeight: '600', color: colors.primary },
@@ -230,9 +228,9 @@ const s = StyleSheet.create({
   },
   signInText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   createBtn: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: colors.border,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
@@ -240,10 +238,10 @@ const s = StyleSheet.create({
   },
   createBtnText: { fontSize: 16, fontWeight: '700', color: colors.text },
   menuContainer: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     overflow: 'hidden',
     ...shadows.card,
   },
@@ -253,7 +251,7 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: colors.borderLight,
     gap: 14,
   },
   menuItemLast: { borderBottomWidth: 0 },
@@ -261,10 +259,11 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
+    backgroundColor: colors.bgInput,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
   },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },

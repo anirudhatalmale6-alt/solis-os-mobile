@@ -137,14 +137,11 @@ export default function ExpensesScreen() {
 
         <Text style={s.sectionTitle}>Recent Expenses</Text>
         {expenses.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="cash-remove" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No expenses recorded</Text>
             <Text style={s.emptyDesc}>Tap + Add to track your first expense</Text>
-          </LinearGradient>
+          </View>
         ) : (
           expenses.map(exp => {
             const catInfo = CATEGORIES.find(c => c.key === exp.category) || CATEGORIES[6]
@@ -155,12 +152,9 @@ export default function ExpensesScreen() {
                 activeOpacity={0.8}
                 onLongPress={() => handleDelete(exp.id)}
               >
-                <LinearGradient
-                  colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.03)']}
-                  style={s.expIcon}
-                >
+                <View style={s.expIcon}>
                   <MaterialCommunityIcons name={catInfo.icon} size={18} color={colors.primary} />
-                </LinearGradient>
+                </View>
                 <View style={s.expInfo}>
                   <Text style={s.expDesc}>{exp.description}</Text>
                   <Text style={s.expCat}>{catInfo.label} · {new Date(exp.created_at).toLocaleDateString()}</Text>
@@ -241,67 +235,67 @@ const s = StyleSheet.create({
   },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   addBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12, ...shadows.button },
-  addBtnText: { fontSize: 14, fontWeight: '700', color: '#000' },
+  addBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   statsRow: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   statCard: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16,
-    padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    flex: 1, backgroundColor: colors.bgCard, borderRadius: 16,
+    padding: 16, borderWidth: 1, borderColor: colors.border,
     borderLeftWidth: 3, ...shadows.card,
   },
   statValue: { fontSize: 22, fontWeight: '700', color: colors.primary, marginBottom: 4 },
   statLabel: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
   catSummary: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 18, padding: 18,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 20, ...shadows.card,
+    backgroundColor: colors.bgCard, borderRadius: 18, padding: 18,
+    borderWidth: 1, borderColor: colors.border, marginBottom: 20, ...shadows.card,
   },
   catTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 14 },
   catRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 8 },
   catName: { fontSize: 13, color: colors.textSecondary, width: 70 },
   catBarWrap: {
-    flex: 1, height: 6, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 3,
+    flex: 1, height: 6, backgroundColor: colors.bgInput, borderRadius: 3,
   },
   catBar: { height: '100%', backgroundColor: colors.primary, borderRadius: 3 },
   catAmount: { fontSize: 13, fontWeight: '600', color: colors.text, width: 50, textAlign: 'right' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 14 },
   expCard: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16,
-    padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: colors.bgCard, borderRadius: 16,
+    padding: 14, borderWidth: 1, borderColor: colors.border,
     marginBottom: 8, gap: 12, ...shadows.card,
   },
-  expIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  expIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgInput },
   expInfo: { flex: 1 },
   expDesc: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 2 },
   expCat: { fontSize: 12, color: colors.textMuted },
   expAmount: { fontSize: 15, fontWeight: '700', color: colors.red },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bgCard,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
   modalOverlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.8)',
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#111118', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: colors.bgCard, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 24, paddingBottom: 40,
   },
   modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 20 },
   inputLabel: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 6 },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 14,
-    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgInput, borderRadius: 12, padding: 14,
+    fontSize: 15, color: colors.text, borderWidth: 1, borderColor: colors.border,
     marginBottom: 16,
   },
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   catChip: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgInput, borderWidth: 1, borderColor: colors.border,
   },
   catChipActive: { borderColor: colors.borderGlow, backgroundColor: 'rgba(245,158,11,0.1)' },
   catChipText: { fontSize: 12, color: colors.textMuted, fontWeight: '500' },
@@ -309,9 +303,9 @@ const s = StyleSheet.create({
   modalActions: { flexDirection: 'row', gap: 12 },
   cancelBtn: {
     flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgInput, borderWidth: 1, borderColor: colors.border,
   },
   cancelText: { fontSize: 15, fontWeight: '600', color: colors.textSecondary },
   saveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', ...shadows.button },
-  saveBtnText: { fontSize: 15, fontWeight: '700', color: '#000' },
+  saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 })

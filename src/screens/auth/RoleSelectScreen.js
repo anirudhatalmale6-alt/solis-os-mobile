@@ -10,7 +10,7 @@ export default function RoleSelectScreen({ navigation }) {
   const { enterGuestMode } = useAuth()
   return (
     <View style={s.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
 
       <LinearGradient
         colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)', 'transparent']}
@@ -31,12 +31,7 @@ export default function RoleSelectScreen({ navigation }) {
           activeOpacity={0.85}
           onPress={() => navigation.navigate('Login', { role: 'business' })}
         >
-          <LinearGradient
-            colors={['rgba(245,158,11,0.12)', 'rgba(245,158,11,0.04)', 'rgba(255,255,255,0.04)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={s.roleCardBusiness}
-          >
+          <View style={s.roleCardBusiness}>
             <View style={s.cardGlow} />
             <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleIcon}>
               <MaterialCommunityIcons name="office-building-outline" size={28} color={colors.primary} />
@@ -48,7 +43,7 @@ export default function RoleSelectScreen({ navigation }) {
             <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleBadge}>
               <Text style={s.roleBadgeText}>Plans from $29/mo</Text>
             </LinearGradient>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -140,6 +135,7 @@ const s = StyleSheet.create({
     gap: 14,
   },
   roleCardBusiness: {
+    backgroundColor: colors.bgCard,
     borderRadius: 22,
     padding: 24,
     borderWidth: 1,
@@ -157,11 +153,11 @@ const s = StyleSheet.create({
     backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
   roleCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 22,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     ...shadows.card,
   },
   roleIcon: {
@@ -192,7 +188,7 @@ const s = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.2)',
+    borderColor: 'rgba(245, 158, 11, 0.25)',
   },
   roleBadgeText: {
     fontSize: 12,

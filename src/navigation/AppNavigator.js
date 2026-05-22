@@ -82,7 +82,7 @@ function CustomerTabs() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#555',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: styles.tabLabel,
       }}
     >
@@ -91,7 +91,7 @@ function CustomerTabs() {
         component={CustomerHomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -100,7 +100,7 @@ function CustomerTabs() {
         component={ExploreScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "compass" : "compass-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "compass" : "compass-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -109,7 +109,7 @@ function CustomerTabs() {
         component={MyBookingsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -118,7 +118,7 @@ function CustomerTabs() {
         component={CustomerProfileStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "person" : "person-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "person" : "person-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -156,7 +156,7 @@ function BusinessTabs() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#555',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: styles.tabLabel,
       }}
     >
@@ -165,7 +165,7 @@ function BusinessTabs() {
         component={DashboardScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "stats-chart" : "stats-chart-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "stats-chart" : "stats-chart-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -174,7 +174,7 @@ function BusinessTabs() {
         component={BookingsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -183,7 +183,7 @@ function BusinessTabs() {
         component={CustomersScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "people" : "people-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "people" : "people-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -192,7 +192,7 @@ function BusinessTabs() {
         component={BusinessMoreStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "menu" : "menu-outline"} size={22} color={focused ? colors.primary : '#555'} />
+            <Ionicons name={focused ? "menu" : "menu-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
           ),
         }}
       />
@@ -246,17 +246,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabBar: {
-    backgroundColor: 'rgba(8, 8, 13, 0.98)',
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.06)',
+    borderTopColor: '#E8E9EF',
     paddingTop: 10,
     paddingBottom: Platform.OS === 'android' ? 45 : 8,
     height: Platform.OS === 'android' ? 105 : 66,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowColor: '#8B8FA8',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 4,
   },
   tabLabel: {
     fontSize: 10,

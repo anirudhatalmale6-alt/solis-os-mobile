@@ -61,14 +61,11 @@ export default function MyBookingsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {bookings.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.emptyCard}
-          >
+          <View style={s.emptyCard}>
             <MaterialCommunityIcons name="calendar-outline" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No bookings yet</Text>
             <Text style={s.emptyDesc}>Browse businesses and book your first appointment</Text>
-          </LinearGradient>
+          </View>
         ) : (
           <>
             {upcoming.length > 0 && (
@@ -104,7 +101,7 @@ export default function MyBookingsScreen() {
               <>
                 <View style={s.sectionRow}>
                   <Text style={s.sectionLabel}>Past</Text>
-                  <View style={[s.sectionBadge, { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }]}>
+                  <View style={[s.sectionBadge, { backgroundColor: colors.bgInput, borderColor: colors.border }]}>
                     <Text style={[s.sectionBadgeText, { color: colors.textMuted }]}>{past.length}</Text>
                   </View>
                 </View>
@@ -197,11 +194,11 @@ const s = StyleSheet.create({
   },
   sectionBadgeText: { fontSize: 11, fontWeight: '700', color: colors.primary },
   bookingCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     marginBottom: 10,
     overflow: 'hidden',
     ...shadows.card,
@@ -226,8 +223,9 @@ const s = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 60,
     borderRadius: 20,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border,
     marginTop: 20,
     ...shadows.card,
   },

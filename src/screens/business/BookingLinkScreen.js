@@ -231,10 +231,10 @@ const styles = StyleSheet.create({
 
   // URL Card
   urlCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     padding: 20,
     marginBottom: 20,
     ...shadows.card,
@@ -320,10 +320,10 @@ const styles = StyleSheet.create({
 
   // Cards
   card: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
     padding: 20,
     marginBottom: 16,
     ...shadows.card,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderLight,
     gap: 12,
   },
   tipIcon: {

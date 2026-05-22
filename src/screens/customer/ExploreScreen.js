@@ -68,10 +68,7 @@ export default function ExploreScreen({ navigation }) {
       </View>
 
       <View style={s.searchWrap}>
-        <LinearGradient
-          colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)']}
-          style={s.searchInner}
-        >
+        <View style={s.searchInner}>
           <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
@@ -80,7 +77,7 @@ export default function ExploreScreen({ navigation }) {
             value={search}
             onChangeText={setSearch}
           />
-        </LinearGradient>
+        </View>
       </View>
 
       <ScrollView
@@ -117,14 +114,11 @@ export default function ExploreScreen({ navigation }) {
         </View>
 
         {filtered.length === 0 ? (
-          <LinearGradient
-            colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.02)']}
-            style={s.empty}
-          >
+          <View style={s.empty}>
             <MaterialCommunityIcons name="magnify" size={48} color={colors.textMuted} />
             <Text style={s.emptyTitle}>No businesses found</Text>
             <Text style={s.emptyDesc}>Try a different search term</Text>
-          </LinearGradient>
+          </View>
         ) : (
           filtered.map(biz => (
             <TouchableOpacity
@@ -141,7 +135,7 @@ export default function ExploreScreen({ navigation }) {
                 style={s.bizImage}
               />
               <LinearGradient
-                colors={['transparent', 'rgba(8,8,13,0.7)', 'rgba(8,8,13,0.95)']}
+                colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.7)']}
                 style={s.bizOverlay}
               />
               <View style={s.bizRating}>
@@ -178,8 +172,9 @@ const s = StyleSheet.create({
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 20 },
   searchInner: {
     flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
-    borderRadius: 16, paddingHorizontal: 14, gap: 10, ...shadows.card,
+    backgroundColor: colors.bgInput,
+    borderWidth: 1, borderColor: colors.border,
+    borderRadius: 16, paddingHorizontal: 14, gap: 10,
   },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
@@ -195,21 +190,21 @@ const s = StyleSheet.create({
   },
   catCard: {
     width: 105, borderRadius: 16, padding: 14,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', gap: 6,
   },
   catLabel: { fontSize: 12, fontWeight: '600', color: colors.text },
   catCount: { fontSize: 11, color: colors.textMuted },
   bizCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 20, overflow: 'hidden',
-    marginBottom: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', ...shadows.card,
+    backgroundColor: colors.bgCard, borderRadius: 20, overflow: 'hidden',
+    marginBottom: 14, borderWidth: 1, borderColor: colors.border, ...shadows.card,
   },
   bizImage: { width: '100%', height: 140 },
   bizOverlay: { position: 'absolute', top: 0, left: 0, right: 0, height: 140 },
   bizRating: {
     position: 'absolute', top: 12, right: 12,
-    backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 10, paddingVertical: 6,
-    borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.9)', paddingHorizontal: 10, paddingVertical: 6,
+    borderRadius: 12,
   },
   bizRatingText: { fontSize: 12, fontWeight: '600', color: colors.text },
   bizInfo: { padding: 16 },
@@ -217,7 +212,7 @@ const s = StyleSheet.create({
   bizMeta: { fontSize: 13, color: colors.textMuted },
   empty: {
     alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border,
   },
   emptyEmoji: { marginBottom: 12 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
