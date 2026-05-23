@@ -24,32 +24,14 @@ import CustomerNotificationsScreen from '../screens/customer/NotificationsScreen
 import HelpSupportScreen from '../screens/customer/HelpSupportScreen'
 import AboutScreen from '../screens/customer/AboutScreen'
 
-// Business Screens
-import DashboardScreen from '../screens/business/DashboardScreen'
-import BookingsScreen from '../screens/business/BookingsScreen'
-import CustomersScreen from '../screens/business/CustomersScreen'
-import MoreScreen from '../screens/business/MoreScreen'
-import ServicesScreen from '../screens/business/ServicesScreen'
-import ScheduleScreen from '../screens/business/ScheduleScreen'
-import StaffScreen from '../screens/business/StaffScreen'
-import SettingsScreen from '../screens/business/SettingsScreen'
-import AnalyticsScreen from '../screens/business/AnalyticsScreen'
-import BookingLinkScreen from '../screens/business/BookingLinkScreen'
-import InvoicesScreen from '../screens/business/InvoicesScreen'
-import ExpensesScreen from '../screens/business/ExpensesScreen'
-import PromotionsScreen from '../screens/business/PromotionsScreen'
-import NotificationsScreen from '../screens/business/NotificationsScreen'
-import WhatsAppConnectScreen from '../screens/business/WhatsAppConnectScreen'
-import LoyaltyScreen from '../screens/business/LoyaltyScreen'
-import WaitlistScreen from '../screens/business/WaitlistScreen'
+// Business: full web dashboard
+import WebAppScreen from '../screens/business/WebAppScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 const HomeStack = createNativeStackNavigator()
-const MoreStack = createNativeStackNavigator()
 const ProfileStack = createNativeStackNavigator()
 
-// Customer Home Stack (Home > BusinessProfile > BookAppointment > Login/Signup)
 function CustomerHomeStack() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
@@ -62,7 +44,6 @@ function CustomerHomeStack() {
   )
 }
 
-// Customer Profile Stack (Profile > Notifications, Help, About)
 function CustomerProfileStack() {
   return (
     <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
@@ -74,7 +55,6 @@ function CustomerProfileStack() {
   )
 }
 
-// Customer Tab Navigator
 function CustomerTabs() {
   return (
     <Tab.Navigator
@@ -126,81 +106,6 @@ function CustomerTabs() {
   )
 }
 
-// Business More Stack (More > Services, Schedule, Staff, etc.)
-function BusinessMoreStack() {
-  return (
-    <MoreStack.Navigator screenOptions={{ headerShown: false }}>
-      <MoreStack.Screen name="MoreMain" component={MoreScreen} />
-      <MoreStack.Screen name="Services" component={ServicesScreen} />
-      <MoreStack.Screen name="Schedule" component={ScheduleScreen} />
-      <MoreStack.Screen name="Staff" component={StaffScreen} />
-      <MoreStack.Screen name="Settings" component={SettingsScreen} />
-      <MoreStack.Screen name="Analytics" component={AnalyticsScreen} />
-      <MoreStack.Screen name="BookingLink" component={BookingLinkScreen} />
-      <MoreStack.Screen name="Invoices" component={InvoicesScreen} />
-      <MoreStack.Screen name="Expenses" component={ExpensesScreen} />
-      <MoreStack.Screen name="Promotions" component={PromotionsScreen} />
-      <MoreStack.Screen name="Notifications" component={NotificationsScreen} />
-      <MoreStack.Screen name="WhatsAppConnect" component={WhatsAppConnectScreen} />
-      <MoreStack.Screen name="Loyalty" component={LoyaltyScreen} />
-      <MoreStack.Screen name="Waitlist" component={WaitlistScreen} />
-    </MoreStack.Navigator>
-  )
-}
-
-// Business Tab Navigator
-function BusinessTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#9CA3AF',
-        tabBarLabelStyle: styles.tabLabel,
-      }}
-    >
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "stats-chart" : "stats-chart-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Bookings"
-        component={BookingsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Customers"
-        component={CustomersScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "people" : "people-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="More"
-        component={BusinessMoreStack}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "menu" : "menu-outline"} size={22} color={focused ? colors.primary : '#9CA3AF'} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  )
-}
-
-// Auth Stack
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -228,7 +133,9 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {showBusinessTabs ? (
-        <BusinessTabs />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="WebApp" component={WebAppScreen} />
+        </Stack.Navigator>
       ) : showCustomerTabs ? (
         <CustomerTabs />
       ) : (
