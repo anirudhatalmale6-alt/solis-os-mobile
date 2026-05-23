@@ -18,7 +18,7 @@ export default function WebAppScreen() {
   const webViewRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [canGoBack, setCanGoBack] = useState(false)
-  const [wasOnDashboard, setWasOnDashboard] = useState(false)
+  const wasOnDashboard = useRef(false)
   const { signOut } = useAuth()
 
   useFocusEffect(
@@ -41,11 +41,13 @@ export default function WebAppScreen() {
   const handleNavigationChange = (navState) => {
     setCanGoBack(navState.canGoBack)
     const url = navState.url || ''
-    const isAuthPage = url.includes('/login') || url.includes('/signup')
-    if (!isAuthPage && url.includes('app.solis-os.com')) {
-      setWasOnDashboard(true)
+    const path = url.replace(/https?:\/\/[^/]+/, '')
+    const isAuthPage = path === '' || path === '/' || path.startsWith('/login') || path.startsWith('/signup') || path.startsWith('/forgot') || path.startsWith('/reset')
+    if (!isAuthPage && path.startsWith('/')) {
+      wasOnDashboard.current = true
     }
-    if (wasOnDashboard && isAuthPage) {
+    if (wasOnDashboard.current && isAuthPage) {
+      wasOnDashboard.current = false
       signOut()
     }
   }
