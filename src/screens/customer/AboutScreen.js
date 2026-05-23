@@ -22,7 +22,7 @@ export default function AboutScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.logoWrap}>
-          <Image source={require('../../assets/logo_solis.png')} style={s.logo} />
+          <Image source={require('../../assets/logo_solis_transparent.png')} style={s.logo} />
           <Text style={s.appName}>Solis OS</Text>
           <Text style={s.version}>Version 1.3.0</Text>
         </View>

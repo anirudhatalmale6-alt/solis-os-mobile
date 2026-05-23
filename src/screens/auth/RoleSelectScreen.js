@@ -21,7 +21,7 @@ export default function RoleSelectScreen({ navigation }) {
       <View style={s.glowOrb3} />
 
       <View style={s.logoWrap}>
-        <Image source={require('../../assets/logo_solis.png')} style={s.logoImage} />
+        <Image source={require('../../assets/logo_solis_transparent.png')} style={s.logoImage} />
         <Text style={s.brandName}>Solis OS</Text>
         <Text style={s.tagline}>The future of business management</Text>
       </View>
@@ -116,7 +116,6 @@ const s = StyleSheet.create({
   logoImage: {
     width: 90,
     height: 90,
-    borderRadius: 22,
     marginBottom: 16,
   },
   brandName: {
