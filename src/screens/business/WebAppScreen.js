@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { useFocusEffect } from '@react-navigation/native'
+import { useAuth } from '../../lib/AuthContext'
 
 const WEB_APP_URL = 'https://app.solis-os.com'
 
@@ -17,6 +18,8 @@ export default function WebAppScreen() {
   const webViewRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [canGoBack, setCanGoBack] = useState(false)
+  const [wasOnDashboard, setWasOnDashboard] = useState(false)
+  const { signOut } = useAuth()
 
   useFocusEffect(
     useCallback(() => {
@@ -34,6 +37,18 @@ export default function WebAppScreen() {
       }
     }, [canGoBack])
   )
+
+  const handleNavigationChange = (navState) => {
+    setCanGoBack(navState.canGoBack)
+    const url = navState.url || ''
+    const isAuthPage = url.includes('/login') || url.includes('/signup')
+    if (!isAuthPage && url.includes('app.solis-os.com')) {
+      setWasOnDashboard(true)
+    }
+    if (wasOnDashboard && isAuthPage) {
+      signOut()
+    }
+  }
 
   const injectedJS = `
     (function() {
@@ -59,7 +74,7 @@ export default function WebAppScreen() {
         source={{ uri: WEB_APP_URL }}
         style={styles.webview}
         onLoadEnd={() => setLoading(false)}
-        onNavigationStateChange={(navState) => setCanGoBack(navState.canGoBack)}
+        onNavigationStateChange={handleNavigationChange}
         injectedJavaScript={injectedJS}
         javaScriptEnabled={true}
         domStorageEnabled={true}
