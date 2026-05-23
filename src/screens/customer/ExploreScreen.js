@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, RefreshControl } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, RefreshControl, Dimensions } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
@@ -115,7 +115,7 @@ export default function ExploreScreen({ navigation }) {
               key={biz.id}
               style={s.bizCard}
               activeOpacity={0.85}
-              onPress={() => navigation.getParent()?.navigate('Home', {
+              onPress={() => navigation.navigate('Home', {
                 screen: 'BusinessProfile',
                 params: { business: biz }
               })}
@@ -168,11 +168,12 @@ const s = StyleSheet.create({
   },
   countText: { fontSize: 12, fontWeight: '600', color: colors.textSecondary },
   catGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 10,
+    flexDirection: 'row', flexWrap: 'wrap', gap: 8,
   },
   catCard: {
-    width: 105, borderRadius: 16, padding: 16,
-    alignItems: 'center', gap: 8,
+    width: (Dimensions.get('window').width - 40 - 16) / 3,
+    borderRadius: 14, padding: 14,
+    alignItems: 'center', gap: 6,
   },
   catIconWrap: {
     width: 44, height: 44, borderRadius: 12,

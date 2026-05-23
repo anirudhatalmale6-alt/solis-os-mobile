@@ -115,7 +115,7 @@ export default function HomeScreen({ navigation }) {
               onPress={() => navigation.navigate('BusinessProfile', { business: biz })}
             >
               <Image
-                source={{ uri: STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
+                source={{ uri: biz.logo_url || STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
                 style={s.bizImage}
               />
               <View style={s.bizRating}>
