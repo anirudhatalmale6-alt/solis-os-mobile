@@ -110,16 +110,10 @@ export default function DashboardScreen() {
           )}
         </View>
 
-        <LinearGradient
-          colors={['rgba(245,158,11,0.08)', 'rgba(249,115,22,0.04)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={s.welcomeBanner}
-        >
-          <View style={s.welcomeGlow} />
+        <View style={s.welcomeBanner}>
           <Text style={s.welcomeTitle}>Your Dashboard</Text>
           <Text style={s.welcomeDesc}>Here's how your business is performing today</Text>
-        </LinearGradient>
+        </View>
 
         <View style={s.statsGrid}>
           {STAT_CARDS.map((st, i) => (
@@ -173,7 +167,6 @@ export default function DashboardScreen() {
             const customerInitials = (b.customer_name || '??').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
             return (
               <View key={b.id} style={s.bookingRow}>
-                <View style={s.bookingGlowDot} />
                 <View style={[s.bookingAvatar, { backgroundColor: ac.bg }]}>
                   <Text style={[s.bookingAvatarText, { color: ac.color }]}>{customerInitials}</Text>
                 </View>
@@ -182,12 +175,9 @@ export default function DashboardScreen() {
                   <Text style={s.bookingService}>{b.service_name}</Text>
                 </View>
                 <View style={s.bookingRight}>
-                  <LinearGradient
-                    colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']}
-                    style={s.bookingTimeWrap}
-                  >
+                  <View style={s.bookingTimeWrap}>
                     <Text style={s.bookingTime}>{b.time}</Text>
-                  </LinearGradient>
+                  </View>
                   <Text style={s.bookingDate}>{b.date}</Text>
                 </View>
               </View>
@@ -220,32 +210,20 @@ const s = StyleSheet.create({
     ...shadows.button,
   },
   welcomeBanner: {
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 20,
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.15)',
-    overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
+    ...shadows.card,
   },
-  welcomeGlow: {
-    position: 'absolute',
-    top: -30,
-    right: -30,
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-  },
-  welcomeTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  welcomeTitle: { fontSize: 17, fontWeight: '700', color: colors.text, marginBottom: 4 },
   welcomeDesc: { fontSize: 13, color: colors.textSecondary },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28 },
   statCard: {
     width: '48%',
-    backgroundColor: colors.bgCard,
-    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
     ...shadows.card,
   },
   statAccent: {
@@ -287,24 +265,12 @@ const s = StyleSheet.create({
   bookingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.bgCard,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 8,
     gap: 12,
-    overflow: 'hidden',
     ...shadows.card,
-  },
-  bookingGlowDot: {
-    position: 'absolute',
-    top: -10,
-    left: -10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(245, 158, 11, 0.06)',
   },
   bookingAvatar: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   bookingAvatarText: { fontSize: 15, fontWeight: '700' },
@@ -313,25 +279,21 @@ const s = StyleSheet.create({
   bookingService: { fontSize: 12, color: colors.textMuted },
   bookingRight: { alignItems: 'flex-end' },
   bookingTimeWrap: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: colors.bgInput,
     marginBottom: 4,
   },
   bookingTime: { fontSize: 13, fontWeight: '700', color: colors.primary },
   bookingDate: { fontSize: 10, color: colors.textMuted },
   emptyUpcoming: {
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 40,
     alignItems: 'center',
-    backgroundColor: colors.bgCard,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: '#FFFFFF',
     ...shadows.card,
   },
-  emptyEmoji: { marginBottom: 12 },
   emptyText: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })

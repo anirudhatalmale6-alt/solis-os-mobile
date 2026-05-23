@@ -217,9 +217,9 @@ export default function SettingsScreen() {
             {logoUrl ? (
               <Image source={{ uri: logoUrl }} style={s.logoPreview} />
             ) : (
-              <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.logoPlaceholder}>
+              <View style={s.logoPlaceholder}>
                 <Text style={s.logoPlaceholderText}>{name ? name[0]?.toUpperCase() : 'S'}</Text>
-              </LinearGradient>
+              </View>
             )}
             <View style={s.logoInfo}>
               <Text style={s.logoInfoTitle}>{logoUrl ? 'Logo uploaded' : 'No logo yet'}</Text>
@@ -460,10 +460,11 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 16,
   },
   logoPreview: {
-    width: 72, height: 72, borderRadius: 18, borderWidth: 2, borderColor: colors.borderGlow,
+    width: 72, height: 72, borderRadius: 14,
   },
   logoPlaceholder: {
-    width: 72, height: 72, borderRadius: 18, alignItems: 'center', justifyContent: 'center',
+    width: 72, height: 72, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
   },
   logoPlaceholderText: {
     fontSize: 28, fontWeight: '800', color: colors.primary,
@@ -496,19 +497,16 @@ const s = StyleSheet.create({
     paddingBottom: 30,
   },
   sectionLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    letterSpacing: 0.2,
     marginBottom: 10,
     marginTop: 8,
   },
   card: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: 20,
     marginBottom: 20,
     ...shadows.card,
@@ -532,9 +530,7 @@ const s = StyleSheet.create({
   },
   input: {
     backgroundColor: colors.bgInput,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
@@ -542,9 +538,7 @@ const s = StyleSheet.create({
   },
   pickerButton: {
     backgroundColor: colors.bgInput,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 13,
     flexDirection: 'row',
@@ -598,10 +592,8 @@ const s = StyleSheet.create({
     fontWeight: '500',
   },
   signOutButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.10)',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.25)',
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+    borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
@@ -618,10 +610,8 @@ const s = StyleSheet.create({
     padding: 30,
   },
   modalContent: {
-    backgroundColor: colors.bgCard,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
     width: '100%',
     maxHeight: 400,
     padding: 20,
@@ -641,9 +631,7 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   modalOptionActive: {
-    backgroundColor: 'rgba(245, 158, 11, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
   modalOptionText: {
     fontSize: 15,

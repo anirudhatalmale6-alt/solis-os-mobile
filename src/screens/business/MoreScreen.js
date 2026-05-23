@@ -54,7 +54,7 @@ export default function MoreScreen() {
               activeOpacity={0.7}
               onPress={() => navigation.navigate(item.nav)}
             >
-              <View style={s.menuIconWrap}>
+              <View style={[s.menuIconWrap, { backgroundColor: item.color + '14' }]}>
                 <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
               </View>
               <Text style={s.menuLabel}>{item.label}</Text>
@@ -72,7 +72,7 @@ export default function MoreScreen() {
                 activeOpacity={0.7}
                 onPress={() => Alert.alert(item.label, 'Coming soon!')}
               >
-                <View style={s.menuIconWrap}>
+                <View style={[s.menuIconWrap, { backgroundColor: item.color + '14' }]}>
                   <MaterialCommunityIcons name={item.icon} size={22} color={item.color} />
                 </View>
                 <Text style={s.menuLabel}>{item.label}</Text>
@@ -100,10 +100,8 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   menuContainer: {
-    backgroundColor: colors.bgCard,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     overflow: 'hidden',
     ...shadows.card,
   },
@@ -113,7 +111,7 @@ const s = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: colors.bgInput,
     gap: 14,
   },
   menuItemLast: { borderBottomWidth: 0 },
@@ -123,9 +121,6 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.bgInput,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
   chevron: { fontSize: 22, color: colors.textMuted, fontWeight: '300' },
@@ -134,8 +129,6 @@ const s = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 8,
     backgroundColor: colors.primaryLight,
-    borderWidth: 1,
-    borderColor: colors.borderGlow,
   },
   soonText: { fontSize: 10, fontWeight: '700', color: colors.primary },
   signOutBtn: {
@@ -144,8 +137,6 @@ const s = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
   },
   signOutText: { fontSize: 15, fontWeight: '700', color: colors.red },
   version: { fontSize: 12, color: colors.textMuted, textAlign: 'center', marginTop: 20 },

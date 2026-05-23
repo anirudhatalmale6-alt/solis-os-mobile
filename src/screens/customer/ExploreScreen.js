@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, TextInput, RefreshControl } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { colors, shadows } from '../../theme/colors'
 import { supabase } from '../../lib/supabase'
 
 const CATEGORIES = [
-  { key: 'salon', label: 'Salons', icon: 'content-cut', gradient: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)'] },
-  { key: 'barber', label: 'Barbers', icon: 'razor-double-edge', gradient: ['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.05)'] },
-  { key: 'clinic', label: 'Clinics', icon: 'hospital-box-outline', gradient: ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.05)'] },
-  { key: 'garage', label: 'Garages', icon: 'wrench', gradient: ['rgba(168,85,247,0.15)', 'rgba(168,85,247,0.05)'] },
-  { key: 'lessons', label: 'Lessons', icon: 'school-outline', gradient: ['rgba(20,184,166,0.15)', 'rgba(20,184,166,0.05)'] },
-  { key: 'other', label: 'Other', icon: 'office-building-outline', gradient: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)'] },
+  { key: 'salon', label: 'Salons', icon: 'content-cut', bg: 'rgba(245,158,11,0.08)', iconColor: '#f59e0b' },
+  { key: 'barber', label: 'Barbers', icon: 'razor-double-edge', bg: 'rgba(59,130,246,0.08)', iconColor: '#3b82f6' },
+  { key: 'clinic', label: 'Clinics', icon: 'hospital-box-outline', bg: 'rgba(34,197,94,0.08)', iconColor: '#22c55e' },
+  { key: 'garage', label: 'Garages', icon: 'wrench', bg: 'rgba(168,85,247,0.08)', iconColor: '#a855f7' },
+  { key: 'lessons', label: 'Lessons', icon: 'school-outline', bg: 'rgba(20,184,166,0.08)', iconColor: '#14b8a6' },
+  { key: 'other', label: 'Other', icon: 'office-building-outline', bg: 'rgba(107,114,128,0.08)', iconColor: '#6b7280' },
 ]
 
 const STOCK_IMAGES = {
@@ -55,13 +54,6 @@ export default function ExploreScreen({ navigation }) {
 
   return (
     <View style={s.container}>
-      <LinearGradient
-        colors={['rgba(59,130,246,0.1)', 'rgba(245,158,11,0.05)', 'transparent']}
-        style={s.headerGlow}
-      />
-      <View style={s.glowOrb1} />
-      <View style={s.glowOrb2} />
-
       <View style={s.header}>
         <Text style={s.title}>Explore</Text>
         <Text style={s.subtitle}>Discover businesses near you</Text>
@@ -69,7 +61,7 @@ export default function ExploreScreen({ navigation }) {
 
       <View style={s.searchWrap}>
         <View style={s.searchInner}>
-          <MaterialCommunityIcons name="magnify" size={18} color={colors.textMuted} />
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMuted} />
           <TextInput
             style={s.searchInput}
             placeholder="Search by name, category, city..."
@@ -90,16 +82,14 @@ export default function ExploreScreen({ navigation }) {
             <TouchableOpacity
               key={cat.key}
               activeOpacity={0.8}
+              style={[s.catCard, { backgroundColor: cat.bg }]}
               onPress={() => setSearch(cat.label.replace(/s$/, ''))}
             >
-              <LinearGradient
-                colors={cat.gradient}
-                style={s.catCard}
-              >
-                <MaterialCommunityIcons name={cat.icon} size={24} color={colors.text} />
-                <Text style={s.catLabel}>{cat.label}</Text>
-                <Text style={s.catCount}>{categoryCounts[cat.key] || 0}</Text>
-              </LinearGradient>
+              <View style={[s.catIconWrap, { backgroundColor: cat.bg }]}>
+                <MaterialCommunityIcons name={cat.icon} size={22} color={cat.iconColor} />
+              </View>
+              <Text style={s.catLabel}>{cat.label}</Text>
+              <Text style={s.catCount}>{categoryCounts[cat.key] || 0}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -134,18 +124,18 @@ export default function ExploreScreen({ navigation }) {
                 source={{ uri: biz.logo_url || STOCK_IMAGES[biz.industry] || STOCK_IMAGES.other }}
                 style={s.bizImage}
               />
-              <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.7)']}
-                style={s.bizOverlay}
-              />
               <View style={s.bizRating}>
-                <Text style={s.bizRatingText}>★ 4.{Math.floor(Math.random() * 3) + 7}</Text>
+                <MaterialCommunityIcons name="star" size={12} color="#f59e0b" />
+                <Text style={s.bizRatingText}>4.{Math.floor(Math.random() * 3) + 7}</Text>
               </View>
               <View style={s.bizInfo}>
                 <Text style={s.bizName}>{biz.name}</Text>
-                <Text style={s.bizMeta}>
-                  {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
-                </Text>
+                <View style={s.bizMetaRow}>
+                  <MaterialCommunityIcons name="map-marker-outline" size={13} color={colors.textMuted} />
+                  <Text style={s.bizMeta}>
+                    {biz.city || 'Local'} · {(biz.industry || 'Business').charAt(0).toUpperCase() + (biz.industry || 'business').slice(1)}
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
           ))
@@ -157,64 +147,59 @@ export default function ExploreScreen({ navigation }) {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 250 },
-  glowOrb1: {
-    position: 'absolute', top: 20, right: -40, width: 160, height: 160,
-    borderRadius: 80, backgroundColor: 'rgba(59, 130, 246, 0.08)',
-  },
-  glowOrb2: {
-    position: 'absolute', top: 300, left: -50, width: 140, height: 140,
-    borderRadius: 70, backgroundColor: 'rgba(245, 158, 11, 0.06)',
-  },
-  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 },
-  title: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: 0.3 },
-  subtitle: { fontSize: 14, color: colors.blue, marginTop: 4, fontWeight: '500' },
+  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 4 },
+  title: { fontSize: 28, fontWeight: '800', color: colors.text },
+  subtitle: { fontSize: 14, color: colors.textSecondary, marginTop: 2 },
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 20 },
   searchInner: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.bgInput,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1, borderColor: colors.border,
-    borderRadius: 16, paddingHorizontal: 14, gap: 10,
+    borderRadius: 12, paddingHorizontal: 14, gap: 10,
+    ...shadows.card,
   },
-  searchInput: { flex: 1, paddingVertical: 14, fontSize: 14, color: colors.text },
+  searchInput: { flex: 1, paddingVertical: 13, fontSize: 15, color: colors.text },
   scroll: { paddingHorizontal: 20, paddingBottom: 100 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 14 },
   sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 24, marginBottom: 14 },
   countBadge: {
-    backgroundColor: colors.primaryLight, paddingHorizontal: 10, paddingVertical: 3,
-    borderRadius: 10, borderWidth: 1, borderColor: colors.borderGlow,
+    backgroundColor: colors.bgInput, paddingHorizontal: 10, paddingVertical: 3,
+    borderRadius: 10,
   },
-  countText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  countText: { fontSize: 12, fontWeight: '600', color: colors.textSecondary },
   catGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 10,
   },
   catCard: {
-    width: 105, borderRadius: 16, padding: 14,
-    borderWidth: 1, borderColor: colors.border,
-    alignItems: 'center', gap: 6,
+    width: 105, borderRadius: 16, padding: 16,
+    alignItems: 'center', gap: 8,
   },
-  catLabel: { fontSize: 12, fontWeight: '600', color: colors.text },
+  catIconWrap: {
+    width: 44, height: 44, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  catLabel: { fontSize: 13, fontWeight: '600', color: colors.text },
   catCount: { fontSize: 11, color: colors.textMuted },
   bizCard: {
-    backgroundColor: colors.bgCard, borderRadius: 20, overflow: 'hidden',
-    marginBottom: 14, borderWidth: 1, borderColor: colors.border, ...shadows.card,
+    backgroundColor: '#FFFFFF', borderRadius: 16, overflow: 'hidden',
+    marginBottom: 16, ...shadows.card,
   },
-  bizImage: { width: '100%', height: 140 },
-  bizOverlay: { position: 'absolute', top: 0, left: 0, right: 0, height: 140 },
+  bizImage: { width: '100%', height: 160, backgroundColor: '#E8E9EF' },
   bizRating: {
     position: 'absolute', top: 12, right: 12,
-    backgroundColor: 'rgba(255,255,255,0.9)', paddingHorizontal: 10, paddingVertical: 6,
-    borderRadius: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: '#FFFFFF', paddingHorizontal: 8, paddingVertical: 5,
+    borderRadius: 8, ...shadows.card,
   },
-  bizRatingText: { fontSize: 12, fontWeight: '600', color: colors.text },
-  bizInfo: { padding: 16 },
-  bizName: { fontSize: 17, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  bizRatingText: { fontSize: 12, fontWeight: '700', color: colors.text },
+  bizInfo: { padding: 14 },
+  bizMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  bizName: { fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 6 },
   bizMeta: { fontSize: 13, color: colors.textMuted },
   empty: {
-    alignItems: 'center', paddingVertical: 60, borderRadius: 20,
-    backgroundColor: colors.bgCard, borderWidth: 1, borderColor: colors.border,
+    alignItems: 'center', paddingVertical: 60, borderRadius: 16,
+    backgroundColor: '#FFFFFF',
   },
-  emptyEmoji: { marginBottom: 12 },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 4 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: 12, marginBottom: 4 },
   emptyDesc: { fontSize: 13, color: colors.textMuted },
 })
