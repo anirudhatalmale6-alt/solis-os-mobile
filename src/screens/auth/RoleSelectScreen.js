@@ -29,7 +29,7 @@ export default function RoleSelectScreen({ navigation }) {
       <View style={s.cardsWrap}>
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => navigation.navigate('Login', { role: 'business' })}
+          onPress={() => navigation.navigate('BusinessWeb')}
         >
           <View style={s.roleCardBusiness}>
             <View style={s.cardGlow} />

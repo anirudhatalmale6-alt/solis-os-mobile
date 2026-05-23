@@ -9,23 +9,25 @@ import {
   SafeAreaView,
 } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { useFocusEffect } from '@react-navigation/native'
-import { useAuth } from '../../lib/AuthContext'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 
 const WEB_APP_URL = 'https://app.solis-os.com'
 
 export default function WebAppScreen() {
   const webViewRef = useRef(null)
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
   const [canGoBack, setCanGoBack] = useState(false)
-  const wasOnDashboard = useRef(false)
-  const { signOut } = useAuth()
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
         if (canGoBack && webViewRef.current) {
           webViewRef.current.goBack()
+          return true
+        }
+        if (navigation.canGoBack()) {
+          navigation.goBack()
           return true
         }
         return false
@@ -35,22 +37,8 @@ export default function WebAppScreen() {
         BackHandler.addEventListener('hardwareBackPress', onBackPress)
         return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress)
       }
-    }, [canGoBack])
+    }, [canGoBack, navigation])
   )
-
-  const handleNavigationChange = (navState) => {
-    setCanGoBack(navState.canGoBack)
-    const url = navState.url || ''
-    const path = url.replace(/https?:\/\/[^/]+/, '')
-    const isAuthPage = path === '' || path === '/' || path.startsWith('/login') || path.startsWith('/signup') || path.startsWith('/forgot') || path.startsWith('/reset')
-    if (!isAuthPage && path.startsWith('/')) {
-      wasOnDashboard.current = true
-    }
-    if (wasOnDashboard.current && isAuthPage) {
-      wasOnDashboard.current = false
-      signOut()
-    }
-  }
 
   const injectedJS = `
     (function() {
@@ -65,7 +53,6 @@ export default function WebAppScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" translucent={false} />
-      <View style={styles.statusBarFill} />
       {loading && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#f59e0b" />
@@ -76,7 +63,7 @@ export default function WebAppScreen() {
         source={{ uri: WEB_APP_URL }}
         style={styles.webview}
         onLoadEnd={() => setLoading(false)}
-        onNavigationStateChange={handleNavigationChange}
+        onNavigationStateChange={(navState) => setCanGoBack(navState.canGoBack)}
         injectedJavaScript={injectedJS}
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -99,10 +86,6 @@ export default function WebAppScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  statusBarFill: {
-    height: 0,
     backgroundColor: '#FFFFFF',
   },
   webview: {
