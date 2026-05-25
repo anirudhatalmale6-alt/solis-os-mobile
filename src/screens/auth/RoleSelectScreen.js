@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Image } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Image, useWindowDimensions } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -8,6 +8,8 @@ import { useAuth } from '../../lib/AuthContext'
 
 export default function RoleSelectScreen({ navigation }) {
   const { enterGuestMode } = useAuth()
+  const { width } = useWindowDimensions()
+  const isTablet = width >= 768
   return (
     <View style={s.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
@@ -26,7 +28,7 @@ export default function RoleSelectScreen({ navigation }) {
         <Text style={s.tagline}>The future of business management</Text>
       </View>
 
-      <View style={s.cardsWrap}>
+      <View style={[s.cardsWrap, isTablet && { maxWidth: 500, alignSelf: 'center', width: '100%' }]}>
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => navigation.navigate('BusinessWeb')}
@@ -41,7 +43,7 @@ export default function RoleSelectScreen({ navigation }) {
               Manage bookings, staff, customers, invoices and grow your business with AI tools
             </Text>
             <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleBadge}>
-              <Text style={s.roleBadgeText}>Plans from $29/mo</Text>
+              <Text style={s.roleBadgeText}>Get started free</Text>
             </LinearGradient>
           </View>
         </TouchableOpacity>

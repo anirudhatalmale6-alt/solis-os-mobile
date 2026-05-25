@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, useWindowDimensions } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -9,6 +9,8 @@ import { useAuth } from '../../lib/AuthContext'
 export default function LoginScreen({ navigation, route }) {
   const role = route.params?.role || 'customer'
   const { signIn, setType } = useAuth()
+  const { width } = useWindowDimensions()
+  const isTablet = width >= 768
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -36,7 +38,8 @@ export default function LoginScreen({ navigation, route }) {
       <LinearGradient colors={['rgba(245,158,11,0.12)', 'rgba(245,158,11,0.04)', 'transparent']} style={s.headerGlow} />
       <View style={s.glowOrb} />
       <View style={s.glowOrb2} />
-      <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[s.scroll, isTablet && { alignItems: 'center' }]} keyboardShouldPersistTaps="handled">
+        <View style={isTablet ? { width: 480, maxWidth: '100%' } : undefined}>
         <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
           <View style={s.backBtn}>
             <Text style={s.backText}>←</Text>
@@ -106,6 +109,7 @@ export default function LoginScreen({ navigation, route }) {
             Don't have an account? <Text style={s.switchLink}>Sign up</Text>
           </Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -220,13 +224,15 @@ const s = StyleSheet.create({
   },
   loginBtn: {
     borderRadius: 14,
-    paddingVertical: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     marginTop: 4,
+    minHeight: 56,
+    justifyContent: 'center',
     ...shadows.button,
   },
   loginBtnText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: colors.white,
   },
