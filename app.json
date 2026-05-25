@@ -18,5 +18,10 @@
       "package": "com.solisos",
       "versionCode": 33
     },
+    "extra": {
+      "eas": {
+        "projectId": "7e71c1d3-adda-4f53-899d-0ac7fc5a8889"
+      }
+    }
   }
 }
