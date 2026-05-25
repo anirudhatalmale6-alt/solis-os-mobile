@@ -12,6 +12,7 @@ import { colors } from '../theme/colors'
 import RoleSelectScreen from '../screens/auth/RoleSelectScreen'
 import LoginScreen from '../screens/auth/LoginScreen'
 import SignupScreen from '../screens/auth/SignupScreen'
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
 
 // Customer Screens
 import HomeScreen from '../screens/customer/HomeScreen'
@@ -40,6 +41,7 @@ function CustomerHomeStack() {
       <HomeStack.Screen name="BookAppointment" component={BookAppointmentScreen} />
       <HomeStack.Screen name="Login" component={LoginScreen} />
       <HomeStack.Screen name="Signup" component={SignupScreen} />
+      <HomeStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </HomeStack.Navigator>
   )
 }
@@ -113,6 +115,7 @@ function AuthStack() {
       <Stack.Screen name="BusinessWeb" component={WebAppScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   )
 }

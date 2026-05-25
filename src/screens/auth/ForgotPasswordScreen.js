@@ -1,34 +1,30 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, useWindowDimensions } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import { colors, shadows } from '../../theme/colors'
-import { useAuth } from '../../lib/AuthContext'
+import { supabase } from '../../lib/supabase'
 
-export default function LoginScreen({ navigation, route }) {
-  const role = route.params?.role || 'customer'
-  const { signIn, setType } = useAuth()
+export default function ForgotPasswordScreen({ navigation }) {
   const { width } = useWindowDimensions()
   const isTablet = width >= 768
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = async () => {
-    if (!email.trim() || !password) {
-      setError('Please enter email and password')
+  const handleReset = async () => {
+    if (!email.trim()) {
+      setError('Please enter your email address')
       return
     }
     setLoading(true)
     setError('')
-    const result = await signIn(email.trim().toLowerCase(), password)
-    if (result.error) {
-      setError(result.error)
-      setLoading(false)
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase())
+    setLoading(false)
+    if (resetError) {
+      setError(resetError.message)
     } else {
-      await setType(role)
+      setSuccess(true)
     }
   }
 
@@ -37,7 +33,6 @@ export default function LoginScreen({ navigation, route }) {
       <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
       <LinearGradient colors={['rgba(245,158,11,0.12)', 'rgba(245,158,11,0.04)', 'transparent']} style={s.headerGlow} />
       <View style={s.glowOrb} />
-      <View style={s.glowOrb2} />
       <ScrollView contentContainerStyle={[s.scroll, isTablet && { alignItems: 'center' }]} keyboardShouldPersistTaps="handled">
         <View style={isTablet ? { width: 480, maxWidth: '100%' } : undefined}>
         <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
@@ -47,70 +42,58 @@ export default function LoginScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <View style={s.header}>
-          {role === 'business' ? (
-            <LinearGradient colors={['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.05)']} style={[s.roleTag, { borderColor: colors.borderGlow }]}>
-              <Text style={[s.roleTagText, { color: colors.primary }]}>
-                Business
-              </Text>
-            </LinearGradient>
-          ) : (
-            <View style={[s.roleTag, { backgroundColor: colors.blueLight, borderColor: 'rgba(59, 130, 246, 0.2)' }]}>
-              <Text style={[s.roleTagText, { color: colors.blue }]}>
-                Customer
-              </Text>
+          <Text style={s.title}>Reset Password</Text>
+          <Text style={s.subtitle}>Enter your email and we'll send you a reset link</Text>
+        </View>
+
+        {success ? (
+          <View style={s.formCard}>
+            <View style={s.successIcon}>
+              <Text style={{ fontSize: 40 }}>✓</Text>
             </View>
-          )}
-          <Text style={s.title}>Welcome back</Text>
-          <Text style={s.subtitle}>Sign in to your account</Text>
-        </View>
-
-        <View style={s.formCard}>
-          <View style={s.inputWrap}>
-            <Text style={s.label}>Email</Text>
-            <TextInput
-              style={s.input}
-              placeholder="your@email.com"
-              placeholderTextColor={colors.textMuted}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+            <Text style={s.successTitle}>Check your email</Text>
+            <Text style={s.successText}>
+              We sent a password reset link to {email}. Open the link to set a new password.
+            </Text>
+            <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.85}>
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.loginBtn}>
+                <Text style={s.loginBtnText}>Back to Sign In</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
+        ) : (
+          <View style={s.formCard}>
+            <View style={s.inputWrap}>
+              <Text style={s.label}>Email</Text>
+              <TextInput
+                style={s.input}
+                placeholder="your@email.com"
+                placeholderTextColor={colors.textMuted}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
 
-          <View style={s.inputWrap}>
-            <Text style={s.label}>Password</Text>
-            <TextInput
-              style={s.input}
-              placeholder="Enter password"
-              placeholderTextColor={colors.textMuted}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
+            {error ? <Text style={s.error}>{error}</Text> : null}
+
+            <TouchableOpacity onPress={handleReset} disabled={loading} activeOpacity={0.85}>
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.loginBtn}>
+                {loading ? (
+                  <ActivityIndicator color={colors.white} />
+                ) : (
+                  <Text style={s.loginBtnText}>Send Reset Link</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
+        )}
 
-          {error ? <Text style={s.error}>{error}</Text> : null}
-
-          <TouchableOpacity onPress={handleLogin} disabled={loading} activeOpacity={0.85}>
-            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.loginBtn}>
-              {loading ? (
-                <ActivityIndicator color={colors.white} />
-              ) : (
-                <Text style={s.loginBtnText}>Sign In</Text>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={s.forgotWrap}>
-            <Text style={s.forgotText}>Forgot Password?</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity onPress={() => navigation.navigate('Signup', { role })} style={s.switchWrap}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.switchWrap}>
           <Text style={s.switchText}>
-            Don't have an account? <Text style={s.switchLink}>Sign up</Text>
+            Remember your password? <Text style={s.switchLink}>Sign in</Text>
           </Text>
         </TouchableOpacity>
         </View>
@@ -140,15 +123,6 @@ const s = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: 'rgba(245, 158, 11, 0.10)',
   },
-  glowOrb2: {
-    position: 'absolute',
-    bottom: 100,
-    left: -40,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(59,130,246,0.06)',
-  },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
@@ -171,18 +145,6 @@ const s = StyleSheet.create({
   },
   header: {
     marginBottom: 32,
-  },
-  roleTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 8,
-    marginBottom: 16,
-    borderWidth: 1,
-  },
-  roleTagText: {
-    fontSize: 12,
-    fontWeight: '600',
   },
   title: {
     fontSize: 28,
@@ -240,14 +202,26 @@ const s = StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
   },
-  forgotWrap: {
+  successIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
     alignItems: 'center',
-    marginTop: 12,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
-  forgotText: {
+  successTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  successText: {
     fontSize: 14,
-    color: colors.primary,
-    fontWeight: '600',
+    color: colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   switchWrap: {
     alignItems: 'center',
