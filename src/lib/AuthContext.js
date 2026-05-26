@@ -69,6 +69,7 @@ export function AuthProvider({ children }) {
     if (error) return { error: error.message }
     await AsyncStorage.setItem('solis_user_type', type)
     setUserType(type)
+    if (!data.session) return { data, confirmationNeeded: true }
     return { data }
   }
 

@@ -16,6 +16,7 @@ export default function SignupScreen({ navigation, route }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [confirmationSent, setConfirmationSent] = useState(false)
 
   const handleSignup = async () => {
     if (!fullName.trim() || !email.trim() || !password) {
@@ -32,6 +33,9 @@ export default function SignupScreen({ navigation, route }) {
     if (result.error) {
       setError(result.error)
       setLoading(false)
+    } else if (result.confirmationNeeded) {
+      setLoading(false)
+      setConfirmationSent(true)
     }
   }
 
@@ -69,59 +73,76 @@ export default function SignupScreen({ navigation, route }) {
           </Text>
         </View>
 
-        <View style={s.formCard}>
-          <View style={s.inputWrap}>
-            <Text style={s.label}>Full Name</Text>
-            <TextInput
-              style={s.input}
-              placeholder="Your name"
-              placeholderTextColor={colors.textMuted}
-              value={fullName}
-              onChangeText={setFullName}
-              autoCapitalize="words"
-            />
+        {confirmationSent ? (
+          <View style={s.formCard}>
+            <View style={s.successIcon}>
+              <Text style={{ fontSize: 36, color: '#10b981' }}>{'✓'}</Text>
+            </View>
+            <Text style={s.successTitle}>Check your email</Text>
+            <Text style={s.successText}>
+              We sent a confirmation link to {email}. Open it to activate your account, then come back and sign in.
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login', { role })} activeOpacity={0.85}>
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signupBtn}>
+                <Text style={s.signupBtnText}>Go to Sign In</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
+        ) : (
+          <View style={s.formCard}>
+            <View style={s.inputWrap}>
+              <Text style={s.label}>Full Name</Text>
+              <TextInput
+                style={s.input}
+                placeholder="Your name"
+                placeholderTextColor={colors.textMuted}
+                value={fullName}
+                onChangeText={setFullName}
+                autoCapitalize="words"
+              />
+            </View>
 
-          <View style={s.inputWrap}>
-            <Text style={s.label}>Email</Text>
-            <TextInput
-              style={s.input}
-              placeholder="your@email.com"
-              placeholderTextColor={colors.textMuted}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+            <View style={s.inputWrap}>
+              <Text style={s.label}>Email</Text>
+              <TextInput
+                style={s.input}
+                placeholder="your@email.com"
+                placeholderTextColor={colors.textMuted}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={s.inputWrap}>
+              <Text style={s.label}>Password</Text>
+              <TextInput
+                style={s.input}
+                placeholder="Min 6 characters"
+                placeholderTextColor={colors.textMuted}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
+
+            {error ? <Text style={s.error}>{error}</Text> : null}
+
+            <TouchableOpacity onPress={handleSignup} disabled={loading} activeOpacity={0.85}>
+              <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signupBtn}>
+                {loading ? (
+                  <ActivityIndicator color={colors.white} />
+                ) : (
+                  <Text style={s.signupBtnText}>
+                    {role === 'business' ? 'Create Business Account' : 'Create Account'}
+                  </Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-
-          <View style={s.inputWrap}>
-            <Text style={s.label}>Password</Text>
-            <TextInput
-              style={s.input}
-              placeholder="Min 6 characters"
-              placeholderTextColor={colors.textMuted}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-
-          {error ? <Text style={s.error}>{error}</Text> : null}
-
-          <TouchableOpacity onPress={handleSignup} disabled={loading} activeOpacity={0.85}>
-            <LinearGradient colors={['#f59e0b', '#f97316']} style={s.signupBtn}>
-              {loading ? (
-                <ActivityIndicator color={colors.white} />
-              ) : (
-                <Text style={s.signupBtnText}>
-                  {role === 'business' ? 'Create Business Account' : 'Create Account'}
-                </Text>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        )}
 
         <TouchableOpacity onPress={() => navigation.navigate('Login', { role })} style={s.switchWrap}>
           <Text style={s.switchText}>
@@ -240,6 +261,27 @@ const s = StyleSheet.create({
     fontSize: 13,
     color: colors.red,
     textAlign: 'center',
+  },
+  successIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  successTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  successText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   signupBtn: {
     borderRadius: 14,
