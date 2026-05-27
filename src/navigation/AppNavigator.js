@@ -112,9 +112,7 @@ function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="RoleSelect" component={RoleSelectScreen} />
-      <Stack.Screen name="BusinessWeb" component={WebAppScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   )

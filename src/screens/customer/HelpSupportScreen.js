@@ -20,7 +20,7 @@ const FAQ = [
   },
   {
     q: 'How do I create a business account?',
-    a: 'Go back to the start screen and select "I\'m a Business". You can sign up with your email and start managing your business right away.',
+    a: 'Visit solis-os.com in your browser to create a business account. Once registered, you can sign in to the app by selecting "I\'m a Business" on the start screen.',
   },
   {
     q: 'Is Solis OS free for customers?',

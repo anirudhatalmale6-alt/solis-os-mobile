@@ -7,11 +7,13 @@ import {
   StatusBar,
   Platform,
   SafeAreaView,
+  Alert,
 } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 
 const WEB_APP_URL = 'https://app.solis-os.com'
+const BLOCKED_PATTERNS = ['/signup', '/register', '/sign-up', '/create-account', '/pricing', '/subscribe', '/checkout', '/payment']
 
 export default function WebAppScreen() {
   const webViewRef = useRef(null)
@@ -46,6 +48,20 @@ export default function WebAppScreen() {
       if (meta) {
         meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
       }
+      function hideSignupElements() {
+        var links = document.querySelectorAll('a[href*="signup"], a[href*="register"], a[href*="sign-up"], a[href*="create-account"], a[href*="pricing"], a[href*="subscribe"]');
+        links.forEach(function(el) { el.style.display = 'none'; });
+        var texts = document.querySelectorAll('a, button, span');
+        texts.forEach(function(el) {
+          var t = (el.textContent || '').toLowerCase().trim();
+          if (t === 'sign up' || t === 'register' || t === 'create account' || t === 'get started free') {
+            el.style.display = 'none';
+          }
+        });
+      }
+      hideSignupElements();
+      var observer = new MutationObserver(hideSignupElements);
+      observer.observe(document.body, { childList: true, subtree: true });
     })();
     true;
   `
@@ -64,6 +80,14 @@ export default function WebAppScreen() {
         style={styles.webview}
         onLoadEnd={() => setLoading(false)}
         onNavigationStateChange={(navState) => setCanGoBack(navState.canGoBack)}
+        onShouldStartLoadWithRequest={(request) => {
+          const url = request.url.toLowerCase()
+          if (BLOCKED_PATTERNS.some(p => url.includes(p))) {
+            Alert.alert('Registration', 'Please create your account at solis-os.com on your browser.')
+            return false
+          }
+          return true
+        }}
         injectedJavaScript={injectedJS}
         javaScriptEnabled={true}
         domStorageEnabled={true}

@@ -31,7 +31,7 @@ export default function RoleSelectScreen({ navigation }) {
       <View style={[s.cardsWrap, isTablet && { maxWidth: 500, alignSelf: 'center', width: '100%' }]}>
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => navigation.navigate('BusinessWeb')}
+          onPress={() => navigation.navigate('Login', { role: 'business' })}
         >
           <View style={s.roleCardBusiness}>
             <View style={s.cardGlow} />
@@ -43,7 +43,7 @@ export default function RoleSelectScreen({ navigation }) {
               Manage bookings, staff, customers, invoices and grow your business with AI tools
             </Text>
             <LinearGradient colors={['rgba(245,158,11,0.2)', 'rgba(245,158,11,0.08)']} style={s.roleBadge}>
-              <Text style={s.roleBadgeText}>Get started free</Text>
+              <Text style={s.roleBadgeText}>Sign in</Text>
             </LinearGradient>
           </View>
         </TouchableOpacity>

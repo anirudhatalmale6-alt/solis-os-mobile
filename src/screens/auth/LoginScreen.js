@@ -108,11 +108,20 @@ export default function LoginScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Signup', { role })} style={s.switchWrap}>
-          <Text style={s.switchText}>
-            Don't have an account? <Text style={s.switchLink}>Sign up</Text>
-          </Text>
-        </TouchableOpacity>
+        {role === 'customer' ? (
+          <TouchableOpacity onPress={() => navigation.navigate('Signup', { role })} style={s.switchWrap}>
+            <Text style={s.switchText}>
+              Don't have an account? <Text style={s.switchLink}>Sign up</Text>
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={s.switchWrap}>
+            <Text style={s.switchText}>
+              New to Solis OS? Create your business account at
+            </Text>
+            <Text style={[s.switchLink, { marginTop: 4 }]}>solis-os.com</Text>
+          </View>
+        )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
