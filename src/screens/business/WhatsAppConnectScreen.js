@@ -9,7 +9,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/AuthContext'
 import ScreenBackground from '../../components/ScreenBackground'
 
-const BOT_URL = 'http://146.190.26.115:3003'
+const BOT_URL = 'https://wa.solis-os.com'
 
 export default function WhatsAppConnectScreen({ navigation }) {
   const { user } = useAuth()
