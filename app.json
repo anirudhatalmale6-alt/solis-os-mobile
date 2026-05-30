@@ -4,10 +4,10 @@
   "expo": {
     "name": "Solis OS",
     "slug": "solis-os",
-    "version": "1.0",
+    "version": "1.0.1",
     "ios": {
       "bundleIdentifier": "com.solisos",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Solis OS needs camera access to take photos for your business profile and services.",
@@ -18,5 +18,10 @@
       "package": "com.solisos",
       "versionCode": 33
     },
+    "extra": {
+      "eas": {
+        "projectId": "e45aada3-49af-418d-b6d6-47bf6c85bb76"
+      }
+    }
   }
 }
