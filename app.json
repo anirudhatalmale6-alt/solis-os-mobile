@@ -7,8 +7,8 @@
     "version": "1.0",
     "ios": {
       "bundleIdentifier": "com.solisos",
-      "buildNumber": "8",
-      "supportsTablet": false,
+      "buildNumber": "9",
+      "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Solis OS needs camera access to take photos for your business profile and services.",
         "NSPhotoLibraryUsageDescription": "Solis OS needs photo library access to upload images for your business."
