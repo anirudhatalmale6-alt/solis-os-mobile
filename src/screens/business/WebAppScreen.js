@@ -94,7 +94,7 @@ export default function WebAppScreen() {
         startInLoadingState={false}
         allowsBackForwardNavigationGestures={true}
         sharedCookiesEnabled={true}
-        cacheEnabled={true}
+        cacheEnabled={false}
         setSupportMultipleWindows={false}
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
